@@ -80,4 +80,4 @@ database
 secrets
 
 # TODO: escludo i files di configurazione per l'ambiente di sviluppo
-src/main/resources/application-dev.properties
+/src/main/resources/application-dev.properties
