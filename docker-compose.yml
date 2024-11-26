@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+    web:
+        image: stud_med_ass:latest # immagine che genero con il Dockerfile
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: stud_med_ass_webapp_container
+        ports:
+            - "8082:8082" # porta_host:porta_container
+        depends_on:
+            - db
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sma_db # 'db' (in ...//db:5432...) è il nome del servizio docker a cui l'app Spring Boot cerca di connettersi. 5432 e' la porta dentro il container
+            SPRING_DATASOURCE_USERNAME: /run/secrets/postgres_user # /run/secrets/postgres_user e' dentro il container
+            SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
+        volumes:
+            - ./target:/app/target  # TODO: Monta la cartella target dal sistema host al container
+        secrets:
+            - postgres_user
+            - postgres_password
+
+    
+    db:
+        image: postgres:alpine
+        container_name: stud_med_ass_postgres_container
+        ports: # 5429 e' la porta sul computer host. Qualunque applicazione che si collega a localhost:5429 sara' reindirizzata verso il contenitore 
+            - "5429:5432"  # 5432 porta interna del contenitore
+        environment:
+            POSTGRES_DB: sma_db # per ora faccio solo un esperimento
+            # TODO: PostgreSQL supporta il passaggio delle password tramite segreti.
+            POSTGRES_USER: /run/secrets/postgres_user
+            POSTGRES_PASSWORD: /run/secrets/postgres_password
+        volumes:
+            - ./database/sma-DDL-and-DML.sql:/docker-entrypoint-initdb.d/init.sql
+            - postgres_data:/var/lib/postgresql/data # questa riga garantisce che i dati del database vengano salvati in un volume persistente chiamato postgres_data e non vengano persi tra i riavvii del contenitore
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"] # se da problemi, al posto di $() mettere postgres
+            interval: 20s # esegui il controllo per vedere se il container e' sano ogni 30s
+            timeout: 5s # limita il timeout a 10s
+            retries: 5 # fai 5 tentativi prima di considerarlo non sano
+        secrets:
+            - postgres_user
+            - postgres_password
+
+
+volumes:
+    postgres_data:
+
+
+# TODO: in .gitignore includere la cartella ./secrets/*
+secrets: 
+  postgres_user:
+    file: ./secrets/postgres_user.txt # questo file nel computer host presente in ./secrets/postgres_user.txt è mappato in automatico dentro al container in /run/secrets/postgres_user.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+    
