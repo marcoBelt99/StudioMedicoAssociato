@@ -1,13 +1,36 @@
-<html>
-    <head>
-        <title>Home</title>
-    </head>
-    <body>
-        <h1>Prima app web</h1>
-        <p th:text="${saluto}"></p>
-        <p th:text="${4+4}"></p>
-    <p>Questo è un paragrafo contenente un po di testo in più</p>
-    <hr />
-    <h2>Questo e' un titolo molto molto bello!!!!!!!</h2>
-    </body>
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+<div class="container">
+    <div class="card">
+        <h1>STUDIO MEDICO ASSOCIATO</h1>
+        <h3 th:text="${intestazione}"></h3>
+        <h5 th:text="${saluti}"></h5>
+        <h5 th:text="${userName}"></h5>
+    </div>
+</div>
+
+
+
+
+<!-- TODO: inserisco il blocco comune foot  -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
 </html>

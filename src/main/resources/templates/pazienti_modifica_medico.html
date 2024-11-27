@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container my-4"> <!-- Necessario per far accentrare il form nella pagina -->
+
+    <h2>Modifica il medico assegnato ad un paziente</h2>
+
+
+    <!-- TODO:
+             1) piccola select box per selezionare il medico del paziente di interesse
+             2) text box per inserire il CF del paziente
+             3) text box per scegliere (tramite nome e cognome) il medico da modificare
+             4) nel controller parte il metodo incaricato di modificare il medico associato al paziente
+                prevedere quindi il repository e poi il service e infine appunto il metodo nel controller
+    -->
+    <form th:action="@{/pazienti/modifica/medico}" method="post">
+
+        <div class="my-5">
+
+            <div class="row">
+
+                <!-- Select Box per scegliere il paziente   -->
+                <div class="input-group col-md-4">
+                    <div class="select-wrapper">
+<!--                        <label for="paziente">Seleziona un Paziente:</label>-->
+                        <select name="codiceFiscaleSelect" id="pazienteSelect" required data-focus-mouse="false">
+                            <option value="" disabled selected>Seleziona un paziente</option>
+                            <option th:each="paz : ${listaPazienti}"
+                                    th:value="${paz.codiceFiscale}"
+                                    th:text="${paz.nome} + ' ' + ${paz.cognome}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Visualizza i dati del paziente dopo la selezione -->
+        <div class="row">
+            <div class="form-group  col-md-4">
+                <label for="codiceFiscale">Codice Fiscale:</label>
+            </div>
+            <div class="form-group  col-md-4">
+                <input type="text" id="codiceFiscale" name="codiceFiscale" disabled/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="nome">Nome:</label>
+            </div>
+            <div class="form-group col-md-4">
+                <input type="text" id="nome" name="nomePaziente" disabled/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-4"> <!-- class="input group" -->
+                <label for="cognome">Cognome:</label>
+            </div>
+            <div class="form-group col-md-4">
+                <input type="text" id="cognome" name="cognomePaziente" disabled/>
+            </div>
+        </div>
+
+
+        <!-- Input per inserire il codice del medico -->
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="medicoCodice">Inserisci il Codice del medico da assegnare:</label>
+            </div>
+            <div class="form-group col-md-4">
+                <input type="text" id="idCodiceMedico" name="codiceMedico" required/>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <button class="btn btn-primary" type="submit">Aggiorna Medico</button>
+        </div>
+
+            <!-- Controllo se la il codice medico inserita e' corretto.
+             param.error è settato quando viene fatto il redirect a questa pagina  -->
+            <th:block th:if="${param.error != null}">
+                <div class="alert alert-danger">
+                    <p th:text="${erroreCodiceMedico}"></p>
+<!--                    <p>Spiacente, il codice del medico inserito non esiste.</p>-->
+                </div>
+            </th:block>
+
+        </div>
+    </form>
+
+</div>
+
+
+
+
+<!-- TODO: inserisco un blocco comune per il foot -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+<!-- Includo il file JavaScript esterno -->
+<script th:src="@{/js/paziente.js}"></script>
+
+</body>
+</html>

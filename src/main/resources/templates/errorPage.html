@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+<section>
+    <div class="container">
+        <div class="card">
+            <h3 class="mt-4">Oh! E' molto imbarazzante!</h3>
+            <h4>Sembra che qualcosa di brutto sia accaduto! Ci scusiamo per l'inconveniente</h4>
+            <h5>Riprova fra qualche minuto.</h5>
+            <a th:href="@{/login}" class="btn btn-primary mt-4">Torna al login</a>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- TODO: inserisco il blocco comune foot  -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>

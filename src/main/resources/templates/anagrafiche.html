@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+<div class="container">
+    <div class="card">
+        <table class="table table-dark table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Codice Fiscale</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cognome</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${anagrafica.getPaziente().getCodiceFiscale()}"></td>
+                <td th:text="${anagrafica.getPaziente().getNome()}"></td>
+                <td th:text="${anagrafica.getPaziente().getCognome()}"></td>
+                <td th:text="${anagrafica.getTelefono()}"></td>
+                <td th:text="${anagrafica.getEmail()}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!--<div class="container">-->
+<!--    <div class="card">-->
+<!--        <h1>STUDIO MEDICO ASSOCIATO</h1>-->
+<!--        <h3 th:text="${intestazione}"></h3>-->
+<!--        <h5 th:text="${saluti}"></h5>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+
+
+<!-- TODO: inserisco il blocco comune foot  -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>

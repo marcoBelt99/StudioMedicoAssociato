@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+<section>
+    <div class="container">
+        <div class="card">
+            <h3 class="mt-4">Oops! Pagina non trovata</h3>
+            <p>Sembra che tu abbia preso una via sbagliata. Non preoccuparti... succede anche ai migliori di noi. Ecco un piccolo consiglio che potrebbe aiutarti a rimetterti in carreggiata.</p>
+            <a th:href="@{/index}" class="btn btn-primary mt-4">Torna alla home</a>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- TODO: inserisco il blocco comune foot  -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>

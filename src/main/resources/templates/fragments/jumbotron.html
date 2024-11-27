@@ -1,0 +1,17 @@
+<div th:fragment="jumbotron">
+
+    <div class="jumbotron jumbotron-billboard">
+        <div class="img">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 th:text="${Titolo}"></h2>
+                        <h2 th:text="${Sottotitolo}"></h2>
+                        <a href="/login" id="login" class="btn btn-primary btn-lg">Accedi</a>
+                        <a href="/signup" id="signin" class="btn btn-success btn-lg">Registrati</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

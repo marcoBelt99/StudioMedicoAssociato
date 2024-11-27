@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container">
+    <h1>STUDIO MEDICO ASSOCIATO</h1>
+
+    <h3 th:text="${titolo}"></h3>
+
+
+        <table class="table table-hover">
+            <thead>
+            <tr scope="row">
+                <th scope="col"> Codice Fiscale</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cognome</th>
+                <th scope="col">Medico referente</th>
+                <th scope="col">Dettagli</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr scope="row" th:each="paz: ${pazienti}" >
+                <td th:text="${paz.getCodiceFiscale()}"></td>
+                <td th:text="${paz.getNome()}"></td>
+                <td th:text="${paz.getCognome()}"></td>
+                <td th:text="${paz.getMedico().getNome().concat(' ').concat(paz.getMedico().getCognome())}"></td>
+                <td>
+                    <a th:href="@{/anagrafiche/{codiceFiscale} (codiceFiscale = ${paz.getCodiceFiscale})}"
+                       class="btn btn-primary btn-icon btn-me">
+                        <span class="rounded-icon">
+                            <svg class="icon icon-primary"><use th:href="@{/svg/sprites.svg# it-plus-circle}"></use></svg>
+                        </span>
+                        <span>Dettagli</span>
+                    </a>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+    <br/>
+
+</div>
+
+
+
+<!-- TODO: inserisco un blocco comune per il foot -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>
