@@ -1,6 +1,6 @@
 package com.beltra.sma.repository;
 
-import com.beltra.sma.domain.Paziente;
+import com.beltra.sma.model.Paziente;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -57,7 +57,7 @@ public interface PazienteRepository extends JpaRepository<Paziente, Long> { //
      *
      *
      * */
-    @Query(value="SELECT p FROM Paziente p, Anagrafica a WHERE a.id = p.id  AND a.cognome = :c AND a.nome = (:n)")
+    @Query(value="SELECT p FROM Paziente p, Anagrafica a WHERE a.idAnagrafica = p.idAnagrafica  AND a.cognome = :c AND a.nome = (:n)")
     Paziente selPazienteByCognomeAndNome(@Param("c") String cognome,
                                          @Param("n") String nome);
 
