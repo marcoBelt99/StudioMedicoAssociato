@@ -9,8 +9,6 @@ import org.hibernate.annotations.Cascade;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
 @Table(name="utenti")
 public class Utente {
@@ -38,19 +36,53 @@ public class Utente {
     private Set<Ruolo> ruoli = new HashSet<>();
 
 
-    /** TODO: Metodo helper per gestione bidirezionale.
-     *   si occupa di mantenere la relazione bidirezionale tra Utente e Ruolo.
-     * */
-    public void addRuolo(Ruolo ruolo) {
-        this.ruoli.add(ruolo);
-        ruolo.setUtente(this); // Associazione bidirezionale
+    // Getters and Setters
+
+    public String getIdUtente() {
+        return idUtente;
     }
 
+    public void setIdUtente(String idUtente) {
+        this.idUtente = idUtente;
+    }
 
-//    public void addAnagrafica(Anagrafica anagrafica) {
-//        this.anagrafica = anagrafica;
-//        anagrafica.setUtente(this);
-//    }
+    public String getUsername() {
+        return username;
+    }
 
-    // Getters and Setters
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean isAttivo() {
+        return attivo;
+    }
+
+    public void setAttivo(Boolean attivo) {
+        this.attivo = attivo;
+    }
+
+    public Anagrafica getAnagrafica() {
+        return anagrafica;
+    }
+
+    public void setAnagrafica(Anagrafica anagrafica) {
+        this.anagrafica = anagrafica;
+    }
+
+    public Set<Ruolo> getRuoli() {
+        return ruoli;
+    }
+
+    public void setRuoli(Set<Ruolo> ruoli) {
+        this.ruoli = ruoli;
+    }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UtenteRepository extends JpaRepository<Utente, String> {
 
-    /** Query method che restituisce l'utente dato il suo username */
+    /** Query method che restituisce l'utente dato il suo username. */
     Utente findByUsername(String username);
 
     Boolean existsByUsername(String username);

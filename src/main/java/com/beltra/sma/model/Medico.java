@@ -2,7 +2,6 @@ package com.beltra.sma.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
@@ -27,7 +26,7 @@ public class Medico {
 
     private String matricola;
 
-    @Column(name="specializzazione", nullable=true)
+    @Column(name="specializzazione")
     private String specializzazione;
 
     // Getters and Setters
