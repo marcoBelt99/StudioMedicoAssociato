@@ -69,23 +69,5 @@ public interface PazienteRepository extends JpaRepository<Paziente, Long> { //
     int countPazientiWithThisCognome(@Param("c") String cognome);
 
 
-    /** Aggiorna il medico assegnato al paziente tramite il suo codice fiscale.
-     *  <br>
-     *  Ritorna il numero di righe che ha aggiornato.
-     *  @param codiceFiscale codice fiscale del paziente (cioè la chiave di ricerca).
-     *  @param medico è codice del medico (cioè il dato da aggiornare).
-     *  @return 1 se la riga è stata aggiornata, 0 altrimenti.
-     *
-      */
-//    @Modifying // indica che il metodo esegue un'operazione di modifica ==> informo Spring Data JPA che il metodo non è di sola lettura
-//    @Query(value = "UPDATE pazienti SET medico = :codiceMedico WHERE codice_fiscale = :codiceFiscale", nativeQuery = true)
-//    int updateMedicoByCodiceFiscale(@Param("codiceFiscale") String codiceFiscale,
-//                                    @Param("codiceMedico") String medico);
-
-
-
-
-
-
 
 }

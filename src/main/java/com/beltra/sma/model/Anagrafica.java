@@ -30,4 +30,16 @@ public class Anagrafica {
     //private Utente utente;
 
     // Getters and Setters
+
+
+    @Override
+    public String toString() {
+        return "Anagrafica{" +
+                "idAnagrafica=" + idAnagrafica +
+                ", cognome='" + cognome + '\'' +
+                ", nome='" + nome + '\'' +
+                ", dataNascita=" + dataNascita +
+                ", genere='" + genere + '\'' +
+                '}';
+    }
 }

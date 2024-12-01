@@ -2,8 +2,12 @@ package com.beltra.sma.model;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Table(name="prestazioni")
+@Getter
+@Setter
 @Entity
 public class Prestazione {
 
@@ -21,4 +25,16 @@ public class Prestazione {
     private Double ticket;
 
     // Getters and Setters
+
+    @Override
+    public String toString() {
+        return "Prestazione{" +
+                "idPrestazione=" + idPrestazione +
+                ", titolo='" + titolo + '\'' +
+                ", descrizione='" + descrizione + '\'' +
+                ", durataMedia=" + durataMedia +
+                ", costo=" + costo +
+                ", ticket=" + ticket +
+                '}';
+    }
 }

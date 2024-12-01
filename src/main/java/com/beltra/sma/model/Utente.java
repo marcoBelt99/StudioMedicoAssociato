@@ -31,7 +31,7 @@ public class Utente {
 
     @OneToMany(
             mappedBy = "utente",
-            //fetch = FetchType.EAGER,
+            fetch = FetchType.EAGER, // TODO: deve per forza essere EAGER
             cascade = CascadeType.ALL)
     private Set<Ruolo> ruoli = new HashSet<>();
 

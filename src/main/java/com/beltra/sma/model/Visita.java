@@ -28,4 +28,16 @@ public class Visita {
     private Prestazione prestazione;
 
     // Getters and Setters
+
+    @Override
+    public String toString() {
+        return "Visita{" +
+                "idVisita=" + idVisita +
+                ", dataVisita=" + dataVisita +
+                ", ora=" + ora +
+                ", numAmbulatorio=" + numAmbulatorio +
+                ", anagrafica=" + anagrafica.getCognome().concat(" ").concat(anagrafica.getNome()) +
+                ", prestazione=" + prestazione.getTitolo() +
+                '}';
+    }
 }

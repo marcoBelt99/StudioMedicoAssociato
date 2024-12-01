@@ -1,7 +1,7 @@
 package com.beltra.sma.repository;
 
-import com.beltra.sma.dto.VisitaDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
+import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Visita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +17,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
      * */
     @Query(
         """
-        SELECT new com.beltra.sma.dto.VisitaDTO(
+        SELECT new com.beltra.sma.dto.VisitaPrenotataDTO(
             pren.dataPrenotazione,
             vis.dataVisita, vis.ora, vis.numAmbulatorio,
             anag.nome, anag.cognome,
@@ -29,13 +29,27 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
                 AND vis.prestazione.idPrestazione = prest.idPrestazione
         ORDER BY vis.dataVisita DESC
             """)
-    List<VisitaDTO> findAllVisiteOrderByDataVisitaDesc();
+    List<VisitaPrenotataDTO> findAllVisiteOrderByDataVisitaDesc();
+
+
+    /** Elenco di tutte le visite appartenenti ad un determinato paziente. */
+    @Query(
+    """
+    SELECT visita
+    FROM Prenotazione pren
+    JOIN pren.visita visita
+    WHERE pren.anagrafica.idAnagrafica = :idAnagraficaPaziente
+    """
+    )
+    List<Visita> findAllVisitePazienteByAnagraficaPaziente(
+        @Param("idAnagraficaPaziente") Long idAnagraficaPaziente
+    );
 
 
     /** Per l'utente paziente: elenco delle visite prenotate e non effettuate */
     @Query(
             """
-                SELECT new com.beltra.sma.dto.VisitaDTO(
+                SELECT new com.beltra.sma.dto.VisitaPrenotataDTO(
                 pren.dataPrenotazione,
                 vis.dataVisita, vis.ora, vis.numAmbulatorio,
                 utente.anagrafica.nome, utente.anagrafica.cognome,
@@ -44,10 +58,15 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
                 FROM Visita vis, Prenotazione pren, Utente utente
                 WHERE
                 vis.idVisita = pren.visita.idVisita
-                AND pren.effettuata = FALSE
+                AND pren.effettuata = :effettuata
                 AND utente.anagrafica.idAnagrafica = pren.anagrafica.idAnagrafica
-                AND utente.username =:username
+                AND utente.username = :username
             """
     )
-    List<VisitaDTO> findAllVisitePrenotateAndNotEffettuateByUsernamePaziente(@Param("username")String username);
+    List<VisitaPrenotataDTO> findAllVisitePrenotateByUsernamePaziente(
+            @Param("username") String username,
+            @Param("effettuata") Boolean effettuata
+    );
+
+
 }

@@ -92,9 +92,13 @@ public class SecurityConfiguration {
 //                    new AntPathRequestMatcher("/articoli"),
 //                    new AntPathRequestMatcher("/anagrafiche/**")
                     new AntPathRequestMatcher("/visite/all")
+                    //new AntPathRequestMatcher("/visitePaziente")
             ).hasRole("MEDICO"); // tutti questi endpoint sono accessibili solo dall'utente che ha il ruolo di MEDICO
 
             // TODO: fare per il paziente
+            authz.requestMatchers(
+                    new AntPathRequestMatcher("/pazienti/visite/**")
+            ).hasRole("PAZIENTE");
 
             // TODO: qualsiasi altra richiesta che riguardi qualunque altro endpoint devo essere
             //       almeno autenticato (cioè aver inserito username e password)

@@ -32,11 +32,9 @@ public class VisitaControllerTests {
     private VisitaService visitaService;
 
 
-    /** Uso di Mockito */
-    //@Disabled
     @Test
-    @WithMockUser(username = "mrgersaur", roles = {"MEDICO"}) // TODO: solo l'utente di ruolo "MEDICO" può chiamare questo endpoint
-    void getElencoCronologicoVisiteMustReturnListOfAllVisiteDTO() throws Exception {
+    @WithMockUser(username = "mario_rossi", roles = {"MEDICO"}) // TODO: solo l'utente di ruolo "MEDICO" può chiamare questo endpoint
+    void getElencoCronologicoVisite_MustReturnListOfAllVisiteDTO() throws Exception {
 
         when( visitaService.getAllVisite() )
                 .thenReturn( new ArrayList<>() );
@@ -50,4 +48,6 @@ public class VisitaControllerTests {
         // cioè, verifico che il metodo del service sia stato chiamato
         verify( visitaService ).getAllVisite();
     }
+
+
 }

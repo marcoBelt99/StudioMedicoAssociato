@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container">
+    <h1>STUDIO MEDICO ASSOCIATO</h1>
+
+    <h3 th:text="${titolo}"></h3>
+
+
+    <table class="table table-hover">
+        <thead>
+        <tr scope="row">
+            <th scope="col">Data Prenotazione</th>
+            <th scope="col">Data Visita</th>
+            <th scope="col">Ora</th>
+            <th scope="col">Num Ambulatorio</th>
+            <th scope="col">Paziente</th>
+            <th scope="col">Tipo Prestazione</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr scope="row" th:each="visitaPrenotata: ${visitePrenotate}" >
+            <td th:text="${visitaPrenotata.getDataPrenotazione()}"></td>
+            <td th:text="${visitaPrenotata.getDataVisita()}"></td>
+            <td th:text="${visitaPrenotata.getOra()}"></td>
+            <td th:text="${visitaPrenotata.getNumAmbulatorio()}"></td>
+            <td th:text="${visitaPrenotata.getCognomePaziente().concat(' ').concat(visitaPrenotata.getNomePaziente())}"></td>
+            <td th:text="${visitaPrenotata.getTitoloPrestazione()}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <br/>
+
+</div>
+
+
+<!-- TODO: inserisco un blocco comune per il foot -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>
