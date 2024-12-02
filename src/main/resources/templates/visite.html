@@ -35,8 +35,8 @@
         </thead>
         <tbody>
         <tr scope="row" th:each="vis: ${visite}" >
-            <td th:text="${vis.getDataPrenotazione()}"></td>
-            <td th:text="${vis.getDataVisita().getDate()}"></td>
+            <td th:text="${#dates.format( vis.getDataPrenotazione(), 'yyyy-MM-dd' )}"></td>
+            <td th:text="${#dates.format( vis.getDataVisita(), 'yyyy-MM-dd' )}"></td>
             <td th:text="${vis.getOra()}"></td>
             <td th:text="${vis.getNumAmbulatorio()}"></td>
             <td th:text="${vis.getCognomePaziente().concat(' ').concat(vis.getNomePaziente())}"></td>

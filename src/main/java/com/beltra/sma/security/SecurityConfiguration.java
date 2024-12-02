@@ -2,6 +2,7 @@ package com.beltra.sma.security;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -53,7 +54,6 @@ public class SecurityConfiguration {
 
 
 
-
     /** TODO: Uno dei metodi più importanti, perchè <b><u>mi consente di configurare i diversi aspetti che riguardano la sicurezza
      *        della mia applicazione</u></b>.
      *        <br>
@@ -81,7 +81,8 @@ public class SecurityConfiguration {
                     new AntPathRequestMatcher("/svg/**"),
                     new AntPathRequestMatcher("/fonts/**"),
                     new AntPathRequestMatcher("/images/**"),
-                    new AntPathRequestMatcher("/benvenuto_utente_anonimo") // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
+                    new AntPathRequestMatcher("/benvenuto"), // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
+                    new AntPathRequestMatcher("/prestazioni/all") // endpoint della pagina di benvenuto
             ).permitAll(); // per poter accedere in modalità anonima
 
             //TODO: endpoint che sono accessibili <b>solo da utente medico (che sarebbe l'amministratore)</b>
@@ -145,6 +146,10 @@ public class SecurityConfiguration {
                                                                //  ==> Devo riportare in questa classe ( SecurityConfiguration ) il Bean che istanzia un nuovo oggetto di tipo CustomAuthenticationFailureHandler
 
 
+                /** TODO: Cambio il comporatmento di default: di default se non sei autenticato devi aprire l'app nell'endpoint che ti specifico qui sotto */
+                .authenticationEntryPoint( (request, response, authException) -> {
+                    response.sendRedirect("/benvenuto");
+                })
         ) // ;
     // TODO: ho finito con i parametri di configurazione di base
 

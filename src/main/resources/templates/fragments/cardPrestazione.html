@@ -1,0 +1,39 @@
+<div th:fragment="cardPrestazione">
+
+    <!-- Ciclo per le card, divise automaticamente in righe -->
+    <div class="section py-5 pb-lg-80 px-lg-5 position-relative" style="background-image: url('https://comuni.designers.italia.it/wp-content/themes/design-comuni-wordpress-theme/assets/img/evidenza-header.png');">
+        <div class="container">
+
+            <div class="row">
+                <div th:each="prest: ${prestazioni}" class="col-12 col-lg-4">
+                    <!--start card-->
+                    <div class="card-wrapper card-space">
+                        <div class="card card-bg">
+                            <div class="card-body">
+                                <h3 class="card-title h5" th:text="${prest.getTitolo()}"></h3>
+                                <p class="card-text font-serif" th:text="${prest.getDescrizione()}">.</p>
+                                <a class="read-more" href="#">
+                                    <span class="text">Dettagli</span>
+                                    <span class="visually-hidden">su Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor…</span>
+                                    <svg class="icon"> <use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end card-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+<!---->
+<!---->
+<!---->
+
+
+
+
+</div>

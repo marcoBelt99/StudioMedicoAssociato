@@ -1,5 +1,8 @@
 package com.beltra.sma.controller;
 
+import com.beltra.sma.repository.UtenteRepository;
+import com.beltra.sma.service.PrestazioneService;
+import com.beltra.sma.service.UtenteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -7,19 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class IndexController {
 
-    /** Variabile che posso passare alla vista tramite Model e metodo addAttribute() */
-    private String saluti = "Saluti, sono la tua prima applicazione web creata in Spring Boot 3 e Thymeleaf";;
+    private final UtenteService utenteService;
+    private final PrestazioneService prestazioneService;
 
-
-
-    /** Ho scritto questo metodo per poter esercitarmi con gli unit test
-     * <br>
-     *  Se, come in questo esempio, al RequestMapping non specifico il tipo di metodo,
-     *  per impostazione predefinita mi mappa tutte le operazioni HTTP.
-     * */
-    @RequestMapping("/saluto")
-    public @ResponseBody String getSaluto() {
-        return "Allenamento per Unit Test !!";
+    public IndexController(UtenteService utenteService, PrestazioneService prestazioneService) {
+        this.utenteService = utenteService;
+        this.prestazioneService = prestazioneService;
     }
 
 
@@ -33,7 +29,7 @@ public class IndexController {
 
         model.addAttribute("intestazione", "Benvenuto/a nella root page dello Studio Medico Associato");
         model.addAttribute("titolo", "HomePage");
-        model.addAttribute("saluti", saluti);
+        //model.addAttribute("saluti", saluti);
 
         // TODO
         return "index";
@@ -51,7 +47,7 @@ public class IndexController {
     public String getWelcome1(@PathVariable String name,
                               Model model) {
         model.addAttribute("intestazione", String.format("Benvenuto %s nella index page della webapp Studio Medico Associato", name) );
-        model.addAttribute("saluti", saluti);
+        //model.addAttribute("saluti", saluti);
 
         return "index";
     }
@@ -61,11 +57,22 @@ public class IndexController {
     @GetMapping(value = "index")
     public String getWelcome2(Model model,
                               @CookieValue(name = "user-id") String userId) {
-        model.addAttribute("intestazione", String.format("Benvenuto %s nella index page della webapp Studio Medico Associato", userId) );
-        model.addAttribute("saluti", saluti);
 
-        // TODO: tecnicamente, ora non dovrebbe più essere necessario usare il cookie, dal momento che l'ho centralizzato
-        //model.addAttribute("userName", userId);
+        model.addAttribute("intestazione",
+                String.format("Benvenut%s %s nella index page della  Studio Medico Associato",
+                    utenteService.getWelcome(userId),
+                    userId)
+                );
+
+        // Se utente e' paziente mostrami le card con le prestazioni
+
+        model.addAttribute("prestazioni",
+                prestazioneService.getAllPrestazioni());
+
+        // Se utente e' medico mostrami il quadro orario
+        // TODO:
+
+        // model.addAttribute("saluti", saluti);
 
         return "index";
     }

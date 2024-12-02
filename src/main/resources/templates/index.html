@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 
 <!-- TODO: importo il namespace xml di thymeleaf  -->
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 
 
 
@@ -19,10 +20,27 @@
 
 <div class="container">
     <div class="card">
+
+
         <h1>STUDIO MEDICO ASSOCIATO</h1>
         <h3 th:text="${intestazione}"></h3>
         <h5 th:text="${saluti}"></h5>
-        <h5 th:text="${userName}"></h5>
+<!--        <h5 th:text="${userName}"></h5>-->
+
+
+        <div sec:authorize="hasRole('ROLE_PAZIENTE') or isAnonymous()">
+
+            <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
+
+        </div>
+
+
+        <div sec:authorize="hasRole('ROLE_MEDICO')">
+
+        <!-- TODO: appuntamenti == quadro orario            -->
+
+        </div>
+
     </div>
 </div>
 

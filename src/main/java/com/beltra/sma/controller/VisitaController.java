@@ -31,6 +31,19 @@ public class VisitaController {
         return "visite";
     }
 
+    @GetMapping("/effettuate")
+    public String getElencoGiornalieroVisitePrenotateAndEffettuate(Model model) {
+        return "";
+    }
+
+    @GetMapping("/noneffettuate")
+    public String getElencoGiornalieroVisitePrenotateAndNotEffettuate(Model model) {
+        return "";
+    }
+
+
+
+
 
 
 }
