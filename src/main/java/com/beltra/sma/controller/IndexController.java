@@ -31,26 +31,12 @@ public class IndexController {
         model.addAttribute("titolo", "HomePage");
         //model.addAttribute("saluti", saluti);
 
-        // TODO
-        return "index";
+
+        // return "index"; // prima era così
+        return "redirect:index";
     }
 
 
-
-
-    /** TODO: metodo necessario per l'autenticazione.
-     *  <br>
-     *  Senza questo metodo, una volta inserito userame e password nel form di login,
-     *  non sarei in grado di vedere la pagina di index
-     * */
-    @GetMapping(value = "index/{name}")
-    public String getWelcome1(@PathVariable String name,
-                              Model model) {
-        model.addAttribute("intestazione", String.format("Benvenuto %s nella index page della webapp Studio Medico Associato", name) );
-        //model.addAttribute("saluti", saluti);
-
-        return "index";
-    }
 
 
     /** TODO: metodo per usare il cookie custom */
@@ -60,16 +46,16 @@ public class IndexController {
 
         model.addAttribute("intestazione",
                 String.format("Benvenut%s %s nella index page della  Studio Medico Associato",
-                    utenteService.getWelcome(userId),
+                    utenteService.getWelcome(userId), // verifico se e' maschio o femmina
                     userId)
                 );
 
-        // Se utente e' paziente mostrami le card con le prestazioni
+        // TODO: Se utente e' paziente mostrami le card con le prestazioni
 
         model.addAttribute("prestazioni",
                 prestazioneService.getAllPrestazioni());
 
-        // Se utente e' medico mostrami il quadro orario
+        // TODO: Se utente e' medico mostrami il quadro orario
         // TODO:
 
         // model.addAttribute("saluti", saluti);

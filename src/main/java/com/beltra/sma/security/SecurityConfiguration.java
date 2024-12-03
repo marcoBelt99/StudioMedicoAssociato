@@ -82,24 +82,25 @@ public class SecurityConfiguration {
                     new AntPathRequestMatcher("/fonts/**"),
                     new AntPathRequestMatcher("/images/**"),
                     new AntPathRequestMatcher("/benvenuto"), // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
-                    new AntPathRequestMatcher("/prestazioni/all") // endpoint della pagina di benvenuto
+                    new AntPathRequestMatcher("/prestazioni/all"), // endpoint della pagina di benvenuto
+                    new AntPathRequestMatcher("/chiSiamo")
             ).permitAll(); // per poter accedere in modalità anonima
 
-            //TODO: endpoint che sono accessibili <b>solo da utente medico (che sarebbe l'amministratore)</b>
+        //TODO: endpoint che sono accessibili <b>solo da utente medico (che sarebbe l'amministratore)</b>
             authz.requestMatchers(
-//                    new AntPathRequestMatcher("/pazienti/cerca/**"),
-//                    new AntPathRequestMatcher("/pazienti/pazienteDettagli/**"),
-//                    new AntPathRequestMatcher("/pazienti/modifica/medico"),
-//                    new AntPathRequestMatcher("/articoli"),
-//                    new AntPathRequestMatcher("/anagrafiche/**")
-                    new AntPathRequestMatcher("/visite/all")
+
+                    //new AntPathRequestMatcher("/visite/all"),
+                    new AntPathRequestMatcher("/medico/visite/**")
                     //new AntPathRequestMatcher("/visitePaziente")
             ).hasRole("MEDICO"); // tutti questi endpoint sono accessibili solo dall'utente che ha il ruolo di MEDICO
 
             // TODO: fare per il paziente
             authz.requestMatchers(
-                    new AntPathRequestMatcher("/pazienti/visite/**")
+                    new AntPathRequestMatcher("/paziente/visite/**")
             ).hasRole("PAZIENTE");
+
+            // TODO: fare per infermiere
+            // ...
 
             // TODO: qualsiasi altra richiesta che riguardi qualunque altro endpoint devo essere
             //       almeno autenticato (cioè aver inserito username e password)
@@ -174,7 +175,6 @@ public class SecurityConfiguration {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID","user-id")
-
 
         );
 

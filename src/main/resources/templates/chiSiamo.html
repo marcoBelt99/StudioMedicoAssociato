@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
+
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+
+<div class="container">
+    <div class="card">
+
+
+        <h1>STUDIO MEDICO ASSOCIATO</h1>
+        <h3 > Siamo uno studio medico associato</h3>
+        <hr/>
+        <h5>Siamo un gruppo di professionisti tra cui: medici specialisti, di base, infermieri
+        Ecc.
+        </h5>
+
+
+
+
+<!-- TODO: inserisco il blocco comune foot  -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>

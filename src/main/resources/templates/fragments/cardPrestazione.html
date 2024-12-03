@@ -1,11 +1,14 @@
 <div th:fragment="cardPrestazione">
 
     <!-- Ciclo per le card, divise automaticamente in righe -->
-    <div class="section py-5 pb-lg-80 px-lg-5 position-relative" style="background-image: url('https://comuni.designers.italia.it/wp-content/themes/design-comuni-wordpress-theme/assets/img/evidenza-header.png');">
+    <div class="section py-5 pb-lg-80 px-lg-5 position-relative" >
+<!--         style="background-image: url('https://comuni.designers.italia.it/wp-content/themes/design-comuni-wordpress-theme/assets/img/evidenza-header.png');"-->
+
         <div class="container">
 
             <div class="row">
                 <div th:each="prest: ${prestazioni}" class="col-12 col-lg-4">
+
                     <!--start card-->
                     <div class="card-wrapper card-space">
                         <div class="card card-bg">

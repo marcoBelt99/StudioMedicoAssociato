@@ -5,23 +5,26 @@
 <!-- TODO: inserisco il blocco comune head -->
 <div th:insert="~{fragments/head.html :: head}"></div>
 
-<body>
+    <body>
 
-<!-- TODO: inserisco il blocco comune per la navbar -->
-<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+        <!-- TODO: inserisco il blocco comune per la navbar -->
+        <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
-<div class="container">
-    <h1 th:text="${titolo}"></h1>
-    <hr/>
-    <h3 th:text="${sottotitolo}"></h3>
-    <br/>
+        <div class="container">
+            <div class="card">
+            <h1 th:text="${titolo}"></h1>
+            <hr/>
+            <h3 th:text="${sottotitolo}"></h3>
+            <br/>
 
-    <!-- TODO: inserisco il frammento (comune, da riusare anche altre volte) per visualizzare le prestazioni    -->
-    <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
 
-</div>
+                <!-- TODO: inserisco il frammento (comune, da riusare anche altre volte) per visualizzare le prestazioni    -->
+                <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
+            </div>
+        </div>
 
-<div th:insert="~{fragments/foot.html :: foot}"></div>
 
-</body>
+        <div th:insert="~{fragments/foot.html :: foot}"></div>
+
+    </body>
 </html>

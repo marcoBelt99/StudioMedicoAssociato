@@ -7,48 +7,48 @@
 
 
 
-<!-- TODO: inserisco il blocco comune head  -->
-<div th:insert="~{fragments/head.html :: head}"></div>
+    <!-- TODO: inserisco il blocco comune head  -->
+    <div th:insert="~{fragments/head.html :: head}"></div>
 
 
-<body>
+    <body>
 
 
-<!-- TODO: inserisco il blocco comune per la navbar  -->
-<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+        <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
 
-<div class="container">
-    <div class="card">
 
 
-        <h1>STUDIO MEDICO ASSOCIATO</h1>
-        <h3 th:text="${intestazione}"></h3>
-        <h5 th:text="${saluti}"></h5>
-<!--        <h5 th:text="${userName}"></h5>-->
+        <div class="container">
+            <div class="card">
 
 
-        <div sec:authorize="hasRole('ROLE_PAZIENTE') or isAnonymous()">
+                <h1>STUDIO MEDICO ASSOCIATO</h1>
+                <h3 th:text="${intestazione}"></h3>
+                <h5 th:text="${saluti}"></h5>
 
-            <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
 
+                <div sec:authorize="hasRole('ROLE_PAZIENTE') or isAnonymous()">
+
+                    <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
+
+                </div>
+
+
+                <div sec:authorize="hasRole('ROLE_MEDICO')">
+
+                <!-- TODO: appuntamenti == quadro orario            -->
+
+                </div>
+
+            </div>
         </div>
 
 
-        <div sec:authorize="hasRole('ROLE_MEDICO')">
-
-        <!-- TODO: appuntamenti == quadro orario            -->
-
-        </div>
-
-    </div>
-</div>
 
 
+        <!-- TODO: inserisco il blocco comune foot  -->
+        <div th:insert="~{fragments/foot.html :: foot}"></div>
 
-
-<!-- TODO: inserisco il blocco comune foot  -->
-<div th:insert="~{fragments/foot.html :: foot}"></div>
-
-</body>
+    </body>
 </html>

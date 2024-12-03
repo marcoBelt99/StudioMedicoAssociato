@@ -1,6 +1,5 @@
 <!--  -->
-<div th:fragment="navbar"
-     xmlns:sec="http://www.w3.org/1999/xhtml">
+<div th:fragment="navbarVecchia">
 
 
     <header
@@ -46,7 +45,7 @@
                                 </div>
 
         <!-- ######################################################## -->
-        <!-- Bottone login/logout: da trasformare in dropdown   -->
+        <!-- TODO: bottone login/logout: da trasformare in dropdown   -->
         <!-- ######################################################## -->
                                 <!-- TODO: UTENTE NON LOGGATO -->
                                 <div th:if="${userName == null}" >
@@ -77,8 +76,8 @@
                                         <div class="dropdown-menu">
                                             <div class="link-list-wrapper">
                                                 <ul class="link-list">
-                                                    <li><a class="dropdown-item list-item" href="#"><span>Profilo </span></a></li>
-<!--                                                    <li><a class="dropdown-item list-item" href="#"><span>Azione 2</span></a></li>-->
+                                                    <li><a class="dropdown-item list-item" href="#"><span>Azione 1</span></a></li>
+                                                    <li><a class="dropdown-item list-item" href="#"><span>Azione 2</span></a></li>
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li><a class="dropdown-item list-item" th:href="@{/logout}"><span>Logout</span></a></li>
                                                 </ul>
@@ -102,12 +101,11 @@
                         <div class="col-12">
                             <div class="it-header-center-content-wrapper">
                                 <div class="it-brand-wrapper">
-                                    <a href="#">
+                                    <a href="/bootstrap-italia/docs/esempi/comuni/template-homepage/">
                                             <img th:src="@{/svg/asl-icon.svg}" alt="Icona ASL" class="icon">
                                         <div class="it-brand-text">
-                                            <div class="it-brand-title ">SMA-RT</div>
-                                            <div class="title">Studio Medico Associato</div>
-                                            <div class="it-brand-tagline d-none d-md-block">Portale per pazienti, medici e infermieri</div>
+                                            <div class="it-brand-title">Studio Medico Associato</div>
+                                            <div class="it-brand-tagline d-none d-md-block">Portale per medici e pazienti</div>
                                         </div>
                                     </a>
                                 </div>
@@ -123,7 +121,7 @@
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="https://github.com/marcoBelt99/" aria-label="Github" target="_blank">
+                                                <a href="#" aria-label="Github" target="_blank">
                                                     <svg class="icon">
                                                         <use th:href="@{/svg/sprites.svg#it-github}"></use>
                                                     </svg>
@@ -187,151 +185,37 @@
                                         </button>
                                     </div>
                                     <div class="menu-wrapper">
-
-                            <!-- ###################### -->
-                            <!-- TODO: PAZIENTE -->
-                            <!-- ###################### -->
-                                        <ul sec:authorize="hasRole('ROLE_PAZIENTE')"
-                                            class="navbar-nav">
-
-
+                                        <ul class="navbar-nav">
                                             <li class="nav-item ">
-                                                <a class="nav-link" th:href="@{/prenotazione}">
-                                                    <span>Prenota</span>
+                                                <a
+                                                        class="nav-link "
+                                                        th:href="@{/pazienti/cerca/all}"
+                                                >
+                                                    <span>Pazienti</span>
+
                                                 </a>
                                             </li>
-
-
-                                    <!-- Dropdown menu' per Paziente -->
-                                            <li class="nav-item dropdown">
-                                                <a class="main-nav-link nav-link dropdown-toggle text-truncate"
-                                                   data-node="1328" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                                   href="/Lo-sportello" title="Vai alla pagina: Lo sportello">
-                                                    <span>Visite</span>
-                                                    <svg class="icon" aria-hidden="true" focusable="false">
-                                                        <use th:href="@{/svg/sprites.svg#it-expand}"></use>
-                                                    </svg>
-                                                </a>
-                                                <div class="dropdown-menu p-2">
-                                                    <div class="p-2 mb-2 border-bottom text-center">
-                                                        <a data-node="1328"
-                                                           th:href="@{/paziente/visite/all}" title="Vai alla pagina: Elenco Visite">
-                                                            <small class="text-uppercase">Elenco Visite</small>
-                                                        </a>
-                                                    </div>
-                                                    <div class="link-list-wrapper">
-                                                        <ul class="link-list">
-                                                            <li>
-                                                                <a class="list-item" data-node="1335"
-                                                                   th:href="@{/paziente/visite?effettuata=false}">
-                                                                    <span>Visite Prenotate</span>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="list-item" data-node="15469"
-                                                                   th:href="@{/paziente/visite?effettuata=true}">
-                                                                    <span>Visite Effettuate</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </li>
-
                                             <li class="nav-item ">
-                                                <a class="nav-link" th:href="@{/paziente/esiti/all}">
-                                                    <span>Esiti</span>
+                                                <a
+                                                        class="nav-link "
+                                                        th:href="@{/pazienti/modifica/medico}">
+                                                    <span>Aggiorna Medico al Paziente</span>
+
                                                 </a>
                                             </li>
+                                            <li class="nav-item ">
+                                                <a class="nav-link " th:href="@{/benvenuto_utente_anonimo}">
+                                                    <span>Benvenuto</span>
 
+                                                </a>
+                                            </li>
+                                            <li class="nav-item ">
+                                                <a class="nav-link " href="/bootstrap-italia/docs/esempi/comuni/template-documenti/">
+                                                    <span>Documenti e Dati</span>
 
+                                                </a>
+                                            </li>
                                         </ul>
-
-
-                                        <!-- ###################### -->
-                                        <!-- TODO: MEDICO -->
-                                        <!-- ###################### -->
-                                        <ul sec:authorize="hasRole('ROLE_MEDICO')"
-                                            class="navbar-nav">
-
-                                            <li class="nav-item ">
-                                                <a class="nav-link "
-                                                   th:href="@{/medico/prenotazioni}">
-                                                    <span>Prenotazioni</span>
-                                                </a>
-                                            </li>
-
-
-                                            <!--  Dropdown menu'visite per Medico  -->
-                                            <li class="nav-item dropdown">
-                                                <a class="main-nav-link nav-link dropdown-toggle text-truncate"
-                                                   data-node="1328" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                                   href="/Lo-sportello" title="Vai alla pagina: Lo sportello">
-                                                    <span>Visite</span>
-                                                    <svg class="icon" aria-hidden="true" focusable="false">
-                                                        <use th:href="@{/svg/sprites.svg#it-expand}"></use>
-                                                    </svg>
-                                                </a>
-                                                <div class="dropdown-menu p-2">
-                                                    <div class="p-2 mb-2 border-bottom text-center">
-                                                        <a data-node="1328"
-                                                           th:href="@{/medico/visite/all}" title="Vai alla pagina: Elenco Visite">
-                                                            <small class="text-uppercase">Elenco Visite</small>
-                                                        </a>
-                                                    </div>
-                                                    <div class="link-list-wrapper">
-                                                        <ul class="link-list">
-                                                            <li>
-                                                                <a class="list-item" data-node="1335"
-                                                                   th:href="@{/medico/visite?effettuata=false}">
-                                                                    <span>Visite Prenotate</span>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="list-item" data-node="15469"
-                                                                   th:href="@{/medico/visite?effettuata=true}">
-                                                                    <span>Visite Effettuate</span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </li>
-
-                                            <li class="nav-item ">
-                                                <a class="nav-link " th:href="@{/medico/esiti/all}">
-                                                    <span>Esiti</span>
-                                                </a>
-                                            </li>
-
-                                        </ul>
-
-
-
-                                <!-- ###################### -->
-                                <!-- TODO: Utente anonimo -->
-                                <!-- ###################### -->
-                                        <ul sec:authorize="isAnonymous()"
-                                            class="navbar-nav">
-
-                                            <li class="nav-item ">
-                                                <a class="nav-link "
-                                                   th:href="@{/prestazioni/all}">
-                                                    <span>Prestazioni</span>
-                                                </a>
-                                            </li>
-
-
-                                            <li class="nav-item ">
-                                                <a class="nav-link "
-                                                   th:href="@{/chiSiamo}">
-                                                    <span>Chi siamo</span>
-
-                                                </a>
-                                            </li>
-
-                                        </ul>
-
                                         <ul class="navbar-nav navbar-secondary">
                                             <li class="nav-item">
                                                 <a class="nav-link" href="/bootstrap-italia/docs/esempi/comuni/template-argomenti-argomento/"> Argomento 1</a>

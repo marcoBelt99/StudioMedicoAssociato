@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(VisitaController.class)
-public class VisitaControllerTests {
+@WebMvcTest(MedicoController.class)
+public class MedicoControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +40,7 @@ public class VisitaControllerTests {
                 .thenReturn( new ArrayList<>() );
 
         this.mockMvc
-                .perform(get("/visite/all"))
+                .perform(get("/medico/visite/all"))
                 .andDo(print())
                 .andExpect( status().isOk() );
 

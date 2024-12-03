@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface PrestazioneService {
 
-    /** Recupera l'elenco di tutte le prestazioni dalla medesima tabella. */
+    /**
+     *  @return Recupera l'elenco di tutte le prestazioni dalla medesima tabella. */
     List<Prestazione> getAllPrestazioni();
 }

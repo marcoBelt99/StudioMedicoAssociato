@@ -8,42 +8,36 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-@Controller
-@RequestMapping("/visite")
-public class VisitaController {
-
-
-    private final VisitaService visitaService;
-
-    public VisitaController(VisitaService visitaService) {
-        this.visitaService = visitaService;
-    }
-
-    /** Accessibile solo da Medico. */
-    @GetMapping("/all")
-    public String getElencoCronologicoVisite(Model model) {
-
-        List<VisitaPrenotataDTO> listaVisite = visitaService.getAllVisite();
-
-        model.addAttribute("titolo", "Elenco Cronologico delle Visite Usufruite da Ciascun Paziente.");
-        model.addAttribute("visite", listaVisite);
-        return "visite";
-    }
-
-    @GetMapping("/effettuate")
-    public String getElencoGiornalieroVisitePrenotateAndEffettuate(Model model) {
-        return "";
-    }
-
-    @GetMapping("/noneffettuate")
-    public String getElencoGiornalieroVisitePrenotateAndNotEffettuate(Model model) {
-        return "";
-    }
-
-
-
-
-
-
-}
+//@Deprecated
+//@Controller
+////@RequestMapping("/visite")
+//public class VisitaController {
+//
+//
+//    private final VisitaService visitaService;
+//
+//    public VisitaController(VisitaService visitaService) {
+//        this.visitaService = visitaService;
+//    }
+//
+//    /** Accessibile solo da Medico. */
+//    @GetMapping("/all")
+//    public String getElencoCronologicoVisite(Model model) {
+//
+//        List<VisitaPrenotataDTO> listaVisite = visitaService.getAllVisite();
+//
+//        model.addAttribute("titolo", "Elenco Cronologico delle Visite Usufruite da Ciascun Paziente.");
+//        model.addAttribute("visite", listaVisite);
+//        return "visite";
+//    }
+//
+//    @GetMapping("/effettuate")
+//    public String getElencoGiornalieroVisitePrenotateAndEffettuate(Model model) {
+//        return "";
+//    }
+//
+//    @GetMapping("/noneffettuate")
+//    public String getElencoGiornalieroVisitePrenotateAndNotEffettuate(Model model) {
+//        return "";
+//    }
+//}

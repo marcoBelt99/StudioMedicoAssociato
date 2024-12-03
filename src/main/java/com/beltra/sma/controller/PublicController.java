@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PublicController {
 
     @GetMapping("/benvenuto")
-    public String benvenuto(Model model) {
+    public String benvenuto() {
         return "redirect:prestazioni/all";  // assicura che esista una vista benvenuto.html in resources/templates
+    }
+
+    @GetMapping("/chiSiamo")
+    public String chiSiamo() {
+        return "chiSiamo";
     }
 }

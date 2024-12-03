@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/pazienti")
+@RequestMapping("/paziente")
 public class PazienteController {
 
 
@@ -28,7 +28,7 @@ public class PazienteController {
             @RequestParam(value = "effettuata") Boolean effettuata,
             Model model) {
 
-        // TODO: Parametrizzare
+
         // Se ho /visite?effettuata=true allora visualizzo solo quelle effettuate
         // Se ho /visite?effettuata=false allora visualizzo solo quelle non ancora effettuate
 
