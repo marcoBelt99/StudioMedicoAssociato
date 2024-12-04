@@ -41,7 +41,7 @@ public class MedicoControllerTests {
 
         this.mockMvc
                 .perform(get("/medico/visite/all"))
-                .andDo(print())
+                //.andDo(print())
                 .andExpect( status().isOk() );
 
         // con la verify() verifico se c'e' stata effettivamente un'iterazione con il metodo dell'oggetto che sto mockando

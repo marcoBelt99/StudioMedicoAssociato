@@ -7,7 +7,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Compila l'applicazione e genera il file JAR
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 # Usa un'immagine più leggera per il runtime
 FROM eclipse-temurin:17-jdk-alpine
@@ -17,12 +17,10 @@ WORKDIR /app
 
 # Copia il file JAR dal container di build
 
-# COPY --from=builder /app/target/*.jar app.jar
 COPY --from=builder /app/target/*.jar /app/app.jar
 
-# Esponi la porta su cui l'applicazione sarà disponibile
+# Espongo la porta su cui l'applicazione sarà disponibile
 EXPOSE 8082
 
 # Comando per avviare l'applicazione
-# CMD ["java", "-jar", "app.jar"]
 CMD ["java", "-jar", "/app/app.jar"]

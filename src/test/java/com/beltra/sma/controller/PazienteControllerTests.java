@@ -43,7 +43,7 @@ public class PazienteControllerTests {
                         .param("effettuata", "false")
                         .cookie(new Cookie("user-id", "marcobeltra")) // Aggiunta del cookie
                 )
-                .andDo( print() )
+                //.andDo( print() )
                 .andExpect( status().isOk() )
                 .andExpect( model().attributeExists("visitePrenotate"))
                 .andExpect( model().attribute("titolo", "Visite Prenotate e Non Effettuate"));
@@ -67,7 +67,7 @@ public class PazienteControllerTests {
                                 .param("effettuata", "true")
                                 .cookie(new Cookie("user-id", "marcobeltra")) // Aggiunta del cookie
                 )
-                .andDo(print())
+                //.andDo(print())
                 .andExpect( status().isOk() )
                 .andExpect( model().attributeExists("visitePrenotate"))
                 .andExpect( model().attribute("titolo", "Visite Prenotate ed Effettuate"));
