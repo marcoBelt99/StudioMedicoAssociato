@@ -102,7 +102,8 @@
                         <div class="col-12">
                             <div class="it-header-center-content-wrapper">
                                 <div class="it-brand-wrapper">
-                                    <a href="#">
+<!--                                    <a href="#">-->
+                                    <a th:href="@{/index}">
                                             <img th:src="@{/svg/asl-icon.svg}" alt="Icona ASL" class="icon">
                                         <div class="it-brand-text">
                                             <div class="it-brand-title ">SMA-RT</div>
@@ -245,6 +246,15 @@
                                             </li>
 
 
+                                            <li class="nav-item ">
+                                                <a class="nav-link "
+                                                   th:href="@{/chiSiamo}">
+                                                    <span>Chi siamo</span>
+
+                                                </a>
+                                            </li>
+
+
                                         </ul>
 
 
@@ -316,7 +326,7 @@
 
                                             <li class="nav-item ">
                                                 <a class="nav-link "
-                                                   th:href="@{/prestazioni/all}">
+                                                   th:href="@{/benvenuto}">
                                                     <span>Prestazioni</span>
                                                 </a>
                                             </li>

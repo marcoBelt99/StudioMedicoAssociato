@@ -15,8 +15,18 @@ public class PrestazioneServiceImpl implements PrestazioneService {
         this.prestazioneRepository = prestazioneRepository;
     }
 
+
     @Override
     public List<Prestazione> getAllPrestazioni() {
         return prestazioneRepository.findAll();
+    }
+
+    @Override
+    public List<Prestazione> getAllPrestazioniDisponibili() {
+        return prestazioneRepository
+                .findAll()
+                .stream()
+                .filter( prest -> !prest.getDeleted() )
+                .toList();
     }
 }

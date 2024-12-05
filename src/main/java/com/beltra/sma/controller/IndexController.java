@@ -44,16 +44,20 @@ public class IndexController {
     public String getWelcome2(Model model,
                               @CookieValue(name = "user-id") String userId) {
 
-        model.addAttribute("intestazione",
-                String.format("Benvenut%s %s nella index page della  Studio Medico Associato",
+        model.addAttribute("titolo",
+                String.format("Benvenut%s %s nella homepage di SMA-RT",
                     utenteService.getWelcome(userId), // verifico se e' maschio o femmina
                     userId)
                 );
 
-        // TODO: Se utente e' paziente mostrami le card con le prestazioni
+        model.addAttribute("sottotitolo", // (per paziente)
+                "Prenota subito una visita tra le seguenti:");
 
+
+ // TODO: Se utente e' paziente mostrami le card con le prestazioni disponibili
         model.addAttribute("prestazioni",
-                prestazioneService.getAllPrestazioni());
+                prestazioneService.getAllPrestazioniDisponibili() );
+
 
         // TODO: Se utente e' medico mostrami il quadro orario
         // TODO:

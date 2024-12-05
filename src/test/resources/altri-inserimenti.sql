@@ -36,3 +36,15 @@ INSERT INTO esiti (id_visita, descrizione_referto, visible)
 VALUES
     (1, 'ECG regolare, nessuna anomalia rilevata.', TRUE), -- Esito della visita 1
     (2, 'Rash cutaneo curabile con crema specifica.', TRUE); -- Esito della visita 2
+
+
+
+UPDATE prestazioni
+    SET deleted=true
+    WHERE id_prestazione= 4;
+
+SELECT * FROM prestazioni;
+
+SELECT * FROM prestazioni WHERE id_prestazione=4;
+
+SELECT * FROM visite;

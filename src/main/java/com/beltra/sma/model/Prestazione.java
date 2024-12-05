@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Table(name="prestazioni")
 @Getter
 @Setter
@@ -23,6 +26,14 @@ public class Prestazione {
     private Double durataMedia;
     private Double costo;
     private Double ticket;
+
+    private Boolean deleted; // di default vale false
+
+    @OneToMany(
+            mappedBy = "prestazione",
+            fetch = FetchType.EAGER //
+            /* ,cascade = CascadeType.ALL */)
+    private Set<Visita> visite = new HashSet<>();
 
     // Getters and Setters
 

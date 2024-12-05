@@ -7,6 +7,12 @@ import java.util.List;
 public interface PrestazioneService {
 
     /**
-     *  @return Recupera l'elenco di tutte le prestazioni dalla medesima tabella. */
+     *  @return Recupera l'elenco di <b>tutte</b> le prestazioni dalla medesima tabella. */
     List<Prestazione> getAllPrestazioni();
+
+    /**
+     *  @return Recupera l'elenco delle sole prestazioni <b>disponibili</b> (cioe' hanno deleted a false) dalla medesima tabella. */
+    List<Prestazione> getAllPrestazioniDisponibili();
+
+
 }

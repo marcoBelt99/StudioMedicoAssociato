@@ -20,54 +20,78 @@
     <!--################################################################-->
     <!-- TODO: Parte variabile -->
     <!-- Form Login -->
-    <div class="container login-container"> <!-- align-content-center d-flex justify-content-center align-items-center -->
-        <div class="card">
-            <div class="row">
-                <div class="col-md-6 login-form">
-                    <h3>Login Form</h3>
+    <div id="content" class="container py-5 "> <!-- align-content-center d-flex justify-content-center align-items-center login-container-->
+        <div class="wrapper">
+            <section class="container" style="max-width: 40em">
+                <h1 class="pb-5 ">Login Form</h1>
 
-                    <form action="#" th:action="@{/autentica}" class="login-form" method="post">
-
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Nome Utente">
-                        </div>
-
-                        <div class="form-group">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
-                        </div>
-
-                        <div class="form-group">
-                            <input class="btn btn-outline-primary" type="submit">
-                        </div>
-
-                        <div class="form-group">
-                            <a href="#" class="ForgetPwd">Password Dimenticata?</a>
-                        </div>
+                        <form action="#" th:action="@{/autentica}" class="login" method="post">
 
 
-                        <!-- Controllo di sicurezza per cross site request forgery                -->
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-
-        <!-- Controllo se la password inserita e' corretta. param.error è contenuto in  -->
-                        <th:block th:if="${param.error != null}">
-                            <div class="alert alert-danger">
-                                <p>Spiacente, la userid o la password sono errati!</p>
+                    <!-- Ricorda: nelle <label> il loro attributo for="..." deve avere lo stesso valore del valore dell'id degli <input> a cui fa riferimento la label.                    -->
+                            <div class="form-group">
+                                <label for="name" class="form-label">Nome Utente</label> <!-- Per avere l'effetto che la label si sposti in su' quando premo sul suo input, devo mettere nel for="<stesso-id-dell'input-a-cui-fa-riferimento> -->
+                                <input type="text" class="form-control" name="name" id="name" >
                             </div>
-                        </th:block>
 
-                <!-- TODO: Se il parametro logout e' stato passato a questa pagina (logout!=null)
-                           significa che e' stato richiesto di fare il logout. Il parametro logout=true
-                           viene settato dal controller LogoutController
-                -->
-                        <th:block th:if="${param.logout != null}">
-                            <div class="alert alert-success">
-                                <p>Logout eseguito con successo!</p>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" id="password" > <!-- placeholder="Password"  -->
                             </div>
-                        </th:block>
 
-                    </form>
-                </div>
-            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <button class="btn btn-primary btn-block" type="submit">Accedi</button>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <a  href="#" class="ForgetPwd link-primary">Password Dimenticata?</a>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <p>Se non hai ancora creato un account, <a href="/accounts/signup/">registrati</a> adesso. </p>
+                            </div>
+
+<!--&lt;!&ndash;                            <div class="form-group">&ndash;&gt;-->
+<!--                            <div class="py-4 login_buttons">-->
+<!--&lt;!&ndash;                                <input class="btn btn-outline-primary" type="submit">&ndash;&gt;-->
+<!--                                <button class="btn btn-outline-primary btn-block" type="submit">Accedi</button>-->
+<!--                            </div>-->
+
+<!--                            <div class="form-group">-->
+<!--                                <p>Se non hai ancora creato un account, <a href="/accounts/signup/">registrati</a> adesso. </p>-->
+<!--                            </div>-->
+
+<!--                            <div class="form-group">-->
+<!--                                <a  href="#" class="ForgetPwd link-primary">Password Dimenticata?</a>-->
+<!--                            </div>-->
+
+
+                            <!-- Controllo di sicurezza per cross site request forgery                -->
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
+            <!-- Controllo se la password inserita e' corretta. param.error è contenuto in  -->
+                            <th:block th:if="${param.error != null}">
+                                <div class="alert alert-danger">
+                                    <p>Spiacente, la userid o la password sono errati!</p>
+                                </div>
+                            </th:block>
+
+                    <!-- TODO: Se il parametro logout e' stato passato a questa pagina (logout!=null)
+                               significa che e' stato richiesto di fare il logout. Il parametro logout=true
+                               viene settato dal controller LogoutController
+                    -->
+                            <th:block th:if="${param.logout != null}">
+                                <div class="alert alert-success">
+                                    <p>Logout eseguito con successo!</p>
+                                </div>
+                            </th:block>
+
+                        </form>
+
+            </section>
         </div>
     </div>
 

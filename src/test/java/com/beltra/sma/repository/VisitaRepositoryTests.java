@@ -32,6 +32,7 @@ public class VisitaRepositoryTests {
                 .findByUsername(username)
                 .getAnagrafica()
                 .getIdAnagrafica();
+
         totaleVisitePaziente = visitaRepository
                 .findAllVisitePazienteByAnagraficaPaziente(idAnagrafica)
                 .size();

@@ -79,7 +79,8 @@ CREATE TABLE IF NOT EXISTS prestazioni (
 	descrizione TEXT NOT NULL,
     durata_media INT NOT NULL,
     costo REAL NOT NULL,
-    ticket REAL NOT NULL
+    ticket REAL NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE
 );
 
 
@@ -91,12 +92,12 @@ CREATE TABLE IF NOT EXISTS visite (
     ora TIME NOT NULL,
     num_ambulatorio INT NOT NULL,
     id_anagrafica INT NOT NULL,
-    id_prestazione INT NOT NULL,
+    id_prestazione INT,
     CONSTRAINT fk_visite_anagrafiche FOREIGN KEY (id_anagrafica) REFERENCES anagrafiche(id_anagrafica)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
     CONSTRAINT fk_visite_prestazioni FOREIGN KEY (id_prestazione) REFERENCES prestazioni(id_prestazione)
-    ON UPDATE CASCADE 
+    ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
@@ -246,7 +247,7 @@ VALUES
   organi toracici, vie respiratorie ecc.).', 30, 100.50, 0.0),
 
 ('Analisi del Sangue', 'Verificare i valori dei principali componenti ematici e fornire così importanti
- informazioni sulla salute del paziente e sul funzionamento del suo organismo.', 10, 15.0, 3.95 ),
+informazioni sulla salute del paziente e sul funzionamento del suo organismo.', 10, 15.0, 3.95 ),
 
 ('Visita Dermatologica', 'Valutare la salute della pelle, delle unghie e dei capelli. Durante la visita il dermatologo esamina la cute
  alla ricerca di eventuali lesioni, macchie, verruche, nei o altre imperfezioni

@@ -7,11 +7,13 @@ import lombok.Setter;
 
 import java.sql.Time;
 import java.util.Date;
+import java.util.Objects;
 
 @Table(name="visite")
 @Entity
 @Getter
 @Setter
+
 public class Visita {
 
     @Id
@@ -42,8 +44,22 @@ public class Visita {
                 ", dataVisita=" + dataVisita +
                 ", ora=" + ora +
                 ", numAmbulatorio=" + numAmbulatorio +
-                ", anagrafica=" + anagrafica.getCognome().concat(" ").concat(anagrafica.getNome()) +
+                ", anagrafica (medico)=" + anagrafica.getCognome().concat(" ").concat(anagrafica.getNome()) +
                 ", prestazione=" + prestazione.getTitolo() +
                 '}';
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Visita visita = (Visita) o;
+        return Objects.equals(idVisita, visita.idVisita) && Objects.equals(dataVisita, visita.dataVisita) && Objects.equals(ora, visita.ora) && Objects.equals(numAmbulatorio, visita.numAmbulatorio) && Objects.equals(anagrafica, visita.anagrafica) && Objects.equals(prestazione, visita.prestazione);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idVisita, dataVisita, ora, numAmbulatorio, anagrafica, prestazione);
     }
 }
