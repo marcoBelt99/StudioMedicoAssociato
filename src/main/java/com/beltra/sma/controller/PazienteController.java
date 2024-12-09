@@ -45,9 +45,21 @@ public class PazienteController {
         }
 
         model.addAttribute("visitePrenotate", listaVisite);
-        return "visitePaziente";
+        return "pazienteVisite";
     }
 
 
 
+    // E' da vedere se serve questo endpoint....
+    // secondo me no....
+    @GetMapping("/prenota")
+        public String goToPrenotaVisita() {
+            return "pazientePrenotaVisitaOld2";
+        }
+
+
 }
+
+
+
+

@@ -1,0 +1,25 @@
+<!--<div th:fragment="formUno">-->
+
+
+<div th:fragment="formUno">
+    <h3>Dettagli Prestazione</h3>
+    <hr/>
+    <form>
+        <div class="form-group">
+            <label for="titoloPrestazione" >Titolo</label>
+            <input class="form-control" type="text" th:value="${prestazione.titolo}" id="titoloPrestazione" readonly>
+        </div>
+        <div class="form-group">
+            <label for="descrizionePrestazione">Descrizione</label>
+            <textarea class="form-control" th:text="${prestazione.descrizione}" id="descrizionePrestazione" rows="6" readonly></textarea>
+        </div>
+        <div class="form-group">
+            <label for="durataMediaPrestazione" >Durata Media</label>
+            <input class="form-control" type="text" th:value="${prestazione.durataMedia}" id="durataMediaPrestazione" readonly>
+        </div>
+        <div class="form-group">
+            <label for="costoPrestazione" >Costo</label>
+            <input class="form-control" type="text" th:value="${prestazione.costo}" id="costoPrestazione" readonly>
+        </div>
+    </form>
+</div>

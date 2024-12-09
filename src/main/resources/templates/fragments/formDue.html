@@ -1,0 +1,17 @@
+<!--<div th:fragment="formDue">-->
+
+
+<div th:fragment="formDue">
+    <h3>Dati Paziente</h3>
+    <form th:action="@{/prenotazione/step2}" method="post">
+        <div class="form-group">
+            <label>Nome</label>
+            <input class="form-control" type="text" name="nome" required>
+        </div>
+        <div class="form-group">
+            <label>Cognome</label>
+            <input class="form-control" type="text" name="cognome" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Avanti</button>
+    </form>
+</div>

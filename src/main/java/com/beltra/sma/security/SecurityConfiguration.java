@@ -96,7 +96,8 @@ public class SecurityConfiguration {
 
             // TODO: fare per il paziente
             authz.requestMatchers(
-                    new AntPathRequestMatcher("/paziente/visite/**")
+                    new AntPathRequestMatcher("/paziente/visite/**"),
+                    new AntPathRequestMatcher("/paziente/prenota/**")
             ).hasRole("PAZIENTE");
 
             // TODO: fare per infermiere

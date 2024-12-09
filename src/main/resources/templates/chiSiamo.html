@@ -17,45 +17,104 @@
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
 
-
 <div class="container">
     <div class="card">
 
 
         <h1 th:text="${titolo}"></h1>
-        <hr/>
+        <br/>
 
-        <h3>Chi siamo?</h3>
-        <p>
-            Ideato nel 2022, SMA-RT e' una clinica privata che mira a costruire una suite di <i>servizi automatizzati</i> per pazienti, medici ed infermieri.
-        </p>
-        <p>Siamo un gruppo di professionisti della salute, tra cui: medici di base e specialisti, infermieri
-            con decine di anni d'esperienza alle spalle. Facciamo uso delle principali tecnologie in ambito medico e queste ultime sono parte integrante
-            dei nostri investimenti.
-        </p>
-        <hr/>
+        <div class="accordion accordion-background-active accordion-left-icon" id="collapseExample">
 
-        <h3>Perche' dovresti scegliere SMA-RT?</h3>
-        <p>
-            La risposta la puo' notare una persona qualsiasi tra di noi: sempre piu' frequentemente, anche per fare una
-            semplicissima visita medica della durata di 10', negli ospedali pubblici ci si puo' imbattere in liste di attesa eccessivamente lunghe, che spesso
-            superano l'anno.<br>
-            Uno degli obiettivi di SMA-RT e' di abbattere questi lunghi (e inutili) tempi d'attesa!
-        </p>
-        <hr/>
+            <div class="accordion-item">
+                <h2 class="accordion-header " id="heading1c">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1c" aria-expanded="true" aria-controls="collapse1c">
+                        Chi siamo?
+                    </button>
+                </h2>
+                <div id="collapse1c" class="accordion-collapse collapse show" role="region" aria-labelledby="heading1c">
+                    <div class="accordion-body">
+                        Ideato nel 2022, SMA-RT e' una clinica privata che mira a costruire una suite di <i>servizi automatizzati</i> per pazienti, medici ed infermieri.
+                    </div>
+                </div>
+            </div>
 
-        <h3>Dove ci troviamo?</h3>
-        <p>
-            La nostra sede è a Rovigo (RO) a in Viale Porta Adige 13. E' raggiungibile tranquillamente a piedi in quanto sita a 250 metri dalla stazione ferroviaria di Rovigo.
-        </p>
-        <hr/>
+            <div class="accordion-item">
+                <h2 class="accordion-header " id="heading2c">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2c" aria-expanded="false" aria-controls="collapse2c">
+                        Perche' dovresti scegliere SMA-RT?
+                    </button>
+                </h2>
+                <div id="collapse2c" class="accordion-collapse collapse" role="region" aria-labelledby="heading2c">
+                    <div class="accordion-body">
+                        La risposta la puo' notare una persona qualsiasi tra di noi: sempre piu' frequentemente, anche per fare una
+                        semplicissima visita medica della durata di 10', negli ospedali pubblici ci si puo' imbattere in liste di attesa eccessivamente lunghe, che spesso
+                        superano l'anno.<br>
+                        Uno degli obiettivi di SMA-RT e' di abbattere questi lunghi (e inutili) tempi d'attesa!            </div>
+                </div>
+            </div>
 
-        <h3>We're hiring!</h3>
-        <p>
-            Siamo sempre alla ricerca di nuove figure professionali per espandere il nostro operato e migliorare i nostri servizi.
-            Attualmente, se sei un infermiere, anche senza esperienza ma con una spiccata voglia di imparare e metterti in gioco,
-            potresti fare al caso nostro!
-        </p>
+            <div class="accordion-item">
+                <h2 class="accordion-header " id="heading3c">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3c" aria-expanded="false" aria-controls="collapse3c">
+                        Dove ci troviamo?
+                    </button>
+                </h2>
+                <div id="collapse3c" class="accordion-collapse collapse" role="region" aria-labelledby="heading3c">
+                    <div class="accordion-body">
+                        La nostra sede è a Rovigo (RO) a in Viale Porta Adige 13. E' raggiungibile tranquillamente a piedi in quanto sita a 250 metri dalla stazione ferroviaria di Rovigo.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header " id="heading4c">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4c" aria-expanded="false" aria-controls="collapse4c">
+                        We're hiring!
+                    </button>
+                </h2>
+                <div id="collapse4c" class="accordion-collapse collapse" role="region" aria-labelledby="heading4c">
+                    <div class="accordion-body">
+                        Siamo sempre alla ricerca di nuove figure professionali per espandere il nostro operato e migliorare i nostri servizi.
+                        Attualmente, se sei un infermiere, anche senza esperienza ma con una spiccata voglia di imparare e metterti in gioco,
+                        potresti fare al caso nostro!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--        <h3>Chi siamo?</h3>-->
+<!--        <p>-->
+<!--            Ideato nel 2022, SMA-RT e' una clinica privata che mira a costruire una suite di <i>servizi automatizzati</i> per pazienti, medici ed infermieri.-->
+<!--        </p>-->
+<!--        <p>Siamo un gruppo di professionisti della salute, tra cui: medici di base e specialisti, infermieri-->
+<!--            con decine di anni d'esperienza alle spalle. Facciamo uso delle principali tecnologie in ambito medico e queste ultime sono parte integrante-->
+<!--            dei nostri investimenti.-->
+<!--        </p>-->
+<!--        <hr/>-->
+
+<!--        <h3>Perche' dovresti scegliere SMA-RT?</h3>-->
+<!--        <p>-->
+<!--            La risposta la puo' notare una persona qualsiasi tra di noi: sempre piu' frequentemente, anche per fare una-->
+<!--            semplicissima visita medica della durata di 10', negli ospedali pubblici ci si puo' imbattere in liste di attesa eccessivamente lunghe, che spesso-->
+<!--            superano l'anno.<br>-->
+<!--            Uno degli obiettivi di SMA-RT e' di abbattere questi lunghi (e inutili) tempi d'attesa!-->
+<!--        </p>-->
+<!--        <hr/>-->
+
+<!--        <h3>Dove ci troviamo?</h3>-->
+<!--        <p>-->
+<!--            La nostra sede è a Rovigo (RO) a in Viale Porta Adige 13. E' raggiungibile tranquillamente a piedi in quanto sita a 250 metri dalla stazione ferroviaria di Rovigo.-->
+<!--        </p>-->
+<!--        <hr/>-->
+
+<!--        <h3>We're hiring!</h3>-->
+<!--        <p>-->
+<!--            Siamo sempre alla ricerca di nuove figure professionali per espandere il nostro operato e migliorare i nostri servizi.-->
+<!--            Attualmente, se sei un infermiere, anche senza esperienza ma con una spiccata voglia di imparare e metterti in gioco,-->
+<!--            potresti fare al caso nostro!-->
+<!--        </p>-->
 
     </div>
 </div>

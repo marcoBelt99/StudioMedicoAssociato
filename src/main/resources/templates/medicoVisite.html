@@ -25,22 +25,23 @@
     <table class="table table-hover">
         <thead>
         <tr scope="row">
+            <th scope="col">Tipo Prestazione</th>
+            <th scope="col">Paziente</th>
             <th scope="col">Data Prenotazione</th>
             <th scope="col">Data Visita</th>
             <th scope="col">Ora</th>
             <th scope="col">Num Ambulatorio</th>
-            <th scope="col">Paziente</th>
-            <th scope="col">Tipo Prestazione</th>
         </tr>
         </thead>
         <tbody>
-        <tr scope="row" th:each="visitaPrenotata: ${visitePrenotate}" >
-            <td th:text="${#dates.format( visitaPrenotata.getDataPrenotazione(), 'yyyy-MM-dd' )}"></td>
-            <td th:text="${#dates.format( visitaPrenotata.getDataVisita(), 'yyyy-MM-dd' )}"></td>
-            <td th:text="${visitaPrenotata.getOra()}"></td>
-            <td th:text="${visitaPrenotata.getNumAmbulatorio()}"></td>
-            <td th:text="${visitaPrenotata.getCognomePaziente().concat(' ').concat(visitaPrenotata.getNomePaziente())}"></td>
-            <td th:text="${visitaPrenotata.getTitoloPrestazione()}"></td>
+        <tr scope="row" th:each="vis: ${visite}">
+            <td th:text="${vis.getTitoloPrestazione()}"></td>
+            <td th:text="${vis.getCognomePaziente().concat(' ').concat(vis.getNomePaziente())}"></td>
+            <td th:text="${#dates.format( vis.getDataPrenotazione(), 'yyyy-MM-dd' )}"></td>
+            <td th:text="${#dates.format( vis.getDataVisita(), 'yyyy-MM-dd' )}"></td>
+            <td th:text="${vis.getOra()}"></td>
+            <td th:text="${vis.getNumAmbulatorio()}"></td>
+
         </tr>
         </tbody>
     </table>

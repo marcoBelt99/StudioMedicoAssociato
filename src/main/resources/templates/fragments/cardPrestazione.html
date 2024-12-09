@@ -9,13 +9,19 @@
             <div class="row">
                 <div th:each="prest: ${prestazioni}" class="col-12 col-lg-4">
 
-                    <!--start card-->
+
+
                     <div class="card-wrapper card-space">
                         <div class="card card-bg">
                             <div class="card-body">
                                 <h3 class="card-title h5" th:text="${prest.getTitolo()}"></h3>
                                 <p class="card-text font-serif" th:text="${prest.getDescrizione()}">.</p>
-                                <a class="read-more" href="#">
+
+
+                                <!-- TODO: inserisco il percorso -->
+
+
+                                <a class="read-more" th:href="@{/prestazioni/{id} ( id = ${prest.getIdPrestazione()} )}" >
                                     <span class="text">Dettagli</span>
                                     <span class="visually-hidden">su Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor…</span>
                                     <svg class="icon"> <use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
@@ -23,7 +29,8 @@
                             </div>
                         </div>
                     </div>
-                    <!--end card-->
+
+
                 </div>
             </div>
 

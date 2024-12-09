@@ -29,7 +29,7 @@ public class MedicoController {
 
         model.addAttribute("titolo", "Elenco Cronologico delle Visite Usufruite da Ciascun Paziente.");
         model.addAttribute("visite", listaVisite);
-        return "visite";
+        return "medicoVisite";
     }
 
     // TODO: ...

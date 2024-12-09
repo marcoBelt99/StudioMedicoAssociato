@@ -14,5 +14,8 @@ public interface PrestazioneService {
      *  @return Recupera l'elenco delle sole prestazioni <b>disponibili</b> (cioe' hanno deleted a false) dalla medesima tabella. */
     List<Prestazione> getAllPrestazioniDisponibili();
 
+    /** @return Recupera la specifica prestazione dato l'id.
+     *  @param id chiave di ricerca della specifica prestazione. */
+    Prestazione getPrestazioneById(Long id);
 
 }

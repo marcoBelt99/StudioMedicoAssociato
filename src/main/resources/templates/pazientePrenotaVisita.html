@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+    <body>
+
+        <div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+
+        <div class="container">
+            <div class="card">
+
+
+                <!-- TODO: STEPPER -->
+                <div class="steppers">
+
+
+                    <div class="steppers-header">
+                        <ul>
+
+                            <li class="confirmed" th:classappend="${step == 1} ? 'active' : ''">
+                                Prestazione
+                                <svg class="icon steppers-success">
+                                    <use th:href="@{/svg/sprites.svg#it-check}"></use>
+                                </svg>
+                                <span class="visually-hidden">Confermato</span>
+                            </li>
+
+                            <li class="it-stepper-item" th:classappend="${step == 2} ? 'active' : ''">
+                                Dati Paziente
+                                <span class="visually-hidden">Attivo</span>
+                            </li>
+
+                            <li class="it-stepper-item" th:classappend="${step == 3} ? 'active' : ''">
+                                <div class="step-title">Riepilogo</div>
+
+                            </li>
+                        </ul>
+                        <span class="steppers-index" aria-hidden="true">2/6</span>
+                    </div>
+
+                    <!-- Stepper Content -->
+                    <div class="steppers-content" aria-live="polite">
+<!--                        <div th:if="${step == 1}" th:insert="~{fragments/formUno}"></div>-->
+                        <div th:if="${step == 1}" th:insert="~{fragments/formUno}"></div>
+                        <div th:if="${step == 2}" th:insert="~{fragments/formDue}"></div>
+                        <div th:if="${step == 3}" th:insert="~{fragments/formTre}"></div>
+                    </div>
+
+
+                    <nav class="steppers-nav">
+                        <a th:if="${step > 1}" th:href="@{'/prenotazione/step' + ${step - 1}}"
+                           class="btn btn-outline-primary btn-sm steppers-btn-prev">
+                            <svg class="icon icon-primary">
+                                <use th:href="@{/svg/sprites.svg#it-chevron-left}"></use>
+                            </svg>Indietro
+                        </a>
+
+                        <a th:if="${step < 3}" th:href="@{'/prenotazione/step' + ${step + 1}}"
+                           class="btn btn-outline-primary btn-sm steppers-btn-next">
+                            <svg class="icon icon-primary">
+                                <use th:href="@{/svg/sprites.svg#it-chevron-right}"></use>
+                            </svg>Avanti
+                        </a>
+
+                        <button th:if="${step == 3}" type="submit"
+                                class="btn btn-primary btn-sm steppers-btn-confirm d-none d-lg-block">
+                            Conferma</button>
+                    </nav>
+
+                </div>
+
+
+        </div>
+    </div>
+
+        <div th:insert="~{fragments/foot.html :: foot}"></div>
+
+    </body>
+</html>

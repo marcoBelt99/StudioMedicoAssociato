@@ -62,7 +62,7 @@ public class IndexController {
         // TODO: Se utente e' medico mostrami il quadro orario
         // TODO:
 
-        // model.addAttribute("saluti", saluti);
+
 
         return "index";
     }

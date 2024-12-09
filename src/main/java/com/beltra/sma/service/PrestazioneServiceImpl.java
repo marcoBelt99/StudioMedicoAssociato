@@ -5,6 +5,7 @@ import com.beltra.sma.repository.PrestazioneRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PrestazioneServiceImpl implements PrestazioneService {
@@ -28,5 +29,11 @@ public class PrestazioneServiceImpl implements PrestazioneService {
                 .stream()
                 .filter( prest -> !prest.getDeleted() )
                 .toList();
+    }
+
+
+    @Override
+    public Prestazione getPrestazioneById(Long id) {
+        return prestazioneRepository.findById(id).orElseThrow();
     }
 }
