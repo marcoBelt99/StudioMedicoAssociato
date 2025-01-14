@@ -1,32 +1,50 @@
+<!--<div th:fragment="formDue">-->
+
+
 <div th:fragment="formPrenotazione">
+    <h3>Disponibilita'</h3>
+    <form th:action="@{/prenotazione/step2}" method="post">
+        <div class="form-group">
+<!--            <label for="prima_data_disponibile">La prima data disponibile per la visita e':</label>-->
+            <p>La prima data disponibile per la visita e':</p>
+            <input class="form-control" type="text"
+                   name="primaDataDisponibile"
+                   id="prima_data_disponibile"
+                   required readonly
+                   th:value="${#dates.format(primaDataDisponibile, 'dd-MMM-yyyy')}"
+            >
+        </div>
+        <div class="form-group">
+            <p>Alle ore:</p>
+            <input class="form-control" type="text"
+                   id="orario"
+                   name="primoOrarioDisponibile"
+                   required readonly
+                   th:value="${#dates.format(primoOrarioDisponibile, 'HH:mm')}"
+            >
 
-    <!-- TODO: rappresenta il form per prenotare la visita che ha ad oggetto la prestazione scelta. -->
-    <div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="formNome">Nome</label>
-                <input type="text" class="form-control" id="formNome">
-            </div>
-            <div class="form-group col-md-6">
-                <label for="formCognome">Cognome</label>
-                <input type="text" class="form-control" id="formCognome">
+        </div>
+
+        <div class="form-group">
+            <p>Medico:</p>
+            <input class="form-control" type="text"
+                   name="medicoCandidato"
+                   id="medico_candidato"
+                   required readonly
+                   th:value="${medicoCandidato}"
+            >
+        </div>
+
+
+        <div class="row mt-4">
+            <div class="form-group col text-center">
+                <button type="submit" class="btn btn-primary">Avanti</button>
+                <button type="button" class="btn btn-secondary">Cambia Data</button>
             </div>
         </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="Comune">Comune</label>
-                <input type="text" class="form-control" id="Comune">
-            </div>
-            <div class="form-group col-md">
-                <label for="Provincia">Provincia</label>
-                <input type="text" class="form-control" id="Provincia">
-            </div>
-            <div class="form-group col-md">
-                <label for="CAP">CAP</label>
-                <input type="text" class="form-control" id="CAP">
-            </div>
-        </div>
-    </div>
 
 
+
+
+    </form>
 </div>

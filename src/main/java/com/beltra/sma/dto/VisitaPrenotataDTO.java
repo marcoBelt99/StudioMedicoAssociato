@@ -30,6 +30,16 @@ public class VisitaPrenotataDTO {
     }
 
 
+    public VisitaPrenotataDTO(Date dataPrenotazione, Date dataVisita, Time ora, Integer numAmbulatorio,
+                              String titoloPrestazione) {
+        this.dataPrenotazione = dataPrenotazione;
+        this.dataVisita = dataVisita;
+        this.ora = ora;
+        this.numAmbulatorio = numAmbulatorio;
+        this.titoloPrestazione = titoloPrestazione;
+
+    }
+
     @Override
     public String toString() {
         return "VisitaPrenotataDTO{" +

@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/medico")
 public class MedicoController {
 
-    final VisitaService visitaService;
+    private final VisitaService visitaService;
 
     MedicoController(VisitaService visitaService) {
         this.visitaService = visitaService;
@@ -29,6 +29,7 @@ public class MedicoController {
 
         model.addAttribute("titolo", "Elenco Cronologico delle Visite Usufruite da Ciascun Paziente.");
         model.addAttribute("visite", listaVisite);
+
         return "medicoVisite";
     }
 

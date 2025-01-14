@@ -30,5 +30,9 @@ public class Medico {
     private String specializzazione;
 
     // Getters and Setters
+
+    public String getNominativo() {
+        return anagrafica.getNome() + " " + anagrafica.getCognome();
+    }
 }
 

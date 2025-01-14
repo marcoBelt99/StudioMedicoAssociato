@@ -42,4 +42,7 @@ public class Anagrafica {
                 ", genere='" + genere + '\'' +
                 '}';
     }
+
+
+
 }

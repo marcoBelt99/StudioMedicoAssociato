@@ -44,7 +44,7 @@ public class MedicoControllerTests {
                 //.andDo(print())
                 .andExpect( status().isOk() );
 
-        // con la verify() verifico se c'e' stata effettivamente un'iterazione con il metodo dell'oggetto che sto mockando
+        // con la verify() verifico se c'e' stata effettivamente un'interazione con il metodo dell'oggetto che sto mockando
         // cioè, verifico che il metodo del service sia stato chiamato
         verify( visitaService ).getAllVisite();
     }

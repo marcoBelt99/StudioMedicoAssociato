@@ -1,12 +1,13 @@
-<!--<div th:fragment="formTre">-->
 
 
 <div th:fragment="formTre">
     <h3>Riepilogo Prenotazione</h3>
     <form th:action="@{/prenotazione/conferma}" method="post">
-        <p>Nome: <span th:text="${session.nome}"></span></p>
-        <p>Cognome: <span th:text="${session.cognome}"></span></p>
+        <p>Nome: <span th:text="${session.primaDataDisponibile}"></span></p>
+        <p>Cognome: <span th:text="${session.primoOrarioDisponibile}"></span></p>
         <p>Prestazione: <span th:text="${session.prestazione.getTitolo()}"></span></p>
+        <p>Costo totale: <span th:text="${session.prestazione.getCosto()+session.prestazione.getTicket()} + ' €'" ></span></p>
+
         <button class="btn btn-success" type="submit">Conferma</button>
     </form>
 </div>

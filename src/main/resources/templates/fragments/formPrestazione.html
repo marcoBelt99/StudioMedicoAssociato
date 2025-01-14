@@ -1,171 +1,25 @@
+<!--<div th:fragment="formUno">-->
+
+
 <div th:fragment="formPrestazione">
-
-    <!-- TODO: rappresenta il dettaglio di una PRESTAZIONE -->
-
-    <div class="container">
-        <h2>Seleziona la Prestazione</h2>
-
-        <!-- Form di selezione della prestazione -->
-        <form th:action="@{/prenotazione/step1}" method="post">
-            <div class="form-group">
-                <label for="prestazione">Prestazione:</label>
-                <select id="prestazione" name="prestazione" class="form-control" th:field="*{prestazione}">
-                    <option value="" th:text="'Seleziona una prestazione'">Seleziona una prestazione</option>
-                    <option th:each="prestazione : ${prestazioni}"
-                            th:value="${prestazione.idPrestazione}"
-                            th:text="${prestazione.titolo}">Prestazione</option>
-                </select>
-            </div>
-
-            <!-- Eventuali altri campi relativi alla prestazione -->
-            <div class="form-group">
-                <label for="descrizione">Descrizione:</label>
-                <textarea id="descrizione" name="descrizione" class="form-control" th:field="*{descrizione}" readonly></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="durataMedia">Durata Media (minuti):</label>
-                <input type="number" id="durataMedia" name="durataMedia" class="form-control" th:field="*{durataMedia}" readonly />
-            </div>
-
-            <div class="form-group">
-                <label for="costo">Costo:</label>
-                <input type="number" id="costo" name="costo" class="form-control" th:field="*{costo}" readonly />
-            </div>
-
-            <div class="form-group">
-                <label for="ticket">Ticket:</label>
-                <input type="number" id="ticket" name="ticket" class="form-control" th:field="*{ticket}" readonly />
-            </div>
-
-            <button type="submit" class="btn btn-primary">Avanti</button>
-        </form>
-
-    </div>
-
-
-<!--    <h1>Gestione Prestazione</h1>-->
-<!--    <form th:action="@{/prenotazione/step1}" th:object="${prestazione}" method="post">-->
-
-<!--        &lt;!&ndash; ID Prestazione (readonly se già esistente) &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="idPrestazione">ID Prestazione:</label>-->
-<!--            <input type="text" id="idPrestazione" name="idPrestazione" th:field="*{idPrestazione}" readonly />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Titolo &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="titolo">Titolo:</label>-->
-<!--            <input type="text" id="titolo" name="titolo" th:field="*{titolo}" required />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Descrizione &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="descrizione">Descrizione:</label>-->
-<!--            <textarea id="descrizione" name="descrizione" th:field="*{descrizione}" rows="4"></textarea>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Durata Media &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="durataMedia">Durata Media (ore):</label>-->
-<!--            <input type="number" id="durataMedia" name="durataMedia" th:field="*{durataMedia}" step="0.01" />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Costo &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="costo">Costo (€):</label>-->
-<!--            <input type="number" id="costo" name="costo" th:field="*{costo}" step="0.01" />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Ticket &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="ticket">Ticket (€):</label>-->
-<!--            <input type="number" id="ticket" name="ticket" th:field="*{ticket}" step="0.01" />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Deleted (checkbox) &ndash;&gt;-->
-<!--        <div>-->
-<!--            <label for="deleted">Eliminato:</label>-->
-<!--            <input type="checkbox" id="deleted" name="deleted" th:field="*{deleted}" />-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Pulsanti &ndash;&gt;-->
-<!--        <div>-->
-<!--            <button type="submit">Continua</button>-->
-<!--            <button type="reset">Annulla</button>-->
-<!--        </div>-->
-<!--    </form>-->
-
-
-<!--    <div>-->
-<!--        <div class="row">-->
-<!--            <div class="form-group col-md-6">-->
-<!--                <label class="active" for="inputEmail4">Email</label>-->
-<!--                <input type="email" class="form-control" id="inputEmail4" placeholder="inserisci il tuo indirizzo email">-->
-<!--            </div>-->
-<!--            <div class="form-group col-md-6">-->
-<!--                <label for="exampleInputPassword1">Password</label>-->
-<!--                <input type="password" data-bs-input class="form-control input-password" id="exampleInputPassword1" aria-describedby="infoPassword1">-->
-<!--                <button type="button" class="password-icon btn" role="switch" aria-checked="false">-->
-<!--                    <span class="visually-hidden">Mostra/Nascondi Password</span>-->
-<!--                    <svg class="password-icon-visible icon icon-sm" aria-hidden="true"><use href="/bootstrap-italia/dist/svg/sprites.svg#it-password-visible"></use></svg>-->
-<!--                    <svg class="password-icon-invisible icon icon-sm d-none" aria-hidden="true"><use href="/bootstrap-italia/dist/svg/sprites.svg#it-password-invisible"></use></svg>-->
-<!--                </button>-->
-<!--                <p id="infoPassword1" class="form-text text-muted d-block small pb-0">Inserisci almeno 8 caratteri e alcuni caratteri speciali.</p>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="row">-->
-<!--            <div class="form-group col">-->
-<!--                <label class="active" for="inputAddress">Descrizione</label>-->
-<!--&lt;!&ndash;                <input type="" class="form-control" id="inputAddress" placeholder="abcd">&ndash;&gt;-->
-<!--                <div class="mb-3">-->
-<!--                    <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>-->
-<!--                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="row">-->
-<!--            <div class="form-group col-md-6">-->
-<!--                <label for="inputCity">Comune</label>-->
-<!--                <input type="text" class="form-control" id="inputCity">-->
-<!--            </div>-->
-<!--            <div class="form-group col-md-2">-->
-<!--                <label for="inputCAP">CAP</label>-->
-<!--                <input type="text" class="form-control" id="inputCAP">-->
-<!--            </div>-->
-<!--            <div class="form-group col-md-4">-->
-<!--                <div class="select-wrapper">-->
-<!--                    <label for="selectID">Tipo Prestazione</label>-->
-<!--                    <select id="selectID">-->
-<!--                        <option value="Value 1">Visita Cardiologica</option>-->
-<!--                        <option value="Value 2">Visita Sportiva</option>-->
-<!--                        <option value="Value 3">ECG</option>-->
-<!--                        <option value="Value 4">TAC</option>-->
-<!--                        <option value="Value 5">Visita Dermatologica</option>-->
-<!--                    </select>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="row">-->
-<!--            <div class="form-group col-md-6">-->
-<!--                <div class="toggles">-->
-<!--                    <label for="toggleEsempio1a">-->
-<!--                        Label dell'interruttore 1-->
-<!--                        <input type="checkbox" id="toggleEsempio1a">-->
-<!--                        <span class="lever"></span>-->
-<!--                    </label>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="row mt-4">-->
-<!--            <div class="form-group col text-center">-->
-<!--                <button type="button" class="btn btn-outline-primary">Annulla</button>-->
-<!--                <button type="submit" class="btn btn-primary">CONTINUA</button>-->
-<!--            </div>-->
-<!--        </div>-->
-
+    <h3>Dettagli Prestazione</h3>
+    <hr/>
+    <form>
+        <div class="form-group">
+            <label for="titoloPrestazione" >Titolo</label>
+            <input class="form-control" type="text" th:value="${prestazione.titolo}" id="titoloPrestazione" readonly>
+        </div>
+        <div class="form-group">
+            <label for="descrizionePrestazione">Descrizione</label>
+            <textarea class="form-control" th:text="${prestazione.descrizione}" id="descrizionePrestazione" rows="6" readonly></textarea>
+        </div>
+        <div class="form-group">
+            <label for="durataMediaPrestazione" >Durata Media</label>
+            <input class="form-control" type="text" th:value="${prestazione.durataMedia}" id="durataMediaPrestazione" readonly>
+        </div>
+        <div class="form-group">
+            <label for="costoPrestazione" >Costo</label>
+            <input class="form-control" type="text" th:value="${prestazione.costo}" id="costoPrestazione" readonly>
+        </div>
+    </form>
 </div>
-
-

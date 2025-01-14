@@ -223,7 +223,7 @@ VALUES
 (2, 'MED0002', 'Dermatologia'), -- medico specialista
 (3, 'MED0003', NULL), -- medico di base perche' specializzazione e' a NULL
 
-(10, 'MED004', 'Medicina Sportiva'); -- medico specialista
+(10, 'MED0004', 'Medicina Sportiva'); -- medico specialista
 
 
 
@@ -243,58 +243,84 @@ VALUES
 
 INSERT INTO prestazioni (titolo, descrizione, durata_media, costo, ticket)
 VALUES
-('Visita Cardiologica', 'Controllo cardiaco completo', 30, 100.0, 20.0),
+('Visita Cardiologica', 'Controllo cardiaco completo', 60, 100.0, 20.0),
 
 ('Visita Ortopedica', 'Valutazione dello stato di salute di ossa, muscoli e articolazioni,
- in termini di struttura e funzionalità.', 25, 102.0, 20.0  ),
+ in termini di struttura e funzionalità.', 45, 102.0, 20.0  ),
 
 ('TAC', 'Tecnica diagnostica che sfrutta le radiazioni ionizzanti (o raggi X) per ottenere immagini dettagliate,
  in versione tridimensionale, di aree anatomiche specifiche del corpo umano (es: encefalo, ossa, vasi sanguigni, organi addominali,
-  organi toracici, vie respiratorie ecc.).', 30, 100.50, 0.0),
+  organi toracici, vie respiratorie ecc.).', 50, 100.50, 0.0),
 
 ('Analisi del Sangue', 'Verificare i valori dei principali componenti ematici e fornire così importanti
-informazioni sulla salute del paziente e sul funzionamento del suo organismo.', 10, 15.0, 3.95 ),
+informazioni sulla salute del paziente e sul funzionamento del suo organismo.', 20, 15.0, 3.95 ),
 
 ('Visita Dermatologica', 'Valutare la salute della pelle, delle unghie e dei capelli. Durante la visita il dermatologo esamina la cute
  alla ricerca di eventuali lesioni, macchie, verruche, nei o altre imperfezioni
-  che possono essere segnale di malattie della pelle.', 30, 200.0, 10.0),
-  
-('Analisi delle Urine', 'Laboratorio prove per la scoperta di eventuali infezioni delle vie urinarie', 15, 50.50, 13.20 ),
+  che possono essere segnale di malattie della pelle.', 70, 200.0, 10.0),
 
-('Visita Sportiva', 'Visita per ottenere ideneità per praticare una qualsiasi attività sportiva agonistica (dilettantistica e non). ', 25, 80.00, 10.00);
+('Analisi delle Urine', 'Laboratorio prove per la scoperta di eventuali infezioni delle vie urinarie', 35, 50.50, 13.20 ),
+
+('Visita Sportiva', 'Visita per ottenere ideneità per praticare una qualsiasi attività sportiva agonistica (dilettantistica e non). ', 100, 80.00, 10.00),
+
+('Visita Odontoiatrica',  'Visita approfondita che riguarda: eventuali otturazioni; diagnosi di carie ai denti; gengiviti e parodontiti; pulizia dei denti; sostituzioni presidi medici. Sbiancamento denti', 120, 350.00, 25.00);
+
 
 
 
 INSERT INTO visite (data_visita, ora, num_ambulatorio, id_anagrafica, id_prestazione)
-VALUES -- TODO: le visite possono essere fatte solo dal lunedì al venerdì
-('2024-11-11', '15:00:00', 5, 3, 3), -- marco beltrame ha prenotato una 'TAC'.                   ==> Il medico 3 si incarica di svolgere questa visita.
-('2024-11-20', '09:20:00', 1, 2, 4), -- lina marchesini ha prenotato una 'Visita Dermatologica'. ==> Il medico 2 si incarica di svolgere questa visita.
-('2024-12-01', '10:30:00', 5, 3, 3), -- marco beltrame ha prenotato una 'TAC'.                   ==> Il medico 3 si incarica di svolgere questa visita.
-('2024-12-01', '15:30:00', 2, 3, 6), -- matteo stoppa ha prenotato una 'Analisi del Sangue'      ==> Il medico 3 si incarica di svolgere questa visita.
+VALUES -- TODO: le visite possono essere fatte solo dal lunedì al venerdì, dalle 07:00-12:00  e dalle 14:00-21:00
+('2024-11-11', '07:05:00', 1, 3, 3), -- marco beltrame ha prenotato una 'TAC'.                   ==> Il medico 3 si incarica di svolgere questa visita.
+('2024-11-20', '07:05:00', 2, 2, 4), -- lina marchesini ha prenotato una 'Visita Dermatologica'. ==> Il medico 2 si incarica di svolgere questa visita.
+('2024-12-01', '07:05:00', 3, 3, 3), -- marco beltrame ha prenotato una 'TAC'.                   ==> Il medico 3 si incarica di svolgere questa visita.
+('2024-12-01', '15:35:00', 4, 10, 7), -- matteo stoppa ha prenotato una 'Visita Sportiva'        ==> Il medico 10 si incarica di svolgere questa visita.
 
 
-('2024-12-02', '10:00:00', 2, 3, 4), -- marco beltrame ha prenotato Analisi del sangue          ===> medico 3 incaricato
-('2024-12-05', '11:00:00', 3, 1, 5), -- marco beltrame ha prenotato Visita Dermatologica        ===> medico 1 incaricato
+('2024-12-02', '07:05:00', 5, 3, 4), -- marco beltrame ha prenotato Analisi del sangue          ===> medico 3 incaricato
+('2024-12-05', '07:05:00', 1, 1, 5), -- marco beltrame ha prenotato Visita Dermatologica        ===> medico 1 incaricato
 
-('2024-12-09', '09:30:00', 3, 3, 6 ), -- lina marchesini ha prenotato Analisi delle Urine       ===> medico 3 incaricato
-('2024-12-09', '16:00:00', 2, 1, 2), -- lina marchesini ha prenotato Visita Ortopedica          ===> medico 1 incaricato
+('2024-12-09', '07:05:00', 2, 3, 6 ), -- lina marchesini ha prenotato Analisi delle Urine       ===> medico 3 incaricato
+('2024-12-09', '16:05:00', 3, 1, 2), -- lina marchesini ha prenotato Visita Ortopedica          ===> medico 1 incaricato
 
-('2025-01-10', '09:00:00', 1, 10, 7), --marco beltra ha prenotato Visita Sportiva                ===> medico 10 incaricato
-('2025-01-10', '09:30:00', 1, 10, 7), -- lina marchesini ha prenotato Visita Sportiva            ===> medico 10 incaricato
-('2025-01-10', '10:00:00', 1, 10, 7), -- matteo stoppa ha prenotato Visita Sportiva              ===> medico 10 incaricato
+('2025-01-08', '09:05:00', 4, 10, 7), --marco beltra ha prenotato Visita Sportiva                ===> medico 10 incaricato
+('2025-01-09', '09:35:00', 5, 10, 7), -- lina marchesini ha prenotato Visita Sportiva            ===> medico 10 incaricato
+('2025-01-10', '10:05:00', 1, 10, 7), -- matteo stoppa ha prenotato Visita Sportiva              ===> medico 10 incaricato
 
 
--- Prenotazione di un altro batch di visite
-('2024-12-06', '09:30:00', 1, 2, 2), --marco beltra ha prenotato Visita
-('2024-12-06', '11:30:00', 2, 10, 2), --marco beltra ha prenotato Visita
-('2024-12-13', '14:30:00', 2, 1, 1), --marco beltra ha prenotato Visita
-('2024-12-06', '09:00:00', 3, 1, 1),-- lina marchesini ha prenotato Visita
-('2024-12-11', '10:30:00', 5, 3, 5), -- lina marchesini ha prenotato Visita
-('2024-12-11', '12:00:00', 3, 1, 6), -- lina marchesini ha prenotato Visita
-('2024-12-11', '14:30:00', 2, 3, 3), -- luca verdi ha prenotato Visita
-('2024-12-12', '15:30:00', 3, 2, 2), -- luca verdi ha prenotato Visita
-('2024-12-12', '17:00:00', 4, 10, 3);-- matteo stoppa ha prenotato Visita
+-- Prenotazione di un altro batch di visite. Nota bene il calcolo dell'ora di inizio visita vi: vi.ora = (vi-1.ora)+(vi-1.prestazione.durata)+(5minuti)
+-- Data visita: 2024-12-06. Medici del sistema: 1, 2, 3, 10.
+('2024-12-06', '07:05:00', 2, 1, 2), --  marco beltra ha prenotato Visita           Medici liberi: 2,3,10           occupati: 1
+('2024-12-06', '07:05:00', 3, 2, 2), --  marco beltra ha prenotato Visita           Medici liberi: 3,10             occupati: 1,2
+('2024-12-06', '07:05:00', 4, 3, 1), --  marco beltra ha prenotato Visita           Medici liberi: 10               occupati: 1, 2, 3
+('2024-12-06', '07:05:00', 5, 10, 1),--  lina marchesini ha prenotato Visita        Medici liberi: <nessuno>        occupati: 1, 2, 3, 10
+('2024-12-06', '07:55:00', 1, 1, 5), --  lina marchesini ha prenotato Visita        Medici liberi: 2                occupati: 1, 3, 10
+('2024-12-06', '07:55:00', 2, 2, 6), --  lina marchesini ha prenotato Visita        Medici liberi: <nessuno>        occupati: 1, 2, 3, 10
+('2024-12-06', '08:10:00', 3, 3, 3), --  luca verdi ha prenotato Visita             Medici liberi: 10               occupati: 1, 2, 3
+('2024-12-06', '08:10:00', 4, 10, 2), --  luca verdi ha prenotato Visita            Medici liberi: <nessuno>        occupati: 1, 2, 3, 10
+('2024-12-06', '08:35:00', 5, 2, 3),--  matteo stoppa ha prenotato Visita           Medici liberi: <nessuno>        occupati: 1, 2, 3, 10
 
+
+-- Ulteriore batch di 20 visite nell'anno nuovo:
+('2025-01-16', '07:05:00', 1, 1, 2), --  durata: 45   paziente: marco beltrame ,        Medici liberi: 2,3,10       occupati: 1
+('2025-01-16', '07:05:00', 2, 2,2), --   durata: 45   paziente: marco beltrame ,        Medici liberi: 3,10         occupati: 1,2
+('2025-01-16', '07:05:00', 3, 3, 1), --  durata: 60   paziente: aldo camisotti ,        Medici liberi: 10           occupati: 1,2,3
+('2025-01-16', '07:05:00', 4, 10, 1), -- durata: 60   paziente: lina marchesini ,       Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '07:55:00', 5, 1, 5), --  durata: 70   paziente: matteo stoppa ,         Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '07:55:00', 1, 2, 6), --  durata: 35   paziente: aldo camisotti ,        Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '08:10:00', 2, 3, 3), --  durata: 50   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '08:10:00', 3, 10, 2), -- durata: 45   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '08:35:00', 4, 2, 2), --  durata: 45   paziente: aldo camisotti ,        Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '09:00:00', 5, 10,3),--    durata: 50   paziente: matteo stoppa ,        Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '09:15:00', 1, 3, 8), --  durata: 120  paziente: marco beltrame ,        Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '09:15:00', 2, 1,2),--    durata: 45   paziente: matteo stoppa ,         Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '09:25:00', 3, 2, 1), -- durata: 60   paziente: marco beltrame ,         Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '09:55:00', 4, 10, 1),--   durata: 60   paziente: lina marchesini ,      Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '10:05:00', 5, 1, 5), --  durata: 70   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '10:30:00', 1, 2, 6), --  durata: 35   paziente: lina marchesini ,       Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '11:00:00', 2, 10, 3), -- durata: 50   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '11:10:00', 3, 2, 2), --  durata: 45   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10
+('2025-01-16', '14:05:00', 4, 1, 8), --  durata: 120  paziente: lina marchesini ,       Medici liberi: 2,3, 10      occupati: 1
+('2025-01-16', '14:05:00', 5, 2,3); --   durata: 50   paziente: aldo camisotti ,        Medici liberi: 3,10         occupati: 1,2
 
 
 
@@ -333,11 +359,30 @@ VALUES
 ('2024-11-26', FALSE, 17, 7), --lina marchesini prenota visita
 ('2024-11-26', FALSE, 18, 4), -- luca verdi prenota visita
 ('2024-11-26', TRUE, 19, 4), -- luca verdi prenota visita
-('2024-11-26', FALSE, 20, 6); -- matteo stoppa prenota visita
+('2024-11-26', FALSE, 20, 6), -- matteo stoppa prenota visita
 
 
-
-
+-- Ulteriore batch di 20 prenotazioni di visite nell'anno nuovo
+('2025-01-10', FALSE, 21, 5), -- marco beltrame prenota visita
+('2025-01-10', FALSE, 22, 5), -- marco beltrame prenota visita
+('2025-01-10', FALSE, 23,8), --  aldo camisotti prenota visita
+('2025-01-10', FALSE, 24, 7), -- lina marchesini prenota visita
+('2025-01-10', FALSE, 25, 6), -- matteo stoppa prenota visita
+('2025-01-10', FALSE, 26, 8), -- aldo camisotti prenota visita
+('2025-01-10', FALSE, 27, 4), -- luca verdi prenota visita
+('2025-01-10', FALSE, 28, 4), -- luca verdi prenota visita
+('2025-01-10', FALSE, 29, 8), -- aldo camisotti prenota visita
+('2025-01-11', FALSE, 30, 6), -- matteo stoppa prenota visita
+('2025-01-11', FALSE, 31, 5), -- marco beltrame prenota visita
+('2025-01-11', FALSE, 32, 6), -- matteo stoppa prenota visita
+('2025-01-11', FALSE, 33, 5), -- marco beltrame prenota visita
+('2025-01-11', FALSE, 34, 7), -- lina marchesini prenota visita
+('2025-01-11', FALSE, 35, 4), -- luca verdi prenota visita
+('2025-01-12', FALSE, 36, 7), -- lina marchesini prenota visita
+('2025-01-12', FALSE, 37, 4), -- luca verdi prenota visita
+('2025-01-12', FALSE, 38, 4), -- luca verdi prenota visita
+('2025-01-12', FALSE, 39, 7), -- lina marchesini prenota visita
+('2025-01-12', FALSE, 40, 8); -- aldo camisotti prenota visita
 
 
 -- L'esito esiste solo se prenotazione.effettuate = TRUE

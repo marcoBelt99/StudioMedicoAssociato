@@ -31,7 +31,7 @@
                             </li>
 
                             <li class="it-stepper-item" th:classappend="${step == 2} ? 'active' : ''">
-                                Dati Paziente
+                                Data e ora
                                 <span class="visually-hidden">Attivo</span>
                             </li>
 
@@ -45,9 +45,8 @@
 
                     <!-- Stepper Content -->
                     <div class="steppers-content" aria-live="polite">
-<!--                        <div th:if="${step == 1}" th:insert="~{fragments/formUno}"></div>-->
-                        <div th:if="${step == 1}" th:insert="~{fragments/formUno}"></div>
-                        <div th:if="${step == 2}" th:insert="~{fragments/formDue}"></div>
+                        <div th:if="${step == 1}" th:insert="~{fragments/formPrestazione}"></div>
+                        <div th:if="${step == 2}" th:insert="~{fragments/formPrenotazione}"></div>
                         <div th:if="${step == 3}" th:insert="~{fragments/formTre}"></div>
                     </div>
 
