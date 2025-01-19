@@ -123,6 +123,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
         , nativeQuery = true)
     List<Visita> findAllVisiteFromNow();
 
+
     /** Trova tutte le visite di un determinato medico in una determinata data */
     @Query("SELECT v FROM Visita v WHERE v.anagrafica.idAnagrafica = :idMedico AND v.dataVisita = :data")
     List<Visita> findByMedicoAndData(@Param("idMedico") Long idMedico, @Param("data") Date data);

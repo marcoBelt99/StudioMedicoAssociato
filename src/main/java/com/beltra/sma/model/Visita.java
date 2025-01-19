@@ -62,4 +62,10 @@ public class Visita {
     public int hashCode() {
         return Objects.hash(idVisita, dataVisita, ora, numAmbulatorio, anagrafica, prestazione);
     }
+
+
+    /** Metodo per ricavare l'orario di fine della visita */
+    public Time calcolaOraFine() {
+        return Time.valueOf( getOra().toLocalTime().plusMinutes( Math.round( getPrestazione().getDurataMedia() ) ) );
+    }
 }

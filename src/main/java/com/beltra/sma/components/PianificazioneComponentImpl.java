@@ -33,116 +33,106 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     }
 
 
-    // TODO:
-    /** Calcolo Slot Orario */
-    // C'e' uno slot orario? == Ci sta la visita qui dentro?
-    // Se ci sta, allora la inserisci lì
-    // Se non ci sta, la crei e la metti in fondo.
-    // Naturalmente la data visita deve essere >= data attuale
-
-
-
-
-
-    /** Trova orario visita */
-
 
     /** TODO: Va richiamato sia nel Controller della Prenotazione, per poter stamapare a video e in HTML nello stepper lo SlotDisponibile,
-     *    Sia in fase di creazione visita.
+     *        Sia in fase di creazione visita.
      * */
-    public Optional<SlotDisponibile> trovaPrimoSlotDisponibile(Double durataMedia, Date dataInizioRicerca) {
+    public Optional<SlotDisponibile> trovaPrimoSlotDisponibile(Double durataMedia, List<Visita> visiteGiornaliere) {
+
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dataInizioRicerca);
+
+        calendar.setTime(new Date()); // Data attuale
+        LocalTime oraAttuale = LocalTime.now(); // Ora attuale
 
         while (true) {
-            // Salta il weekend
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
-                calendar.add(Calendar.DATE, 1);
+            // Data corrente
+            Date dataCorrente = calendar.getTime();
+
+            // Controlla se il giorno è ammissibile
+            if (!isGiornoAmmissibile(dataCorrente)) {
+                calendar.add(Calendar.DATE, 1); // Passa al giorno successivo
+                oraAttuale = orarioAperturaMattina; // Reset orario per il giorno successivo
                 continue;
             }
 
-            // Recupera tutte le visite per il giorno corrente
-            Date dataCorrente = calendar.getTime();
-            List<Visita> visiteGiornaliere = visitaService.getAllVisiteByData( dataCorrente );
+            // TODO: decommentare se necessario: per la fase di test lo lascio commentato
+            // visiteGiornaliere = visitaService.getAllVisiteByData(dataCorrente);
 
             // Ordina le visite per orario
             visiteGiornaliere.sort(Comparator.comparing(Visita::getOra));
 
-            // Cerca uno slot disponibile tra le visite
-            Time inizioOrarioLavoro = Time.valueOf("07:00:00");
-            Time fineOrarioLavoro = Time.valueOf("21:00:00");
+            // Scorri gli slot tra le visite
+            LocalTime inizioSlot = oraAttuale.isBefore(orarioAperturaMattina) ? orarioAperturaMattina : oraAttuale;
+            for (Visita visita : visiteGiornaliere) {
+                LocalTime orarioVisita = visita.getOra().toLocalTime();
+                LocalTime fineVisita = aggiungiDurata(orarioVisita, visita.getPrestazione().getDurataMedia());
 
-            // Verifica spazi prima della prima visita
-            if (!visiteGiornaliere.isEmpty()) {
-                Visita primaVisita = visiteGiornaliere.get(0);
-                if (isSlotDisponibile(inizioOrarioLavoro, primaVisita.getOra(), durataMedia)) {
-                    Medico medicoDisponibile = trovaMedicoDisponibile(dataCorrente, inizioOrarioLavoro.toLocalTime(), durataMedia);
-                    if (medicoDisponibile != null) {
-                        return Optional.of(new SlotDisponibile(dataCorrente, inizioOrarioLavoro, medicoDisponibile));
-                    }
+                // Controlla se c'è spazio tra lo slot corrente e l'inizio della visita
+                if (isSlotDisponibile(Time.valueOf(inizioSlot), visita.getOra(), durataMedia)) {
+                    Medico medicoDisponibile = trovaMedicoDisponibile(dataCorrente, inizioSlot, durataMedia);
+                    if (medicoDisponibile != null)
+                        return Optional.of(new SlotDisponibile(dataCorrente, Time.valueOf(inizioSlot), medicoDisponibile));
                 }
+                inizioSlot = fineVisita; // Aggiorna l'inizio dello slot successivo
             }
 
-            // Verifica spazi tra le visite
-            for (int i = 0; i < visiteGiornaliere.size() - 1; i++) {
-                LocalTime fineVisita = aggiungiDurata(visiteGiornaliere.get(i).getOra().toLocalTime(), visiteGiornaliere.get(i).getPrestazione().getDurataMedia());
-                LocalTime inizioVisitaSuccessiva = visiteGiornaliere.get(i + 1).getOra().toLocalTime();
-
-                if ( isSlotDisponibile( Time.valueOf(fineVisita), Time.valueOf( inizioVisitaSuccessiva ), durataMedia)) {
-                    Medico medicoDisponibile = trovaMedicoDisponibile( dataCorrente, fineVisita , durataMedia);
-                    if (medicoDisponibile != null) {
-                        return Optional.of(new SlotDisponibile(dataCorrente, Time.valueOf( fineVisita ), medicoDisponibile));
-                    }
-                }
-            }
-
-            // Verifica spazio dopo l'ultima visita
+            // Controlla slot dopo l'ultima visita
             if (!visiteGiornaliere.isEmpty()) {
                 Visita ultimaVisita = visiteGiornaliere.get(visiteGiornaliere.size() - 1);
-                Time fineUltimaVisita = Time.valueOf( aggiungiDurata(ultimaVisita.getOra().toLocalTime(), ultimaVisita.getPrestazione().getDurataMedia()) );
-                if (isSlotDisponibile(fineUltimaVisita, fineOrarioLavoro, durataMedia)) {
-                    Medico medicoDisponibile = trovaMedicoDisponibile(dataCorrente, fineUltimaVisita.toLocalTime(), durataMedia);
-                    if (medicoDisponibile != null) {
-                        return Optional.of(new SlotDisponibile(dataCorrente, fineUltimaVisita, medicoDisponibile));
-                    }
+                LocalTime fineUltimaVisita = aggiungiDurata(ultimaVisita.getOra().toLocalTime(), ultimaVisita.getPrestazione().getDurataMedia());
+                if (fineUltimaVisita.isBefore(orarioChiusuraPomeriggio) &&
+                        isSlotDisponibile(Time.valueOf(fineUltimaVisita), Time.valueOf(orarioChiusuraPomeriggio), durataMedia)) {
+                    Medico medicoDisponibile = trovaMedicoDisponibile(dataCorrente, fineUltimaVisita, durataMedia);
+                    if (medicoDisponibile != null)
+                        return Optional.of(new SlotDisponibile(dataCorrente, Time.valueOf(fineUltimaVisita), medicoDisponibile));
+                }
+            } else {
+                // Nessuna visita per il giorno corrente, verifica slot libero
+                if ( isSlotDisponibile(Time.valueOf(inizioSlot), Time.valueOf(orarioChiusuraPomeriggio), durataMedia )) {
+                    Medico medicoDisponibile = trovaMedicoDisponibile(dataCorrente, inizioSlot, durataMedia);
+                    if (medicoDisponibile != null)
+                        return Optional.of(new SlotDisponibile(dataCorrente, Time.valueOf(inizioSlot.plusMinutes(pausaFromvisite)), medicoDisponibile));
                 }
             }
 
             // Passa al giorno successivo
             calendar.add(Calendar.DATE, 1);
+            oraAttuale = orarioAperturaMattina; // Reset orario per il nuovo giorno
         }
     }
 
-    private boolean isSlotDisponibile(Time inizio, Time fine, Double durataMedia) {
-        long minutiDisponibili = (fine.getTime() - inizio.getTime()) / (1000 * 60);
-        return minutiDisponibili >= durataMedia;
+
+
+
+
+    public boolean isSlotDisponibile(Time inizio, Time fine, Double durataMedia) {
+        Duration slotDisponibile = Duration.between(inizio.toLocalTime(), fine.toLocalTime());
+        return slotDisponibile.toMinutes() >= (durataMedia + pausaFromvisite); // Pausa inclusa
     }
 
+
     public LocalTime aggiungiDurata(LocalTime ora, Double durataMedia) {
-        return ora.plusMinutes(durataMedia.intValue());
+        return ora.plusMinutes(durataMedia.intValue() + pausaFromvisite );
     }
 
 
 
     public Medico trovaMedicoDisponibile(Date data, LocalTime orario, Double durataMedia) {
-        for (Medico medico : medicoService.getAllMedici()) {
-            List<Visita> visiteMedico = visitaService.getAllVisiteByMedicoAndData(medico, data);
-            boolean disponibile = true;
+        List<Medico> medici = medicoService.getAllMedici();
+        for (Medico medico : medici) {
+            List<Visita> visiteMedico = visitaService.getAllVisiteByMedicoAndData( medico, data);
 
-            for (Visita visita : visiteMedico) {
-                LocalTime inizioVisita = visita.getOra().toLocalTime();
-                LocalTime fineVisita = aggiungiDurata(inizioVisita, visita.getPrestazione().getDurataMedia());
-                LocalTime fineRichiesta = aggiungiDurata(orario, durataMedia);
+            boolean isDisponibile = visiteMedico
+                    .stream()
+                    .noneMatch(visita -> {
+                        LocalTime inizioVisita = visita.getOra().toLocalTime();
+                        LocalTime fineVisita = aggiungiDurata(inizioVisita, visita.getPrestazione().getDurataMedia());
+                        LocalTime fineProposta = aggiungiDurata(orario, durataMedia);
 
-                // Verifica sovrapposizione
-                if (!(fineRichiesta.isBefore(inizioVisita) || orario.isAfter(fineVisita))) {
-                    disponibile = false;
-                    break;
-                }
-            }
+                return !(fineProposta.isBefore(inizioVisita) || orario.isAfter(fineVisita));
+            });
 
-            if (disponibile)
+            if (isDisponibile)
                 return medico;
         }
         return null;
@@ -164,11 +154,11 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     @Override
     public Boolean condizioneSoddisfacibilita(LocalTime orarioDaControllare) {
         return
-            ( !orarioDaControllare.isBefore(PianificazioneComponent.orarioAperturaMattina) &&
-              !orarioDaControllare.isAfter(PianificazioneComponent.orarioChiusuraMattina)
+            ( !orarioDaControllare.isBefore(orarioAperturaMattina) &&
+              !orarioDaControllare.isAfter(orarioChiusuraMattina)
             ) ||
-            ( !orarioDaControllare.isBefore(PianificazioneComponent.orarioAperturaPomeriggio) &&
-              !orarioDaControllare.isAfter(PianificazioneComponent.orarioChiusuraPomeriggio)
+            ( !orarioDaControllare.isBefore(orarioAperturaPomeriggio) &&
+              !orarioDaControllare.isAfter(orarioChiusuraPomeriggio)
             );
     }
 
@@ -186,13 +176,24 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                 java.sql.Time.valueOf (
                     orarioLocalTime
                         .plus( Duration.ofMillis( (long) (prestazione.getDurataMedia() * 60*1000))
-                        .plusMinutes( pausaFromvisite ) ) // ci aggiungo anche la pausa tra le visite
+                        .plusMinutes( pausaFromvisite ) ) //TODO: DA RIVEDERE (FORSE DEVO TOGLIERLA) ci aggiungo anche la pausa tra le visite
                 )
                 .toLocalTime();
 
         // Ecco perchè devo ricontrollare la condizione prima di ritornare
         return condizioneSoddisfacibilita( orarioMaggioratoDaDurata ) ;
-
     }
+
+
+    @Override
+    /** In questo metodo inserisco i dati di test per i vari casi di test specifici.
+     *  In fase di produzione invece e' consigliato usare il metodo getAllVisiteSt */
+    public List<Visita> getAllVisiteByData() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date()); // Data attuale
+        Date dataCorrente = calendar.getTime();
+        return visitaService.getAllVisiteByData(dataCorrente);
+    }
+
 
 }

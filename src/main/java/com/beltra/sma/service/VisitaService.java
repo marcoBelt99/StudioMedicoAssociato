@@ -2,6 +2,7 @@ package com.beltra.sma.service;
 
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.*;
+import com.beltra.sma.repository.VisitaRepository;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
@@ -66,4 +67,6 @@ public interface VisitaService {
 
     Visita salvaVisita( Visita visita );
 
+
+    VisitaRepository getVisitaRepository();
 }

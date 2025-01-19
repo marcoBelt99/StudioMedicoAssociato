@@ -305,6 +305,7 @@ VALUES -- TODO: le visite possono essere fatte solo dal lunedì al venerdì, dal
 ('2025-01-16', '07:05:00', 2, 2,2), --   durata: 45   paziente: marco beltrame ,        Medici liberi: 3,10         occupati: 1,2
 ('2025-01-16', '07:05:00', 3, 3, 1), --  durata: 60   paziente: aldo camisotti ,        Medici liberi: 10           occupati: 1,2,3
 ('2025-01-16', '07:05:00', 4, 10, 1), -- durata: 60   paziente: lina marchesini ,       Medici liberi: <nessuno>    occupati: 1,2,3,10
+
 ('2025-01-16', '07:55:00', 5, 1, 5), --  durata: 70   paziente: matteo stoppa ,         Medici liberi: <nessuno>    occupati: 1,2,3,10
 ('2025-01-16', '07:55:00', 1, 2, 6), --  durata: 35   paziente: aldo camisotti ,        Medici liberi: <nessuno>    occupati: 1,2,3,10
 ('2025-01-16', '08:10:00', 2, 3, 3), --  durata: 50   paziente: luca verdi ,            Medici liberi: <nessuno>    occupati: 1,2,3,10

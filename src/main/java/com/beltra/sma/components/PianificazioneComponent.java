@@ -1,12 +1,14 @@
 package com.beltra.sma.components;
 
 import com.beltra.sma.model.Prestazione;
+import com.beltra.sma.model.Visita;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,6 +23,7 @@ public interface PianificazioneComponent {
     LocalTime orarioAperturaPomeriggio = LocalTime.of(14, 0);
     LocalTime orarioChiusuraPomeriggio = LocalTime.of(21, 0);
 
+
     /** Tolleranza / Pausa in minuti tra una visita e l'altra. */
     long pausaFromvisite = 5;
 
@@ -32,10 +35,10 @@ public interface PianificazioneComponent {
      * Logica per trovare lo slot disponibile: considera l'orario di apertura e chiusura dello SMA e calcola gli intervalli
      * disponibili tra le visite esistenti.
      * @param durata durata media della prestazione a cui la visita che si creando fa riferimento.
-     * @param dataInizio giorno da cui iniziare la ricerca per lo slot.
+     * @param visiteGiornaliere lista di visite presenti in una determinata data.
      * @return slot disponibile: una tripla composta da Data, Orario, Medico.
      * */
-    Optional<SlotDisponibile> trovaPrimoSlotDisponibile(Double durata, Date dataInizio);
+    Optional<SlotDisponibile> trovaPrimoSlotDisponibile(Double durata, List<Visita> visiteGiornaliere);
 
     /**
      * @param  data giorno che si vuol analizzare: vogliamo che sia diverso da Sabato e Domenica.<br>
@@ -54,11 +57,11 @@ public interface PianificazioneComponent {
      *  Lo SMA lavora dalle 07:00 alle 12:00 e dalle 14:00 alle 21:00
      *      orario compreso in quell'intervallo.
      *
-     *  Mi serve la durata prevista della prestazione:
-     *      vedere che:
-     *       - se ad esempio il primo orario libero e' alle
+     *  Mi serve la durata media della prestazione:
+     *      Vedere che:
+     *       - Se ad esempio il primo orario libero e' alle
      *         18:00 e la prestazione ha durata media 30 min allora posso prenotare
-     *       - se invece la prestazione ha durata media 30 minuti
+     *       - Se, invece, la prestazione ha durata media 30 minuti
      *         ma il primo orario libero e' alle 20:45 allora sforo e non posso
      * @param orario: ora che si vuol analizzare.
      * @param prestazione: necessario per ottenere la durata media per vedere se, sommata ad orario, stiamo sforando
@@ -66,9 +69,9 @@ public interface PianificazioneComponent {
     Boolean isOrarioAmmissibile(Time orario, Prestazione prestazione);
 
 
-
     LocalTime aggiungiDurata(LocalTime ora, Double durataMedia);
 
 
+    List<Visita> getAllVisiteByData();
 
 }
