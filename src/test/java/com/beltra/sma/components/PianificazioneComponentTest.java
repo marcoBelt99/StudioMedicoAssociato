@@ -1,5 +1,9 @@
 package com.beltra.sma.components;
 
+import com.beltra.sma.components.data.DatiMediciTest;
+import com.beltra.sma.components.data.DatiPrestazioniTest;
+import com.beltra.sma.components.data.DatiTest;
+import com.beltra.sma.components.data.DatiVisiteTest;
 import com.beltra.sma.model.*;
 import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.service.VisitaService;
@@ -9,13 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 @SpringBootTest
 public class PianificazioneComponentTest {
@@ -23,6 +26,7 @@ public class PianificazioneComponentTest {
 
     @Autowired
     private PianificazioneComponent pianificazioneComponent;
+
     @Autowired
     private VisitaService visitaService;
 
@@ -30,87 +34,205 @@ public class PianificazioneComponentTest {
     private MedicoService medicoService;
 
 
-    private Date dataTest;
-    private List<Visita> visiteTest;
-    private List<Prenotazione> prenotazioniTest;
-
-
-
-
-
-//    @BeforeEach
-//    void setup() {
-//
-//        // Configura una data di test unica
-//        Calendar cal = Calendar.getInstance();
-//        cal.set(2025, Calendar.JANUARY, 16); // 16 gennaio 2025
-//        dataTest = cal.getTime();
-//
-//
-//        // Liste per tenere traccia delle entità di test create
-//        visiteTest = new ArrayList<>();
-//        prenotazioniTest = new ArrayList<>();
-//
-//        // Crea una visita di test
-//        Visita visita1 = new Visita();
-//        visita1.setAnagrafica(anagraficaRepository.findById(1L).get()); // Medico Mario Rossi
-//        visita1.setDataVisita(dataTest);
-//        visita1.setOra(Time.valueOf("08:30:00")); // Visita alle 08:30
-//        visita1.setPrestazione(prestazioneRepository.findById(2L).get()); // prestazione 2
-//        visita1.setNumAmbulatorio(4);
-//        visita1 = visitaService.salvaVisita(visita1);
-//        visiteTest.add(visita1);
-//
-//        // Creo un'altra visita
-//        Visita visita2 = new Visita();
-//        visita2.setAnagrafica(anagraficaRepository.findById(3L).get()); // Medico Geraldo Mori
-//        visita2.setDataVisita(dataTest);
-//        visita2.setOra(Time.valueOf("09:30:00")); // Visita alle 08:90
-//        visita2.setPrestazione(prestazioneRepository.findById(3L).get()); // prestazione 3
-//        visita2.setNumAmbulatorio(3);
-//        visita2 = visitaService.salvaVisita(visita2);
-//        visiteTest.add(visita1);
-//
-//        // Crea la prenotazione di test relativa a visita1
-//        Prenotazione prenotazione1 = new Prenotazione();
-//        prenotazione1.setAnagrafica(anagraficaRepository.findById(5L).get()); // Paziente Marco Beltrame
-//        prenotazione1.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione1.setEffettuata(false);
-//        prenotazione1.setVisita(visita1); // Associa la prenotazione alla visita
-//        prenotazione1 = prenotazioneRepository.save(prenotazione1);
-//        prenotazioniTest.add(prenotazione1);
-//
-//        // Crea la prenotazione di test relativa a visita2
-//        Prenotazione prenotazione2 = new Prenotazione();
-//        prenotazione2.setAnagrafica(anagraficaRepository.findById(7L).get()); // Paziente Lina Marchesini
-//        prenotazione2.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione2.setEffettuata(false);
-//        prenotazione2.setVisita(visita1); // Associa la prenotazione alla visita
-//        prenotazione2 = prenotazioneRepository.save(prenotazione2);
-//        prenotazioniTest.add(prenotazione2);
-//
-//
-//    }
-//
-//    @AfterEach
-//    void cleanup() {
-//
-//        // Rimuove le visite create durante il test
-//        visitaService.getVisitaRepository().deleteAll(visiteTest);
-//
-//        // Rimuove le prenotazioni create durante il test
-//        prenotazioneRepository.deleteAll(prenotazioniTest);
-//    }
-
-
-    /** In questo metodo inserisco i dati di test per i vari casi di test specifici. */
+    /**  TODO: In questo metodo inserisco i dati di test per i vari casi di test specifici. */
     public List<Visita> getAllVisiteByData() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date()); // Data attuale
-        Date dataCorrente = calendar.getTime();
-        return visitaService.getAllVisiteByData(dataCorrente);
+        DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
+        return datiVisiteTest
+                .getListaVisiteTest()
+                .stream()
+                .filter( v -> v.getDataVisita().after( DatiTest.dataTest_16Gennaio2025 ) ).toList();
     }
 
+    public List<Medico> getAllDatiMediciTests() {
+        DatiMediciTest datiMediciTest = new DatiMediciTest();
+        return datiMediciTest.getDatiTest();
+    }
+
+    public List<Prestazione> getAllPrestazioniTests() {
+        DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
+        return datiPrestazioniTest.getDatiTest();
+    }
+
+
+
+    /// #################################################################################
+    /// CASO PIÙ SEMPLICE: LISTA VISITE VUOTA
+
+
+    /// slot.data = dataAttuale, slot.ora=07:05, medico=m1
+    /// dataTest = 17/01/2025 = venerdì
+    /// oraAttualeTest = 06:55
+    @Test
+    public void testTrovaPrimoSlotDisponibile_WithListaVisiteEmpty_WithOrarioBeforeAperturaMattina() {
+        // ARRANGE
+        Double durataMediaPrestazioneTest = 90.0;
+        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();  //
+        LocalTime oraAttualeTest = LocalTime.of( 6, 55  ); // Tengo fissa l'ora attuale ( simulo now() )
+        List<Medico> listaMediciTest = medicoService.getAllMedici();
+        List<Visita> listaVisiteTest = visitaService.getAllVisiteByData( dataTest );
+
+
+
+        SlotDisponibile slotDisponibileTest = new SlotDisponibile();
+        slotDisponibileTest.setData( dataTest );
+        slotDisponibileTest.setOrario( Time.valueOf(
+                PianificazioneComponent.orarioAperturaMattina.plusMinutes(PianificazioneComponent.pausaFromvisite) )
+        );
+        slotDisponibileTest.setMedico( medicoService.getAllMedici().get(0) );
+
+        // ACT
+        Optional<SlotDisponibile> risultato =
+                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                    durataMediaPrestazioneTest,
+                    dataTest,
+                    oraAttualeTest,
+                    listaMediciTest,
+                    listaVisiteTest
+
+        );
+
+        // ASSERT
+        assertTrue( risultato.isPresent(), "Il risultato dovrebbe essere presente");
+        assertEquals( slotDisponibileTest.getData(), risultato.get().getData() );
+        assertEquals( slotDisponibileTest.getMedico().getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() ); // non riuscivo ad eguagliare gli oggetti, quindi controllo tramite id
+        assertEquals( slotDisponibileTest.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() ); // e tramite matricola
+        assertEquals( slotDisponibileTest.getOrario(), risultato.get().getOrario() );
+
+        // assertSame( slotDisponibileTest, risultato.get() );
+    }
+
+
+    /// slot.data = dataAttuale, slot.ora=09:35, medico=m1
+    /// dataTest = 17/01/2025 = venerdì
+    /// oraAttualeTest = 07:50
+    @Test
+    public void testTrovaPrimoSlotDisponibile_WithListaVisiteEmpty_WithOrarioAmmissibileInMattina() {
+        // ARRANGE
+        Double durataMediaPrestazioneTest = 90.0;
+        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();  //
+        LocalTime oraAttualeTest = LocalTime.of( 7, 50  ); // Tengo fissa l'ora attuale ( simulo now() )
+        List<Medico> listaMediciTest = medicoService.getAllMedici();
+        List<Visita> listaVisiteTest = visitaService.getAllVisiteByData( dataTest );
+
+
+        SlotDisponibile slotDisponibileTest = new SlotDisponibile();
+        slotDisponibileTest.setData( dataTest );
+        slotDisponibileTest.setOrario( Time.valueOf(
+               oraAttualeTest.plusMinutes( durataMediaPrestazioneTest.intValue() ).plusMinutes(PianificazioneComponent.pausaFromvisite) )
+        );
+        slotDisponibileTest.setMedico( medicoService.getAllMedici().get(0) );
+
+        // ACT
+        Optional<SlotDisponibile> risultato =
+                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                        durataMediaPrestazioneTest,
+                        dataTest,
+                        oraAttualeTest,
+                        listaMediciTest,
+                        listaVisiteTest
+
+                );
+
+        // ASSERT
+        assertTrue( risultato.isPresent(), "Il risultato dovrebbe essere presente");
+        assertEquals( slotDisponibileTest.getData(), risultato.get().getData() );
+        assertEquals( slotDisponibileTest.getMedico().getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() ); // non riuscivo ad eguagliare gli oggetti, quindi controllo tramite id
+        assertEquals( slotDisponibileTest.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() ); // e tramite matricola
+        assertEquals( slotDisponibileTest.getOrario(), risultato.get().getOrario() );
+
+        // assertSame( slotDisponibileTest, risultato.get() );
+    }
+
+
+    /** dataTest = 17/01/2025 = venerdì
+     *  oraAttualeTest = 06:55 (prima dell'orario di apertura)
+     *  */
+    @Test
+    public void testTrovaPrimoSlotDisponibile_WithMattinoAmmissibileAndPomeriggioVuoto() {
+        // ARRANGE
+        Double durataMediaPrestazioneTest = 90.0;
+        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();
+        LocalTime oraAttualeTest = LocalTime.of( 6, 55  ); // Tengo fissa l'ora attuale ( simulo now() )
+        List<Visita> listaVisiteTest = getAllVisiteByData(  ); // come dati di test ho le solite 6 visite (quelle disegnate su carta)
+        List<Medico> listaMediciTest = getAllDatiMediciTests(); // come dati di test mi servono anche i medici (sono != da quelli a DB)
+
+        // Dopo inserimento di v6 ho:
+        // listaVisite = [v1, v2, ..., v6]
+        // listaMedici = [m1, m2, m3]
+        // mediciMap = [<3, 09:30>, <2, 10:05>, <1, 11:30>]
+        Date dataExpected = dataTest;
+        Time oraExpected = Time.valueOf( LocalTime.of(9, 30)
+                .plusMinutes( PianificazioneComponent.pausaFromvisite ) ); // Mi aspetto 09:35
+        Medico medicoExpected = listaMediciTest.get(2); // prendo medico di id=3 (sta in terza posizione, a partire da 0)
+
+        SlotDisponibile slotDisponibileExpected =
+                new SlotDisponibile( dataExpected, oraExpected , medicoExpected );
+        // ACT
+        Optional<SlotDisponibile> risultato =
+                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                durataMediaPrestazioneTest,
+                        dataTest,
+                        oraAttualeTest,
+                        listaMediciTest,
+                        listaVisiteTest
+        );
+
+        // ASSERT
+        assertTrue(risultato.isPresent(), "Il risultato dovrebbe essere presente");
+        assertEquals( slotDisponibileExpected.getData(), risultato.get().getData() );
+        assertEquals( slotDisponibileExpected.getOrario(), risultato.get().getOrario() );
+        assertEquals( slotDisponibileExpected.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() );
+    }
+
+
+
+
+    // visiteMattino = [v1, v2, v3, __], visitePomeriggio = []
+    @Test
+    public void testTrovaPrimoSlotDisponibile_WithMattinoNotAmmissibileAndPomeriggioVuoto() {
+        // ARRANGE
+        // TODO: durata presetazione esagerata, in modo da farmi avere lo slot disponibile alle 14:05
+        Double durataMediaPrestazioneTest = getAllPrestazioniTests().get(3).getDurataMedia();  // durata = 4 ore
+        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime(); // TODO: 17/01/2025 (mi servono le visite). E' una data rappresentativa (copre molti casi di test).
+        LocalTime oraAttualeTest = LocalTime.of( 6, 55  ); // Tengo fissa l'ora attuale ( simulo now() )
+        List<Visita> listaVisiteTest = getAllVisiteByData(  ); // come dati di test ho le solite 6 visite (quelle disegnate su carta)
+        List<Medico> listaMediciTest = getAllDatiMediciTests(); //  come dati di test mi servono anche i medici (sono != da quelli a DB)
+
+        // Dopo inserimento di v6 ho:
+        // listaVisite = [v1, v2, ..., v6]
+        // listaMedici = [m1, m2, m3]
+        // mediciMap = [<3, 09:30>, <2, 10:05>, <1, 11:30>]
+        Date dataExpected = dataTest;
+        Time oraExpected = Time.valueOf(
+                PianificazioneComponent.orarioAperturaPomeriggio.plusMinutes(PianificazioneComponent.pausaFromvisite)
+        );  //
+        Medico medicoExpected = listaMediciTest.get(0); // prendo il primo medico medico (di id=1), perchè non essendocene di occupati, si riparte dal primo in lista
+
+        SlotDisponibile slotDisponibileExpected =
+                new SlotDisponibile( dataExpected, oraExpected , medicoExpected );
+
+        // ACT
+        Optional<SlotDisponibile> risultato =
+                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                        durataMediaPrestazioneTest,
+                        dataTest,
+                        oraAttualeTest,
+                        listaMediciTest,
+                        listaVisiteTest
+                );
+
+        System.out.println(risultato.get());
+
+        // ASSERT
+        assertTrue(risultato.isPresent(), "Il risultato dovrebbe essere presente");
+        assertEquals( slotDisponibileExpected.getData(), risultato.get().getData() );
+        assertEquals( slotDisponibileExpected.getOrario(), risultato.get().getOrario() );
+        assertEquals( slotDisponibileExpected.getMedico().getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() );
+        assertEquals( slotDisponibileExpected.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() );
+    }
+
+
+/*
     @Test
     public void testTrovaPrimoSlotDisponibile_Ok() {
 
@@ -119,12 +241,12 @@ public class PianificazioneComponentTest {
 
         // Chiama il metodo da testare
         Optional<SlotDisponibile> slotDisponibile =
-                pianificazioneComponent.trovaPrimoSlotDisponibile( durataVisita, getAllVisiteByData() );
+                pianificazioneComponent.trovaPrimoSlotDisponibile( durataVisita, new Date(), LocalTime.now(), getAllDatiMediciTests(), getAllVisiteByData() );
 
         // Verifica che lo slot sia presente e sia corretto
         assertTrue( slotDisponibile.isPresent(), "Nessuno slot disponibile trovato");
         assertEquals( Time.valueOf("07:00:00"), slotDisponibile.get().getOrario(), "L'orario dello slot non è corretto");
-        assertEquals( dataTest, slotDisponibile.get().getData(), "La data dello slot non è corretta");
+        assertEquals( PianificazioneManagerTest.dataAttualeDiTest, slotDisponibile.get().getData(), "La data dello slot non è corretta");
         assertNotNull( slotDisponibile.get().getMedico(), "Nessun medico assegnato allo slot");
 
         System.out.println("");
@@ -138,137 +260,22 @@ public class PianificazioneComponentTest {
 
 
 
-//    @Test
-//    public void testTrovaPrimoSlotDisponibile_NoMedicoDisponibile() {
-//
-//        // Arrange
-//        // Configura una data di test unica
-//        Calendar cal = Calendar.getInstance();
-//        cal.set(2025, Calendar.JANUARY, 16); // 16 gennaio 2025
-//        dataTest = cal.getTime();
-//
-//
-//        // Liste per tenere traccia delle entità di test create
-//        visiteTest = new ArrayList<>();
-//        prenotazioniTest = new ArrayList<>();
-//
-//
-//        // Crea una visita di test
-//        Visita visita1 = new Visita();
-//        visita1.setAnagrafica(anagraficaRepository.findById(1L).get()); // Medico Mario Rossi
-//        visita1.setDataVisita(dataTest);
-//        visita1.setOra(Time.valueOf("08:30:00")); // Visita alle 08:30
-//        visita1.setPrestazione(prestazioneRepository.findById(2L).get()); // prestazione 2
-//        visita1.setNumAmbulatorio(4);
-//        visita1 = visitaService.getVisitaRepository().save(visita1);
-//        visiteTest.add(visita1);
-//
-//        // Creo un'altra visita
-//        Visita visita2 = new Visita();
-//        visita2.setAnagrafica(anagraficaRepository.findById(3L).get()); // Medico Geraldo Mori
-//        visita2.setDataVisita(dataTest);
-//        visita2.setOra(Time.valueOf("09:30:00")); // Visita alle 08:90
-//        visita2.setPrestazione(prestazioneRepository.findById(3L).get()); // prestazione 3
-//        visita2.setNumAmbulatorio(3);
-//        visita2 = visitaService.getVisitaRepository().save(visita2);
-//        visiteTest.add(visita1);
-//
-//        // Crea la prenotazione di test relativa a visita1
-//        Prenotazione prenotazione1 = new Prenotazione();
-//        prenotazione1.setAnagrafica(anagraficaRepository.findById(5L).get()); // Paziente Marco Beltrame
-//        prenotazione1.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione1.setEffettuata(false);
-//        prenotazione1.setVisita(visita1); // Associa la prenotazione alla visita
-//        prenotazione1 = prenotazioneRepository.save(prenotazione1);
-//        prenotazioniTest.add(prenotazione1);
-//
-//        // Crea la prenotazione di test relativa a visita2
-//        Prenotazione prenotazione2 = new Prenotazione();
-//        prenotazione2.setAnagrafica(anagraficaRepository.findById(7L).get()); // Paziente Lina Marchesini
-//        prenotazione2.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione2.setEffettuata(false);
-//        prenotazione2.setVisita(visita1); // Associa la prenotazione alla visita
-//        prenotazione2 = prenotazioneRepository.save(prenotazione2);
-//        prenotazioniTest.add(prenotazione2);
-//
-//
-//        // Crea una visita di test
-//        Visita visita3 = new Visita();
-//        visita3.setAnagrafica(anagraficaRepository.findById(2L).get()); // Medico Anna Bianchi
-//        visita3.setDataVisita(dataTest);
-//        visita3.setOra(Time.valueOf("10:30:00")); // Visita alle 10:30
-//        visita3.setPrestazione(prestazioneRepository.findById(2L).get()); // prestazione 2
-//        visita3.setNumAmbulatorio(4);
-//        visita3 = visitaService.getVisitaRepository().save(visita3);
-//        visiteTest.add(visita3);
-//
-//        // Creo un'altra visita
-//        Visita visita4 = new Visita();
-//        visita4.setAnagrafica(anagraficaRepository.findById(4L).get()); // Medico Luca Verdi
-//        visita4.setDataVisita(dataTest);
-//        visita4.setOra(Time.valueOf("11:30:00")); // Visita alle 11:30
-//        visita4.setPrestazione(prestazioneRepository.findById(3L).get()); // prestazione 3
-//        visita4.setNumAmbulatorio(3);
-//        visita4 = visitaService.getVisitaRepository().save(visita4);
-//        visiteTest.add(visita4);
-//
-//        // Crea la prenotazione di test relativa a visita1
-//        Prenotazione prenotazione3 = new Prenotazione();
-//        prenotazione3.setAnagrafica(anagraficaRepository.findById(6L).get()); // Paziente Stoppa Matteo
-//        prenotazione3.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione3.setEffettuata(false);
-//        prenotazione3.setVisita(visita3); // Associa la prenotazione alla visita
-//        prenotazione3 = prenotazioneRepository.save(prenotazione3);
-//        prenotazioniTest.add(prenotazione3);
-//
-//        // Crea la prenotazione di test relativa a visita2
-//        Prenotazione prenotazione4 = new Prenotazione();
-//        prenotazione4.setAnagrafica(anagraficaRepository.findById(8L).get()); // Paziente Camisotti Aldo
-//        prenotazione4.setDataPrenotazione(Calendar.getInstance().getTime()); // Data di oggi
-//        prenotazione4.setEffettuata(false);
-//        prenotazione4.setVisita(visita4); // Associa la prenotazione alla visita
-//        prenotazione4 = prenotazioneRepository.save(prenotazione4);
-//        prenotazioniTest.add(prenotazione4);
-//
-//        // Act
-//        // Durata della visita richiesta
-//        double durataVisita = 90.0; // 90 minuti
-//
-//        // Chiama il metodo da testare
-//        Optional<SlotDisponibile> slotDisponibile =
-//                pianificazioneComponent.trovaPrimoSlotDisponibile( durataVisita, getAllVisiteByData() );
-//
-//
-//
-//        // Assert
-//        // Verifica che lo slot sia presente e sia corretto
-//        assertTrue( slotDisponibile.isPresent(), "Nessuno slot disponibile trovato");
-//        assertEquals( Time.valueOf("07:00:00"), slotDisponibile.get().getOrario(), "L'orario dello slot non è corretto");
-//        assertEquals( dataTest, slotDisponibile.get().getData(), "La data dello slot non è corretta");
-//        assertNotNull( slotDisponibile.get().getMedico(), "Nessun medico assegnato allo slot");
-//
-//        System.out.println("");
-//        System.out.println( "Medico da assegnare:\tData:\tOrario:\n"
-//                + slotDisponibile.get().getMedico().getAnagrafica().getCognome() +"\t"
-//                + slotDisponibile.get().getData() +"\t"
-//                + slotDisponibile.get().getOrario()
-//        );
-//    }
-
-
 
     @Test
     public void testTrovaPrimoSlotDisponibile_WithDurataPrestazioneQuindiciMinuti() {
 
+        DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
+
         List<Visita> listaVisiteTest = visitaService.getAllVisiteStartingFromNow();
 
-        List<Medico> listaDiTuttiMediciDelSistema = medicoService.getAllMedici();
+
 
         // Mi invento alcune prestazione con durata lunghissima
         // così facendo riesco a "spostarmi" di più tra un giorno lavorativo e il successivo
-        List<Prestazione> listaPrestazioniTest = PianificazioneComponentDataTest.getListaPrestazioniTest();
+//        List<Prestazione> listaPrestazioniTest = PianificazioneManagerTest.getListaPrestazioniTest();
+        List<Prestazione> listaPrestazioniTest = datiPrestazioniTest.getDatiTest();
 
-        Prestazione prestazioneBreve = listaPrestazioniTest.get( 4); // 15 min
+        Prestazione prestazioneBreve = listaPrestazioniTest.get( 4 ); // 15 min
 
 
         // TODO: Mi domando: Quando schedulo una visita avente prestazione con durata n ?
@@ -277,6 +284,9 @@ public class PianificazioneComponentTest {
         Optional<SlotDisponibile> slotDisponibile =
                 pianificazioneComponent.trovaPrimoSlotDisponibile (
                         prestazioneBreve.getDurataMedia(),
+                        new Date(),
+                        LocalTime.now(),
+                        getAllDatiMediciTests(),
                         getAllVisiteByData()
                 );
 
@@ -300,13 +310,15 @@ public class PianificazioneComponentTest {
     @Test
     public void testTrovaPrimoSlotDisponibile_WithDurataPrestazioneDueOre() {
 
+        DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
+
         List<Visita> listaVisiteTest = visitaService.getAllVisiteStartingFromNow();
 
-        List<Medico> listaDiTuttiMediciDelSistema = medicoService.getAllMedici();
 
         // Mi invento alcune prestazione con durata lunghissima
         // così facendo riesco a "spostarmi" di più tra un giorno lavorativo e il successivo
-        List<Prestazione> listaPrestazioniTest = PianificazioneComponentDataTest.getListaPrestazioniTest();
+//        List<Prestazione> listaPrestazioniTest = PianificazioneManagerTest.getListaPrestazioniTest();
+        List<Prestazione> listaPrestazioniTest = datiPrestazioniTest.getDatiTest();
 
 
         Prestazione prestazione2Ore = listaPrestazioniTest.get( 5); // 2 ore
@@ -319,6 +331,9 @@ public class PianificazioneComponentTest {
         Optional<SlotDisponibile> slotDisponibile =
                 pianificazioneComponent.trovaPrimoSlotDisponibile (
                         prestazione2Ore.getDurataMedia(),
+                        new Date(),
+                        LocalTime.now(),
+                        getAllDatiMediciTests(),
                         getAllVisiteByData()
                 );
 
@@ -340,13 +355,13 @@ public class PianificazioneComponentTest {
     @Test
     public void testTrovaPrimoSlotDisponibile_WithDurataPrestazioneQuattroOre() {
 
+        DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
         List<Visita> listaVisiteTest = visitaService.getAllVisiteStartingFromNow();
-
-        List<Medico> listaDiTuttiMediciDelSistema = medicoService.getAllMedici();
 
         // Mi invento alcune prestazione con durata lunghissima
         // così facendo riesco a "spostarmi" di più tra un giorno lavorativo e il successivo
-        List<Prestazione> listaPrestazioniTest = PianificazioneComponentDataTest.getListaPrestazioniTest();
+//        List<Prestazione> listaPrestazioniTest = PianificazioneManagerTest.getListaPrestazioniTest();
+        List<Prestazione> listaPrestazioniTest = datiPrestazioniTest.getDatiTest();
 
 
         Prestazione prestazioneLunga = listaPrestazioniTest.get( 1 ); // 4 ore
@@ -359,6 +374,9 @@ public class PianificazioneComponentTest {
         Optional<SlotDisponibile> slotDisponibile =
                 pianificazioneComponent.trovaPrimoSlotDisponibile (
                         prestazioneLunga.getDurataMedia(),
+                        new Date(),
+                        LocalTime.now(),
+                        getAllDatiMediciTests(),
                         getAllVisiteByData()
                 );
 
@@ -377,7 +395,7 @@ public class PianificazioneComponentTest {
 
     }
 
-
+ */
 
 
 }

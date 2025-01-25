@@ -67,6 +67,4 @@ public interface VisitaService {
 
     Visita salvaVisita( Visita visita );
 
-
-    VisitaRepository getVisitaRepository();
 }

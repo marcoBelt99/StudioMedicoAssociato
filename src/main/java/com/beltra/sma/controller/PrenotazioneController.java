@@ -2,6 +2,7 @@ package com.beltra.sma.controller;
 
 import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.model.Prestazione;
+import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.service.PrestazioneService;
 import com.beltra.sma.utils.SlotDisponibile;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -25,13 +28,16 @@ public class PrenotazioneController {
     private final PrestazioneService prestazioneService;
     private final HttpSession httpSession; /** Faccio il code Injection anche della sessione!! */
     private final PianificazioneComponent pianificazioneComponent;
+    private final MedicoService medicoService;
 
     PrenotazioneController(PrestazioneService prestazioneService,
                            HttpSession httpSession,
-                           PianificazioneComponent pianificazioneComponent) {
+                           PianificazioneComponent pianificazioneComponent,
+                           MedicoService medicoService) {
         this.prestazioneService = prestazioneService;
         this.httpSession = httpSession;
         this.pianificazioneComponent = pianificazioneComponent;
+        this.medicoService = medicoService;
     }
 
 
@@ -59,7 +65,11 @@ public class PrenotazioneController {
         // dalla data attuale (ci pensa poi il metodo a verificare che il giorno non sia un sabato o una domenica).
 
         Optional<SlotDisponibile> slotDisponibile =
-                pianificazioneComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(), pianificazioneComponent.getAllVisiteByData() );
+                pianificazioneComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(),
+                        new Date(), // data di oggi
+                        LocalTime.now(), // orario attuale
+                        medicoService.getAllMedici(),
+                        pianificazioneComponent.getAllVisiteByData() );
 
         slotDisponibile.ifPresent(slot -> {
             model.addAttribute("primaDataDisponibile", slot.getData() );

@@ -1,4 +1,4 @@
-package com.beltra.sma.components;
+package com.beltra.sma.utils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +14,6 @@ import java.sql.Time;
 public class FineVisita {
     Long idVisita;
     Time oraFine;
-
-    public FineVisita() {
-    }
 
     public FineVisita(Long idVisita, Time oraFine) {
         this.idVisita = idVisita;

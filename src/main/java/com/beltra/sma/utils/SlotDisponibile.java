@@ -2,44 +2,31 @@ package com.beltra.sma.utils;
 
 
 import com.beltra.sma.model.Medico;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Time;
 import java.util.Date;
 
+@Getter
+@Setter
 public class SlotDisponibile {
     private Date data;
     private Time orario;
     private Medico medico;
 
+
+    public SlotDisponibile() {
+    }
+
+    public SlotDisponibile(Date data, Time orario) {
+        this.data = data;
+        this.orario = orario;
+    }
+
     public SlotDisponibile(Date data, Time orario, Medico medico) {
         this.data = data;
         this.orario = orario;
-        this.medico = medico;
-    }
-
-    // Getters e Setters
-
-    public Date getData() {
-        return data;
-    }
-
-    public void setData(Date data) {
-        this.data = data;
-    }
-
-    public Time getOrario() {
-        return orario;
-    }
-
-    public void setOrario(Time orario) {
-        this.orario = orario;
-    }
-
-    public Medico getMedico() {
-        return medico;
-    }
-
-    public void setMedico(Medico medico) {
         this.medico = medico;
     }
 
