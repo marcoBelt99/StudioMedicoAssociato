@@ -65,9 +65,10 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         while (true) {
 
             // Finchè il giorno non è ammissibile incrementi il calendario
-            while (!calcolatore.isGiornoAmmissibile( dataAttuale ))
+            while (!calcolatore.isGiornoAmmissibile( dataAttuale )) {
                 calendar.add(Calendar.DATE, 1);
-
+                dataAttuale = calendar.getTime();
+            }
             // Se sono arrivato qui, il giorno è ammissibile
 
 /// ####################################################################################################################################

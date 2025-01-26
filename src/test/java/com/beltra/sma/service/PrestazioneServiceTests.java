@@ -23,6 +23,7 @@ public class PrestazioneServiceTests {
 
     @Test
     public void getAllVisiteOfPrestazioneOfPaziente() {
+
         // Non ho voglia di farmi un metodo nel service che fa uso del PrestazioneRepository
         // quindi faccio il mocking
         PrestazioneService prestazioneRepositoryMock = mock( PrestazioneService.class );
