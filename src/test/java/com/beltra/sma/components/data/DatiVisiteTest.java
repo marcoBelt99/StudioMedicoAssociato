@@ -7,6 +7,7 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.VisitaService;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,8 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.List;
+
 
 @Component
 public class DatiVisiteTest implements DatiTest<Visita> {
@@ -109,6 +110,58 @@ public class DatiVisiteTest implements DatiTest<Visita> {
     }
 
 
+    public List<Visita> getListaDiDueVisite() {
+
+        for(int i=0;i < getListaMediciTest().size()-1;i++) { // faccio solo 2 giri nel for
+
+            Visita visita = new Visita();
+
+            visita.setIdVisita( (long) (i+1) );
+            visita.setAnagrafica( getListaAnagraficheTest().get( i ) );
+            visita.setDataVisita( dataAttualeDiTest );
+            visita.setOra( Time.valueOf( LocalTime.of(7,0).plusMinutes( pm.getPausa5Minuti() ) ));
+            visita.setPrestazione( getListaPrestazioniTest().get( i ) ); // ad ogni iterazione prendi una determinata durata che ho scelto io prima
+            visita.setNumAmbulatorio( i+1 );
+
+            // Aggiungo la visita sia alla listaVisite sia alla mappa visiteMap
+            pm.aggiungiVisita( visita );
+
+        }
+
+
+        return pm.getListaVisite();
+    }
+
+
+    public List<Visita> getListaDiUnaVisita() {
+
+        for(int i=0;i < getListaMediciTest().size()-2;i++) { // faccio solo 1 giro nel for
+
+            Visita visita = new Visita();
+
+            visita.setIdVisita( (long) (i+1) );
+            visita.setAnagrafica( getListaAnagraficheTest().get( i ) );
+            visita.setDataVisita( dataAttualeDiTest );
+            visita.setOra( Time.valueOf( LocalTime.of(7,0).plusMinutes( pm.getPausa5Minuti() ) ));
+            visita.setPrestazione( getListaPrestazioniTest().get( i ) ); // ad ogni iterazione prendi una determinata durata che ho scelto io prima
+            visita.setNumAmbulatorio( i+1 );
+
+            // Aggiungo la visita sia alla listaVisite sia alla mappa visiteMap
+            pm.aggiungiVisita( visita );
+
+        }
+
+
+        return pm.getListaVisite();
+    }
+
+
+//    @Test
+//    public void testGetListaDiDueVisite() {
+//        List<Visita> listaDiDueVisite = getListaDiDueVisite();
+//        assertNotNull(listaDiDueVisite);
+//        assertEquals(2, listaDiDueVisite.size());
+//    }
 
     public List<Visita> getListaVisiteTest_ForPianificazioneAfterOraAperturaPomeriggio() {
 

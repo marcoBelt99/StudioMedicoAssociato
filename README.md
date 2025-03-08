@@ -96,6 +96,7 @@ l’intera parola nel suo insieme (“*SMART*”) vuole indicare il fatto che ta
 - Java 17
 - Spring Boot 3
 - Spring Data JPA
+- PostgreSQL
 - Thymeleaf
 - HTML 5, CSS 3, Ecmascript, Ajax
 - Bootstrap Italia

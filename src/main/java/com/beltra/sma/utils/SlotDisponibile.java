@@ -19,6 +19,11 @@ public class SlotDisponibile {
     public SlotDisponibile() {
     }
 
+    public SlotDisponibile(Date data, Medico medico) {
+        this.data = data;
+        this.medico = medico;
+    }
+
     public SlotDisponibile(Date data, Time orario) {
         this.data = data;
         this.orario = orario;

@@ -50,6 +50,8 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
         return (gregorianCalendar.get(Calendar.DAY_OF_WEEK) != GregorianCalendar.SATURDAY) && (gregorianCalendar.get(Calendar.DAY_OF_WEEK) != GregorianCalendar.SUNDAY) ;
     }
 
+
+
     /** Verifica che data1 abbia lo stesso giorno di data2 */
     public BiPredicate<Date, Date> isStessoGiorno = (data1, data2) -> {
         Calendar calendar1 = Calendar.getInstance();
@@ -84,19 +86,22 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     public Risultato getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione) {
 
-        // Basta che uno solo dei due orari ( da o quello da controllare o quello maggiorato) sforino i limiti consentiti
+        // Basta che uno solo dei due orari ( o quello da controllare o quello maggiorato) sforino i limiti consentiti
         // e risultato sarà negativo
 
         LocalTime orarioMaggioratoDaDurata = aggiungiDurataAndPausa( orarioDaControllare, durataPrestazione );
 
-        if ( (orarioDaControllare.isBefore(orarioAperturaMattina) ) ||
-             (orarioMaggioratoDaDurata.isBefore(orarioAperturaMattina)) )
+        if ( ( (orarioDaControllare.isBefore(orarioAperturaMattina) ) ||
+               (orarioMaggioratoDaDurata.isBefore(orarioAperturaMattina)) ) &&
+             !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
             return Risultato.NO_BECAUSE_BEFORE_APERTURA_MATTINA;
-        else if( ( orarioDaControllare.isAfter(orarioChiusuraMattina) && orarioDaControllare.isBefore(orarioAperturaPomeriggio) ) ||
-                 ( orarioMaggioratoDaDurata.isAfter(orarioChiusuraMattina) && orarioMaggioratoDaDurata.isBefore(orarioAperturaPomeriggio) ) )
+        else if( ( (orarioDaControllare.isAfter(orarioChiusuraMattina) && orarioDaControllare.isBefore(orarioAperturaPomeriggio) ) ||
+                   (orarioMaggioratoDaDurata.isAfter(orarioChiusuraMattina) && orarioMaggioratoDaDurata.isBefore(orarioAperturaPomeriggio)) ) &&
+                  !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
             return Risultato.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO;
-        else if( ( orarioDaControllare.isAfter(orarioChiusuraPomeriggio)) ||
-                 ( orarioMaggioratoDaDurata.isAfter(orarioChiusuraPomeriggio)) )
+        else if( ( (orarioDaControllare.isAfter(orarioChiusuraPomeriggio)) ||
+                 (orarioMaggioratoDaDurata.isAfter(orarioChiusuraPomeriggio)) ) &&
+                  !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
             return Risultato.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO;
         else
             return Risultato.AMMISSIBILE;
@@ -110,4 +115,29 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     }
 
 
+    public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia)
+    {
+
+        return
+            !isOrarioAmmissibile(ora, durataMedia) &&
+            (ora.isBefore(LocalTime.MAX) &&
+             aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MAX));
+    }
+
+
+    public boolean isOrarioInMattina(LocalTime ora, Double durata) {
+        return isOrarioAmmissibile(ora, durata) &&
+                ora.isBefore(orarioChiusuraMattina);
+    }
+
+    // Potrei anche non implementare il metodo isOrarioInPomeriggio(), ma ricavarlo dalla negazione
+    // del metodo isOrarioInMattina(), questo perchè in isOrarioInMattina() contiene già il controllo di ammissibilità
+    // e se orario e' ammissibile ma isOrarioInMattina() è falso, significa che siamo nel pomeriggio.
+    public boolean isOrarioInPomeriggio(LocalTime ora, Double durata) {
+        return isOrarioAmmissibile( ora, durata) && !isOrarioInMattina(ora, durata);
+    }
+
+    public boolean isOrarioBetweenMidnightAndAperturaMattina(LocalTime ora) {
+        return ora.isAfter(LocalTime.MIDNIGHT) && ora.isBefore(orarioAperturaMattina);
+    }
 }

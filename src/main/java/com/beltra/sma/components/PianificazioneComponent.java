@@ -1,14 +1,12 @@
 package com.beltra.sma.components;
 
 import com.beltra.sma.model.Medico;
-import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
-import java.sql.Time;
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,12 +29,13 @@ public interface PianificazioneComponent {
 
 
 
+
     /**
-     * Logica per trovare lo slot disponibile: considera gli orari di apertura e chiusura dello SMA e calcola gli intervalli
+     * Logica per trovare, ricorsivamente, lo slot disponibile: considera gli orari di apertura e chiusura dello SMA e calcola gli intervalli
      * disponibili tra le visite esistenti.<br>
-     *  Va richiamato sia nel Controller della Prenotazione, per poter stamapare a video e in HTML nello stepper lo SlotDisponibile,
-     *  Sia in fase di Creazione Visita (e prenotazione).
-     * @param durata durata media della prestazione a cui la visita che si creando fa riferimento.
+     * Va richiamato sia nel Controller della Prenotazione, per poter stamapare a video e in HTML nello stepper lo SlotDisponibile,
+     * Sia in fase di Creazione Visita (e prenotazione).
+     * @param durata durata media della prestazione a cui fa riferimento la visita che si sta creando .
      * @param dataAttuale data di partenza da cui iniziare a cercare lo slot.
      * @param oraAttuale ora attuale di riferimento (dalla quale iniziare la ricerca).
      * @param listaMedici elenco di tutti i medici del sistema su cui ricercare il prossimo medico disponibile.
@@ -49,8 +48,13 @@ public interface PianificazioneComponent {
                                                         List<Medico> listaMedici,
                                                         List<Visita> visiteGiornaliere);
 
+    List<Visita> getAllVisiteByData(Date dataCorrente);
 
 
-    List<Visita> getAllVisiteByData();
+
+
+    Optional<SlotDisponibile> trovaSlotGiornoSuccessivo(Calendar calendar,
+                                                        Double durataMedia,
+                                                        List<Medico> listaMedici);
 
 }

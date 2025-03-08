@@ -37,10 +37,8 @@ public class PianificazioneManagerTest {
     //    private PianificazioneManagerPerTesting pianificazioneManager;
     private PianificazioneManager pianificazioneManager;
 
-    public List<Prestazione> getListaPrestazioniTest() {return datiPrestazioniTest.getDatiTest();}
     public List<Anagrafica>  getListaAnagraficheTest() {return  datiAnagraficheTest.getDatiTest();}
     public List<Medico>      getListaMediciTest()      {return datiMediciTest.getDatiTest();}
-    public List<Visita>      getListaVisiteTest()      {return  datiVisiteTest.getDatiTest();}
 
     public List<Visita>     getListaVisiteTest_ForPianificazioneAfterOraAperturaPomeriggio() {return datiVisiteTest.getListaVisiteTest_ForPianificazioneAfterOraAperturaPomeriggio();}
 

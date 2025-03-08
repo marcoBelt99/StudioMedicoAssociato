@@ -1,15 +1,15 @@
 package com.beltra.sma.components;
 
+
 import com.beltra.sma.functional.TriPredicate;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
-import com.beltra.sma.service.MedicoService;
+
 import com.beltra.sma.utils.FineVisita;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;
@@ -45,8 +45,9 @@ public class PianificazioneManager {
     @Getter
     private long pausa5Minuti = 5;
 
-    @Autowired
-    private MedicoService medicoService;
+    //@Autowired
+    //private MedicoService medicoService;
+
 
     public PianificazioneManager() {
         listaVisite = new ArrayList<>();
@@ -118,6 +119,13 @@ public class PianificazioneManager {
         /** Cerco la visita che contiene il medico che si libera per primo */
         Visita Vx = searchVisitaConOraFineMinima();
 
+        /** /// Controllare che Vx non sia null
+        Time oraInizio = null;
+        if(Vx==null)
+            oraInizio = Time.valueOf( LocalTime.now() );
+
+         */
+
 
         // TODO: calcolo orario corretto di inizio nuova visita
         // Vi.setOra(  ) deve rispettare gli orari di apertura / chiusura dello SMA
@@ -156,16 +164,48 @@ public class PianificazioneManager {
 
 
 
-    public Medico getPrimoMedicoDisponibile(List<Visita> listaVisiteGiornaliere) {
+    public Medico getPrimoMedicoDisponibile(List<Visita> listaVisiteGiornaliere, List<Medico> listaMedici) {
+
+        if(listaVisiteGiornaliere.isEmpty())
+            return listaMedici.get(0);
+
+        Long idMedicoDaAssegnare;
+
         // ESSENZIALE: Setto il pianificazioneManager con l'insieme di visite da cui basarsi per ricercare il medico
         setListaVisite( listaVisiteGiornaliere );
         // ESSENZIALE: Aggiorno la mediciMap del pianificazioneManager
         aggiornaMediciMap();
 
-        // CERCO IL MEDICO DA ASSEGNARE USANDO LE STRUTTURE DATI DEL PIANIFICAZIONE MANAGER
-        Long idMedicoDaAssegnare = getMediciMap().keySet().iterator().next(); // scelgo il primo medico (come risaputo, sono sicuro che sia il primo medico della mappa)
 
-        return medicoService.getMedicoByIdAnagrafica(idMedicoDaAssegnare);
+        /// Se in listaMedici ho un medico libero in lista, perchè ho che listaVisiteGiornaliere = [v1, v2],
+        /// Mentre listaMedici = [m1, m2, m3], allora m1 ed m2 sono occupati, ma m3 no!!
+        List<Long> listaIdMediciLiberi = listaMedici
+                .stream()
+                .map(Medico::getIdAnagrafica) // estraggo e costruisco la lista dei soli id
+                .filter(idAnagrafica -> !mediciMap.containsKey(idAnagrafica) )// mantengo solo quelli non presenti nella mappa
+                .toList();
+
+
+        /// CERCO IL MEDICO DA ASSEGNARE
+        ///     Se ho un qualche medico libero allora assegno quello,
+        ///     altrimenti scelgo quello che si libera per primo  USANDO LE STRUTTURE DATI DEL PIANIFICAZIONE MANAGER
+        if(!listaIdMediciLiberi.isEmpty()) {
+            idMedicoDaAssegnare = listaIdMediciLiberi.get(0);
+
+            /// AGGIUNGO IN MAPPA IL MEDICO CHE PRIMA ERA LIBERO?
+            mediciMap.put(idMedicoDaAssegnare,
+                    new FineVisita(0L,
+                            ordinaListaVisite( listaVisiteGiornaliere )
+                            .get(listaVisiteGiornaliere.size()-1)
+                            .calcolaOraFine())
+            );
+        } else
+            idMedicoDaAssegnare =  getMediciMap().keySet().iterator().next(); // scelgo il primo medico (come risaputo, sono sicuro che sia il primo medico della mappa)
+
+
+        return listaMedici.stream().filter(medico -> medico.getIdAnagrafica().equals(idMedicoDaAssegnare)).findFirst().get(); // Ora uso la lista
+
+        //medicoService.getMedicoByIdAnagrafica(idMedicoDaAssegnare); // Prima usavo il service
     }
 
     /** Tra le visite attualmente memorizzate nella tabella "visite", seleziona quella avente orario di fine visita minore.

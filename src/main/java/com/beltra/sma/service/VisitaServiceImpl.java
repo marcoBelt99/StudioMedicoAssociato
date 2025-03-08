@@ -5,17 +5,13 @@ import com.beltra.sma.components.PianificazioneComponent;
 
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.*;
-import com.beltra.sma.repository.MedicoRepository;
 import com.beltra.sma.repository.VisitaRepository;
 import com.beltra.sma.utils.SlotDisponibile;
-import org.apache.tools.ant.taskdefs.Local;
 import org.springframework.stereotype.Service;
 
 
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /** In questa classe si fa parecchio uso della classe "operazionale" Service: {@link PianificazioneComponent} */

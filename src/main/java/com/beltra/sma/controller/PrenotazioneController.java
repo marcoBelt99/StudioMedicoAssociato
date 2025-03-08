@@ -65,11 +65,12 @@ public class PrenotazioneController {
         // dalla data attuale (ci pensa poi il metodo a verificare che il giorno non sia un sabato o una domenica).
 
         Optional<SlotDisponibile> slotDisponibile =
+                //pianificazioneComponent.trovaPrimoSlotDisponibileITERATIVO( prestazione.getDurataMedia(),
                 pianificazioneComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(),
                         new Date(), // data di oggi
                         LocalTime.now(), // orario attuale
                         medicoService.getAllMedici(),
-                        pianificazioneComponent.getAllVisiteByData() );
+                        pianificazioneComponent.getAllVisiteByData(new Date() ) ); // gli passo la data di oggi
 
         slotDisponibile.ifPresent(slot -> {
             model.addAttribute("primaDataDisponibile", slot.getData() );
