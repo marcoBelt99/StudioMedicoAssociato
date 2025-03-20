@@ -30,7 +30,7 @@ public class PazienteControllerTests {
 
     @Test
     @WithMockUser(username = "marcobeltra", roles = {"PAZIENTE"}) // TODO: solo l'utente di ruolo "PAZIENTE" può chiamare questo endpoint
-    void getVisitePrenotateAndNotEffettuate() throws Exception {
+    void testGetVisitePrenotateAndNotEffettuate() throws Exception {
 
         String username = "marcobeltra";
 
@@ -54,7 +54,7 @@ public class PazienteControllerTests {
 
     @Test
     @WithMockUser(username = "marcobeltra", roles = {"PAZIENTE"}) // TODO: solo l'utente di ruolo "PAZIENTE" può chiamare questo endpoint
-    void getVisitePrenotateAndEffettuate() throws Exception {
+    void testGetVisitePrenotateAndEffettuate() throws Exception {
 
         String username = "marcobeltra";
 

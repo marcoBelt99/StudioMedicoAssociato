@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-/** Classe in cui sono presenti tutti i dati di test (variabili) utili per questo package */
+/** Ospita vari dati di test (variabili) utili per questo package */
 public interface DatiTest<T> {
 
     List<T> getDatiTest();

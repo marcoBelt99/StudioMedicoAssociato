@@ -1,7 +1,14 @@
-package com.beltra.sma.components;
+package com.beltra.sma.components.calcolatoreammissibilitacomponent;
 
+import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
+import com.beltra.sma.components.PianificazioneComponent;
+import com.beltra.sma.components.Risultato;
 import com.beltra.sma.model.Prestazione;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -9,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,7 +83,7 @@ public class CalcolatoreAmmissibilitaCompontentTest {
         Prestazione prestazioneTest = createPrestazioneTest();
 
         assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia() ) );
-        assertEquals( Risultato.AMMISSIBILE,
+        Assertions.assertEquals( Risultato.AMMISSIBILE,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
@@ -222,4 +230,103 @@ public class CalcolatoreAmmissibilitaCompontentTest {
 
         assertEquals(true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare));
     }
+
+/// #############################################################################################
+/// #############################################################################################
+/// #############################################################################################
+// TODO: da questi test, emerge :
+//       - orario 00:00 (compresa) è considerato in pomeriggio
+//       - orario 00:01 è in mattina
+//       - orario dalle 12:00 (comprese) è considerato pomeriggio
+
+    private static Stream<Arguments>provideDatiForIsOrarioInMattina() {
+        return Stream.of(
+    Arguments.of(LocalTime.of(23, 1), false), // 23:01
+            Arguments.of(LocalTime.MAX, false), // 23:59:59.99999999
+            Arguments.of(LocalTime.MIDNIGHT, false), // 00:00
+            Arguments.of(PianificazioneComponent.orarioChiusuraMattina, false), // 12:00
+            Arguments.of(LocalTime.of(0, 1), true), // 00:01
+            Arguments.of(LocalTime.of(8, 35), true), // 08:35
+            Arguments.of(LocalTime.of(11, 59), true) // 11:59
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDatiForIsOrarioInMattina")
+    public void testIsOrarioInMattina( LocalTime orarioInput, boolean expected) {
+        assertEquals(calcolatoreAmmissibilitaComponent.isOrarioInMattina(orarioInput), expected);
+    }
+
+
+    private static Stream<Arguments> provideDatiForIsOrarioInPomeriggio() {
+        return Stream.of(
+        Arguments.of(LocalTime.of(23, 1), true),
+                Arguments.of(LocalTime.MAX, true), // 23:59:59.999999999
+                Arguments.of(LocalTime.MIDNIGHT, true), // 00:00
+                Arguments.of(LocalTime.of(0,1), false), // 00:01 (da qui compreso inizia la mattina)
+                Arguments.of(LocalTime.of(11,59), false), // siamo ancora in mattina
+                Arguments.of(PianificazioneComponent.orarioChiusuraMattina, true), // 12:00 (da qui compreso inizia il pomeriggio)
+                Arguments.of(LocalTime.of(12, 1), true), // 12:01
+                Arguments.of(PianificazioneComponent.orarioAperturaPomeriggio, true), // 14:00
+                Arguments.of(PianificazioneComponent.orarioChiusuraPomeriggio, true) // 21:00
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDatiForIsOrarioInPomeriggio")
+    public void testIsOrarioInPomeriggio(LocalTime orarioInput, boolean expected) {
+        assertEquals(!calcolatoreAmmissibilitaComponent.isOrarioInMattina(orarioInput), expected);
+    }
+
+    @Test
+    void testIsDurataMediaContenuta_ShouldReturnTrue(){
+
+        LocalTime orarioFineTest = LocalTime.of(11, 35);
+        LocalTime orarioChiusuraTest = LocalTime.of(12,0);
+        Double durataTest = 19.0;
+        boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
+
+        assertTrue(risultato);
+
+    }
+
+    @Test
+    void testIsDurataMediaContenuta_WithCondizioneDiConfine_ShouldReturnTrue(){
+
+        LocalTime orarioFineTest = LocalTime.of(11, 35);
+        LocalTime orarioChiusuraTest = LocalTime.of(12,0);
+        Double durataTest = 20.0;
+        boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
+
+        assertTrue(risultato);
+    }
+
+
+    @Test
+    void testIsDurataMediaContenuta_ShouldReturnFalse(){
+
+        LocalTime orarioFineTest = LocalTime.of(11, 35);
+        LocalTime orarioChiusuraTest = LocalTime.of(12,0);
+        Double durataTest = 21.0;
+        boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
+
+        assertFalse(risultato);
+
+    }
+
+
+    @Test
+    void testIsDurataMediaContenuta_ShouldReturnYes(){
+
+        LocalTime orarioFineTest = LocalTime.of(9, 55);
+        LocalTime orarioChiusuraTest = LocalTime.of(12,0);
+        Double durataTest = 120.0;
+        boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
+
+        assertTrue(risultato);
+
+    }
+
+
+
 }

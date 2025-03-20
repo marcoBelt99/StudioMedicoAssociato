@@ -1,7 +1,11 @@
 package com.beltra.sma.components;
 
+import com.beltra.sma.functional.TriPredicate;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
+import java.sql.Time;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -114,30 +118,65 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
         return ora.plusMinutes(durataMedia.intValue() + PianificazioneComponent.pausaFromvisite);
     }
 
-
+    @Override
     public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia)
     {
-
         return
             !isOrarioAmmissibile(ora, durataMedia) &&
             (ora.isBefore(LocalTime.MAX) &&
              aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MAX));
     }
 
-
-    public boolean isOrarioInMattina(LocalTime ora, Double durata) {
+    @Override
+    public boolean isOrarioAmmissibileInMattina(LocalTime ora, Double durata) {
         return isOrarioAmmissibile(ora, durata) &&
                 ora.isBefore(orarioChiusuraMattina);
     }
 
+
     // Potrei anche non implementare il metodo isOrarioInPomeriggio(), ma ricavarlo dalla negazione
     // del metodo isOrarioInMattina(), questo perchè in isOrarioInMattina() contiene già il controllo di ammissibilità
     // e se orario e' ammissibile ma isOrarioInMattina() è falso, significa che siamo nel pomeriggio.
-    public boolean isOrarioInPomeriggio(LocalTime ora, Double durata) {
-        return isOrarioAmmissibile( ora, durata) && !isOrarioInMattina(ora, durata);
+    public boolean isOrarioAmmissibileInPomeriggio(LocalTime ora, Double durata) {
+        return isOrarioAmmissibile( ora, durata) && !isOrarioAmmissibileInMattina(ora, durata);
     }
+
+
+    @Override
+    public boolean isOrarioInMattina(LocalTime ora) {
+        return  ora.isAfter(LocalTime.MIDNIGHT) &&
+                ora.isBefore(orarioChiusuraMattina);
+    }
+
+    @Override
+    public boolean isOrarioInPomeriggio(LocalTime ora) {
+        return  ora.isAfter(orarioChiusuraMattina) &&
+                ora.isBefore(LocalTime.MAX);
+
+    }
+
+
 
     public boolean isOrarioBetweenMidnightAndAperturaMattina(LocalTime ora) {
         return ora.isAfter(LocalTime.MIDNIGHT) && ora.isBefore(orarioAperturaMattina);
     }
+
+
+
+    /** TriPredicate e' una interfaccia funzionale che ho creato io per poter usare più parametri nel mio predicato.
+     * <br>
+     * Controlla se durataMedia è contenuta in oraFine ed orarioChiusura. */
+    private TriPredicate<Double, LocalTime, LocalTime> lambdaIsDurataMediaContenuta = (durataMedia, oraFine, orarioChiusura)  -> {
+
+        // Calcolo la differenza in minuti tra oraFine (maggiorata di 5 minuti) e ora chiusura
+        // nota che non e' specificato se chiusura mattino o pomeriggio, lo scelgo in fase di chiamata
+        long differenzaInMinuti = Duration.between( oraFine.plusMinutes(PianificazioneComponent.pausaFromvisite), orarioChiusura ).toMinutes();
+        return (differenzaInMinuti - durataMedia) >= 0;
+    };
+
+    @Override
+    public boolean isDurataMediaContenuta(Double durataMedia, LocalTime oraFine, LocalTime orarioChiusura) {
+        return lambdaIsDurataMediaContenuta.test(durataMedia, oraFine, orarioChiusura);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.beltra.sma.components;
+package com.beltra.sma.datastructures;
 
 
 import com.beltra.sma.functional.TriPredicate;
@@ -6,29 +6,28 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 
+import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.utils.FineVisita;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.*;
 
 
-/** Struttura dati che offre operazioni di inserimento visite automatico per Unit Tests.
- *  <br> */
+
 
 @Getter
 @Component
-public class PianificazioneManager {
+public class PianificatoreImpl implements Pianificatore {
 
-
+//    @Autowired
+//    private MedicoService medicoService;
 
     /** Lista di visite aggiunte man mano (simula la tabella a database) */
-    @Setter
     private List<Visita> listaVisite;
 
 
@@ -42,22 +41,13 @@ public class PianificazioneManager {
      *  */
     private final Map<Long, FineVisita> mediciMap;
 
-    @Getter
-    private long pausa5Minuti = 5;
 
-    //@Autowired
-    //private MedicoService medicoService;
-
-
-    public PianificazioneManager() {
+    public PianificatoreImpl() {
         listaVisite = new ArrayList<>();
         mediciMap = new LinkedHashMap<>();
     }
 
-
-    /**  Metodo per aggiungere una visita sia in listaVisite sia nella mappa <br>
-     *   L'ordine di inserimento e' importante: e' obbligatorio inserire prima in lista
-     *   e successivamente in Mappa.*/
+    @Override
     public void aggiungiVisita(Visita visita) {
         listaVisite.add( visita );
         aggiornaMediciMap();
@@ -65,18 +55,7 @@ public class PianificazioneManager {
 
 
 
-    private List<Visita> ordinaListaVisite(List<Visita> listaVisite) {
-
-        // TODO: Lista di appoggio per ordinamento delle visite in base a oraFine
-        List<Visita> listaVisiteOrdinate = new ArrayList<>( listaVisite );
-        listaVisiteOrdinate.sort( Comparator.comparing( Visita::calcolaOraFine ) ); // ordino sulla base del risultato della funzione calcolaOraFine della classe Visita
-
-       return listaVisiteOrdinate;
-
-    }
-
-
-    /** Aggiorno la mappa mediciMap sulla base delle visite appena inserite */
+    @Override
     public void aggiornaMediciMap() {
 
         List<Visita> listaVisiteOrdinate = ordinaListaVisite(listaVisite);
@@ -105,34 +84,17 @@ public class PianificazioneManager {
     }
 
 
-
-    /** @param Vi Nuova Visita da inserire.
-     * @param data Data Visita (a partire da oggi).
-     *  <br>
-     *   #########################<br>
-     *   ** METODO ORIGINALE **<br>
-     *   #########################<br>
-     *  Costruisce Vi sulla base di Vx: <br>
-     *  Vx = visita su cui ci si sta basando (e' quella con orario di fine minimo) */
+    @Override
     public Visita pianificaNuovaVisita(Visita Vi, Date data, Prestazione prestazione) {
 
         /** Cerco la visita che contiene il medico che si libera per primo */
         Visita Vx = searchVisitaConOraFineMinima();
-
-        /** /// Controllare che Vx non sia null
-        Time oraInizio = null;
-        if(Vx==null)
-            oraInizio = Time.valueOf( LocalTime.now() );
-
-         */
-
 
         // TODO: calcolo orario corretto di inizio nuova visita
         // Vi.setOra(  ) deve rispettare gli orari di apertura / chiusura dello SMA
         // Se e' mattina e voglio creare una nuova visita che sfora l'orario di apertura SMA,
         // allora se non ce ne sono gia' pianificate devo pianificarla per il pomeriggio.
         Time oraInizio = Time.valueOf( Vx.calcolaOraFine().toLocalTime().plusMinutes( pausa5Minuti )); // Ci aggiungo la pausa di 5 minuti
-
 
 
         Vi.setIdVisita( (long) ( getListaVisite().size()+1 ) );
@@ -150,20 +112,7 @@ public class PianificazioneManager {
     }
 
 
-
-    /** TriPredicate e' una interfaccia funzionale che ho creato io per poter usare più parametri nel mio predicato.
-     * <br>
-     * Controlla se durataMedia è contenuta in oraFine ed orarioChiusura. */
-    public TriPredicate<Double, LocalTime, LocalTime> isDurataMediaContenuta = (durataMedia, oraFine, orarioChiusura)  -> {
-
-        // Calcolo la differenza in minuti tra oraFine (maggiorata di 5 minuti) e ora chiusura
-        // nota che non e' specificato se chiusura mattino o pomeriggio, lo scelgo in fase di chiamata
-        long differenzaInMinuti = Duration.between( oraFine.plusMinutes(5), orarioChiusura ).toMinutes();
-        return differenzaInMinuti > durataMedia;
-    };
-
-
-
+    @Override
     public Medico getPrimoMedicoDisponibile(List<Visita> listaVisiteGiornaliere, List<Medico> listaMedici) {
 
         if(listaVisiteGiornaliere.isEmpty())
@@ -171,9 +120,10 @@ public class PianificazioneManager {
 
         Long idMedicoDaAssegnare;
 
-        // ESSENZIALE: Setto il pianificazioneManager con l'insieme di visite da cui basarsi per ricercare il medico
+        /// ESSENZIALE:
+        ///     Setto il pianificatore con l'insieme di visite da cui basarsi per ricercare il medico
+        ///     Aggiorno la mediciMap del pianificatore
         setListaVisite( listaVisiteGiornaliere );
-        // ESSENZIALE: Aggiorno la mediciMap del pianificazioneManager
         aggiornaMediciMap();
 
 
@@ -208,10 +158,48 @@ public class PianificazioneManager {
         //medicoService.getMedicoByIdAnagrafica(idMedicoDaAssegnare); // Prima usavo il service
     }
 
+
+    @Override
+    public Map<Long, FineVisita> getMediciMap() {
+        return Collections.unmodifiableMap( mediciMap ); // Restituisce la mappa immutabile
+    }
+
+
+    @Override
+    public List<Visita> getListaVisite() {
+        return  this.listaVisite ; // Restituisce la lista
+    }
+
+    @Override
+    public void setListaVisite(List<Visita> listaVisite) {
+        this.listaVisite = listaVisite;
+    }
+
+    @Override
+    public void stampaListaAndMappa() {
+        System.out.println("VISITE DI TEST:\n");
+        getListaVisite().forEach(System.out::println);
+
+        System.out.println("\nMAPPA ORDINATA: ");
+        getMediciMap().forEach( (id, oraFine) -> System.out.println("\nID MEDICO: " + id + ", Ora Fine: " + oraFine) );
+    }
+
+    @Override
+    public void clear() {
+        listaVisite.clear();
+        mediciMap.clear();
+    }
+
+    @Override
+    public long getPausa5Minuti() {
+        return pausa5Minuti;
+    }
+
+
+
     /** Tra le visite attualmente memorizzate nella tabella "visite", seleziona quella avente orario di fine visita minore.
      * <br> Tale visita trovata servira' poi per calcolare l'orario di inizio della visita che si vuole inserire. */
     private Visita searchVisitaConOraFineMinima() {
-
 
         /**
          * Prendo il primo elemento di mediciMap:
@@ -227,30 +215,15 @@ public class PianificazioneManager {
                 .orElseThrow();
     }
 
+    /** Ordina listaVisite sulla base del risultato della funzione calcolaOraFine della classe Visita */
+    private List<Visita> ordinaListaVisite(List<Visita> listaVisite) {
 
+        /// Lista di appoggio per ordinamento delle visite in base a oraFine
+        List<Visita> listaVisiteOrdinate = new ArrayList<>( listaVisite );
+        listaVisiteOrdinate.sort( Comparator.comparing( Visita::calcolaOraFine ) );
 
-    public Map<Long, FineVisita> getMediciMap() {
-        return Collections.unmodifiableMap( mediciMap ); // Restituisce la mappa immutabile
-    }
+        return listaVisiteOrdinate;
 
-
-    // Metodo per ottenere la lista di tutte le visite
-    public List<Visita> getListaVisite() {
-        return Collections.unmodifiableList( listaVisite ); // Restituisce la lista immutabile
-    }
-
-
-    public void stampaListaAndMappa() {
-        System.out.println("VISITE DI TEST:\n");
-        getListaVisite().forEach(v -> {
-            System.out.println(v);
-            System.out.println();
-        });
-
-
-        // Stampa la mappa ordinata
-        System.out.println("\nMAPPA ORDINATA: ");
-        getMediciMap().forEach( (id, oraFine) -> System.out.println("\nID MEDICO: " + id + ", Ora Fine: " + oraFine) );
     }
 
 

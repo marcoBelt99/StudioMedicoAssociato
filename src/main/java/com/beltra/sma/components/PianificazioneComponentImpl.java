@@ -1,17 +1,19 @@
 package com.beltra.sma.components;
 
 
+import com.beltra.sma.datastructures.Pianificatore;
+import com.beltra.sma.datastructures.PianificatoreImpl;
 import com.beltra.sma.functional.TriFunction;
 
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
 
-import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.FineVisita;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
+import com.beltra.sma.utils.Utils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +29,8 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
     // Code Injection
     private final VisitaService visitaService;
-    private final MedicoService medicoService;
-    private final PianificazioneManager pianificazioneManager;
+
+    private final Pianificatore pianificatore;
     private final CalcolatoreAmmissibilitaComponentImpl calcolatore;
 
 
@@ -36,12 +38,10 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
      * Nota bene: @Lazy per evitare dipendenze circolari tra i Bean: PianificazioneComponentImpl e VisitaServiceImpl
      */
     public PianificazioneComponentImpl(@Lazy VisitaService visitaService,
-                                       MedicoService medicoService,
-                                       PianificazioneManager pianificazioneManager,
+                                       PianificatoreImpl pianificatore,
                                        CalcolatoreAmmissibilitaComponentImpl calcolatore) {
         this.visitaService = visitaService;
-        this.medicoService = medicoService;
-        this.pianificazioneManager = pianificazioneManager;
+        this.pianificatore = pianificatore;
         this.calcolatore = calcolatore;
     }
 
@@ -65,6 +65,9 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                 // partendo però non più da oraAttuale, bensì da orarioApertura
                 return trovaSlotGiornoSuccessivo(calendar, durata, listaMedici);
 
+            // TODO: Pensare di mettere qui (e fattorizzare) la ricerca del primo medico disponibile (tramite il metodo)
+
+
             // ALTRIMENTI, SE ARRIVO QUI LA DATA E' AMMISSIBILE,
             // mi resta solo da verificare AMMISSIBILITÀ ORARIO!
             else
@@ -80,12 +83,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
 
-    private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereVuota(
-                                        Calendar calendar,
-                                        Date dataDiRicerca,
-                                        LocalTime oraAttuale,
-                                        Double durataMedia,
-                                        List<Medico> listaMedici) {
+    private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereVuota(Calendar calendar, Date dataDiRicerca, LocalTime oraAttuale, Double durataMedia, List<Medico> listaMedici) {
 
         /// CASO PARTICOLARE DELLA MEZZANOTTE
         // Se (oraAttuale+durataMedia) supera la mezzanotte rientro nel giorno successivo, e di conseguenza
@@ -98,7 +96,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
         // Il medico da assegnare allo slot deve sempre essere il PRIMO MEDICO, dato che listaVisiteGiornaliera e' vuota
-        Medico medico = pianificazioneManager.getPrimoMedicoDisponibile(new ArrayList<Visita>(), listaMedici);
+        Medico medico = pianificatore.getPrimoMedicoDisponibile(new ArrayList<Visita>(), listaMedici);
         SlotDisponibile slotDisponibile = new SlotDisponibile(dataDiRicerca,medico);
 
 
@@ -111,6 +109,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         Date dataSuccessiva = calendar.getTime(); // Ottieni la nuova data
 
         return switch ( calcolatore.getRisultatoCalcoloAmmissibilitaOrario( oraAttuale, durataMedia ) ) {
+
             case AMMISSIBILE ->
                     Optional.of( setOrarioSlot(slotDisponibile, oraAttuale.plusMinutes(pausaFromvisite)) ); // allora assegno con oraAttuale+5min, e ritorno lo slot
 
@@ -145,75 +144,78 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 *  ///    Altrimenti, provo con 2) ripetendo il controllo fatto per 1)
 *  ///    Altrimenti, passo al giorno successivo
  * */
-    private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereNonVuota(
-            Calendar calendar,
-            Date dataDiRicerca,
-            LocalTime oraAttuale,
-            Double durataMedia,
-            List<Visita> listaVisiteGiornaliere,
-            List<Medico> listaMedici) {
+    private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereNonVuota(Calendar calendar, Date dataDiRicerca, LocalTime oraAttuale, Double durataMedia, List<Visita> listaVisiteGiornaliere, List<Medico> listaMedici) {
 
 
-        //  Devo recuperare tramite mediciMap il primo medico disponibile sulla base della lista di visite
+        // Devo recuperare tramite la mediciMap del pianificatore il primo medico disponibile sulla base della lista di visite
         Medico medicoLiberato = new Medico();
-        medicoLiberato = pianificazioneManager.getPrimoMedicoDisponibile(listaVisiteGiornaliere, listaMedici);
+        medicoLiberato = pianificatore.getPrimoMedicoDisponibile(listaVisiteGiornaliere, listaMedici);
 
-        // RECUPERO DALLA MAPPA ANCHE LA VISITA AVENTE ORARIO DI FINE MINORE
-        FineVisita fineVisita = pianificazioneManager.getMediciMap().get(medicoLiberato.getIdAnagrafica());
+        // RECUPERO DALLA MAPPA DEL pianificatore ANCHE LA VISITA AVENTE ORARIO DI FINE MINORE
+        FineVisita fineVisita = pianificatore.getMediciMap().get(medicoLiberato.getIdAnagrafica());
 
+        SlotDisponibile slotDisponibile = new SlotDisponibile(dataDiRicerca, medicoLiberato);
+
+
+        // Analizzo oraAttuale
         return switch ( calcolatore.getRisultatoCalcoloAmmissibilitaOrario(oraAttuale, durataMedia) ) {
             case AMMISSIBILE ->
 
                 // Fichè listaVisiteGiornaliere.size() <= listaMedici.size()
-                    (listaVisiteGiornaliere.size() <= listaMedici.size()) ?
-                        // allora come ora dello slot ho oraAttuale+5min (perchè ho subito almeno un medico libero)
-                        (Optional.of( setOrarioSlot( new SlotDisponibile(dataDiRicerca, medicoLiberato), oraAttuale.plusMinutes(pausaFromvisite) ) )) :
+                (listaVisiteGiornaliere.size() <= listaMedici.size()) ?
+                    // allora come ora dello slot ho oraAttuale+5min (perchè ho subito almeno un medico libero)
+                    (Optional.of( setOrarioSlot( slotDisponibile, oraAttuale.plusMinutes(pausaFromvisite) ) )) :
 
-                // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio
-                // a seconda di oraAttuale
-                    // isOrarioInMattina mi controlla 2 cose:
-                    // 1) che oraAttuale e poi anche oraAttuale+durataMedia+5min sia ammissibile
-                    // 2) che oraAttuale+durata+5min isBefore oraChiusuraMattina
-                        ( calcolatore.isOrarioInMattina(oraAttuale, durataMedia) ? // Se isOrarioInMattina
-                            // allora mi pianifichi la visita in coda a quelle del mattino: Quando?
-                            // ==> serve sapere l'ultima visita del mattino per poter calcolare l'ora di pianificazione di questa nuova visita
-                            accodaVisitaAlMattino(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
-                                                  calendar, oraAttuale, durataMedia, listaMedici) :
+            // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio
+            // a seconda di oraAttuale
+                // isOrarioInMattina mi controlla 2 cose:
+                // 1) che oraAttuale e poi anche oraAttuale+durataMedia+5min sia ammissibile
+                // 2) che oraAttuale+durata+5min isBefore oraChiusuraMattina
+                    ( calcolatore.isOrarioAmmissibileInMattina(oraAttuale, durataMedia) ? // Se isOrarioInMattina
+                        // allora mi pianifichi la visita in coda a quelle del mattino: Quando?
+                        // ==> serve sapere l'ultima visita del mattino per poter calcolare l'ora di pianificazione di questa nuova visita
+                        accodaVisitaAlMattino(listaVisiteGiornaliere, fineVisita, slotDisponibile,
+                                              calendar, oraAttuale, durataMedia, listaMedici) :
 
-                            // Altrimenti sicuramente sarà un orario ammissibile al pomeriggio
-                            accodaVisitaAlPomeriggio(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
-                                                     calendar, oraAttuale, durataMedia, listaMedici)
-                        );
+                        // Altrimenti sicuramente sarà un orario ammissibile al pomeriggio
+                        accodaVisitaAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile,
+                                                 calendar, oraAttuale, durataMedia, listaMedici)
+                    );
+            // TODO:
+            //   2) Per i soli casi di non ammissibilità,
+            //      uso fineVisita per verificare se essa stessa è in Mattina oppure in Pomeriggio
+            //      ==> già fatto per case NO_BECAUSE_BEFORE_APERTURA_MATTINA
             case NO_BECAUSE_BEFORE_APERTURA_MATTINA ->
 
                 // Fichè listaVisiteGiornaliere.size() <= listaMedici.size()
                 ( listaVisiteGiornaliere.size() <= listaMedici.size() ) ?
                         // allora come ora dello slot ho oraAperturaMattina+5min (perchè ho subito almeno un medico libero)
-                        (Optional.of( setOrarioSlot( new SlotDisponibile(dataDiRicerca, medicoLiberato), orarioAperturaMattina.plusMinutes(pausaFromvisite) ) )) :
+                        (Optional.of( setOrarioSlot( slotDisponibile, orarioAperturaMattina.plusMinutes(pausaFromvisite) ) )) :
 
-                        // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio
-                        // a seconda di oraAttuale
+                        // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio a seconda di fineVisita.getOraFine()
                         // isOrarioInMattina mi controlla 2 cose:
                         // 1) che oraAttuale e poi anche oraAttuale+durataMedia+5min siano ammissibile
                         // 2) che oraAttuale+durata+5min isBefore oraChiusuraMattina
-                        ( calcolatore.isOrarioBetweenMidnightAndAperturaMattina(oraAttuale) ?
+                        ( calcolatore.isOrarioAmmissibileInMattina( fineVisita.getOraFine().toLocalTime().plusMinutes(pausaFromvisite), durataMedia )  ?
 
-                                cercaSlotAlMattino(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
+                                cercaSlotAlMattino(listaVisiteGiornaliere, fineVisita, slotDisponibile,
                                         calendar, orarioAperturaMattina, durataMedia, listaMedici) :
                                 // allora mi pianifichi la visita in coda a quelle del mattino: Quando?
                                 // ==> serve sapere l'ultima visita del mattino per poter calcolare l'ora di pianificazione di questa nuova visita
                                 // accodaVisitaAlMattino(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
                                 //        calendar, orarioAperturaMattina, durataMedia, listaMedici) :
 
-                                cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
+                                cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile,
                                         calendar, orarioAperturaPomeriggio, durataMedia, listaMedici)
                                 // Altrimenti sicuramente sarà un orario ammissibile al pomeriggio
                                 // accodaVisitaAlPomeriggio(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
                                 //         calendar, oraAttuale, durataMedia, listaMedici)
                         );
 
-            case NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO -> Optional.empty(); // TODO
-            case NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO -> Optional.empty(); // TODO
+            case NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ->
+                    cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile, calendar, oraAttuale, durataMedia, listaMedici);
+            case NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO ->
+                    trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici);
         };
 
     }
@@ -221,34 +223,51 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
     /** Caso orario non ammissibile because before apertura mattino */
     private Optional<SlotDisponibile> cercaSlotAlMattino(List<Visita> listaVisiteGiornaliere, FineVisita fineVisita,
-                                                         Date dataDiRicerca, Medico medicoLiberato, Calendar calendar,
+                                                         SlotDisponibile slotDisponibile, Calendar calendar,
                                                          LocalTime orario, Double durataMedia, List<Medico> listaMedici) {
 
         // Se (ora di fine ultima visita) + 5min è ammissibile
         return calcolatore.isOrarioAmmissibile( fineVisita.getOraFine().toLocalTime(), durataMedia ) ?
-                // allora assegna come orario mattutino (ora fine ultima visita) + 5min
-            Optional.of( setOrarioSlot(new SlotDisponibile(dataDiRicerca, medicoLiberato),
+            // allora assegna come orario mattutino (ora fine ultima visita) + 5min
+            Optional.of( setOrarioSlot(slotDisponibile,
                                        fineVisita.getOraFine().toLocalTime().plusMinutes( pausaFromvisite)) )  :
                 // altrimenti cerca al pomeriggio
-                cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato, calendar, orario, durataMedia, listaMedici);
+                cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile, calendar, orario, durataMedia, listaMedici);
     }
 
     /** Caso (orario non ammissibile because before apertura mattino) or (between chiusura mattina and apertura pomeriggio)*/
     private Optional<SlotDisponibile> cercaSlotAlPomeriggio(List<Visita> listaVisiteGiornaliere, FineVisita fineVisita,
-                                                            Date dataDiRicerca, Medico medicoLiberato, Calendar calendar,
+                                                            SlotDisponibile slotDisponibile, Calendar calendar,
                                                             LocalTime oraAttuale, Double durataMedia, List<Medico> listaMedici){
-        // C'è spazio in fondo al pomeriggio?
-        return calcolatore.isOrarioAmmissibile(fineVisita.getOraFine().toLocalTime(), durataMedia) ?
-                // se sì, produci lo slot e come orario metti in fondo al pomeriggio
-                Optional.of( setOrarioSlot(new SlotDisponibile(dataDiRicerca, medicoLiberato), calcolatore.aggiungiDurataAndPausa(fineVisita.getOraFine().toLocalTime(), durataMedia)) ) :
-              // altrimenti, cerca nel giorno successivo
+
+        // Trovo le visite del mattino
+        List<Visita> visiteGiornaliereDelPomeriggio = splittaListaVisiteGiornaliere.apply( orarioAperturaPomeriggio, orarioChiusuraPomeriggio, listaVisiteGiornaliere);
+
+
+
+        // Se listaVisitePomeriggio vuota
+        //      allora pianifica ad inizio pomeriggio
+        // altrimenti (listaVisitePomeriggio non vuota):
+        //      se fineVisitaPomeriggio is ammissibile
+        //          allora accoda al pomeriggio
+        //      altrimenti
+        //          passa al giorno successivo
+        if(visiteGiornaliereDelPomeriggio.isEmpty())
+            return calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, slotDisponibile.getData(), oraAttuale, durataMedia, listaMedici  );
+
+        LocalTime oraFineUltimaVisitaPomeriggio = visiteGiornaliereDelPomeriggio.get(visiteGiornaliereDelPomeriggio.size()-1).calcolaOraFine().toLocalTime();
+
+        if(calcolatore.isOrarioAmmissibile( oraFineUltimaVisitaPomeriggio, durataMedia ) )
+                return Optional.of( setOrarioSlot( slotDisponibile , oraFineUltimaVisitaPomeriggio ));
+        else
+            return
                 trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici);
     }
 
 
     /** Solo nel caso AMMISSIBILE */
     private Optional<SlotDisponibile> accodaVisitaAlMattino(List<Visita> listaVisiteGiornaliere, FineVisita fineVisita,
-                                                            Date dataDiRicerca, Medico medicoLiberato, Calendar calendar,
+                                                            SlotDisponibile slotDisponibile, Calendar calendar,
                                                             LocalTime oraAttuale, Double durataMedia, List<Medico> listaMedici) {
 
         // Trovo le visite del mattino
@@ -256,25 +275,30 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
         // Però se è vuota posso pianificare all'ora attuale (con lista visite vuota)
         if(visiteGiornaliereDelMattino.isEmpty())
-            return calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, dataDiRicerca, oraAttuale, durataMedia, listaMedici);
+            return calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, slotDisponibile.getData(), oraAttuale, durataMedia, listaMedici);
 
 
-        // Arrivato qui, la listaVisiteMattino non è vuota, ed ho già controllato che ci sia spazio al mattino
-        // quindi procedo a calcolare l'orario in funzione dell'ultima visita presente in lista
+        // Arrivato qui, la listaVisiteMattino non è vuota: contiene almeno una visita
+
+
         Visita ultimaVisitaMattino = visiteGiornaliereDelMattino.get( visiteGiornaliereDelMattino.size() - 1);
 
-        // Trovo gli orari di fine visita ultima visita della sottolista
-        LocalTime oraInizioPrevistaProssimaVisitaMattinoFromUltimaVisitaMattino =
-                ultimaVisitaMattino != null ? ultimaVisitaMattino.calcolaOraFine().toLocalTime().plusMinutes(pausaFromvisite) : null;
+        // TODO: Controllo che ci sia spazio in fondo al mattino
 
-        // TODO
-        return Optional.of( setOrarioSlot( new SlotDisponibile( dataDiRicerca, medicoLiberato),
-                oraInizioPrevistaProssimaVisitaMattinoFromUltimaVisitaMattino) );
+        return (calcolatore.isDurataMediaContenuta(durataMedia,
+                ultimaVisitaMattino.calcolaOraFine().toLocalTime(), orarioChiusuraMattina )
+                ) ?
+            // Se arrivo qui significa che in fondo al mattino c'è spazio sufficiente, procedo a calcolare l'orario in funzione dell'ultima visita presente in listaVisiteMattino
+            // Trovo gli orari di fine visita ultima visita della sottolista
+            Optional.of( setOrarioSlot( slotDisponibile, ultimaVisitaMattino.calcolaOraFine().toLocalTime().plusMinutes(pausaFromvisite)) ) :
+            // Altrimenti, non c'è spazio in fondo al mattino, considera il pomeriggio
+            accodaVisitaAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile, calendar, oraAttuale, durataMedia, listaMedici);
+
     }
 
     /** Solo nel caso AMMISSIBILE */
     private Optional<SlotDisponibile> accodaVisitaAlPomeriggio(List<Visita> listaVisiteGiornaliere, FineVisita fineVisita,
-                                                               Date dataDiRicerca, Medico medicoLiberato, Calendar calendar,
+                                                               SlotDisponibile slotDisponibile, Calendar calendar,
                                                                LocalTime oraAttuale, Double durataMedia, List<Medico> listaMedici) {
 
 
@@ -284,7 +308,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
         // Però se è vuota posso pianificare all'ora attuale (con lista visite vuota)
         if(visiteGiornaliereDelPomeriggio.isEmpty())
-            return calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, dataDiRicerca, oraAttuale, durataMedia, listaMedici);
+            return calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, slotDisponibile.getData(), orarioAperturaPomeriggio, durataMedia, listaMedici);
 
         Visita ultimaVisitaPomeriggio = visiteGiornaliereDelPomeriggio.get(visiteGiornaliereDelPomeriggio.size() - 1);
 
@@ -294,8 +318,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
         // TODO
-        return Optional.of( setOrarioSlot( new SlotDisponibile( dataDiRicerca, medicoLiberato),
-                oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio) );
+        return Optional.of( setOrarioSlot( slotDisponibile, oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio) );
     }
 
 
@@ -319,50 +342,12 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
 
-
-
-
-    /// ######################################################################################
-    /// ######################################################################################
-    /// ######################################################################################
-    /// ######################################################################################
-    /// QUA SOTTO HO LA VECCHIA PARTE (ITERATIVO)
-    /// ######################################################################################
-    /// ######################################################################################
-    /// ######################################################################################
-    /// ######################################################################################
-
-
-
-
     /** Metodo ausiliario a scopo di DRY */
+    /** TODO: Usare synchronized ??? */
     private SlotDisponibile setOrarioSlot(SlotDisponibile slot, LocalTime orario) {
         slot.setOrario(Time.valueOf(orario));
         return slot;
     }
-
-
-    /**  */
-    private Optional<SlotDisponibile> getSlotDisponibile(List<Visita> sottolistaVisiteGiornaliere,
-                                                         List<Medico> listaMedici,
-                                                         Date dataDiRicerca,
-                                                         LocalTime oraInizioPrevistaProssimaVisitaFromUltimaVisitaInSottolista) {
-
-        // ESSENZIALE: Setto il pianificazioneManager con l'insieme di visite da cui basarsi per ricercare il medico
-        pianificazioneManager.setListaVisite( sottolistaVisiteGiornaliere ); // seleziono solo quelle del mattino / pomeriggio
-
-        pianificazioneManager.aggiornaMediciMap(); // ESSENZIALE: Aggiorno la mediciMap del pianificazioneManager
-
-        // CERCO IL MEDICO DA ASSEGNARE USANDO LE STRUTTURE DATI DEL PIANIFICAZIONE MANAGER
-        Medico medicoLiberato = pianificazioneManager.getPrimoMedicoDisponibile( sottolistaVisiteGiornaliere, listaMedici  );
-
-        return Optional.of(new SlotDisponibile(dataDiRicerca, Time.valueOf(oraInizioPrevistaProssimaVisitaFromUltimaVisitaInSottolista), medicoLiberato));
-    }
-
-
-
-
-
 
 
 
