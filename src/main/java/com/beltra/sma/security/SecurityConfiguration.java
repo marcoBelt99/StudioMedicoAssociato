@@ -83,7 +83,8 @@ public class SecurityConfiguration {
                     new AntPathRequestMatcher("/images/**"),
                     new AntPathRequestMatcher("/benvenuto"), // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
                     new AntPathRequestMatcher("/prestazioni/all"), // endpoint della pagina di benvenuto
-                    new AntPathRequestMatcher("/chiSiamo")
+                    new AntPathRequestMatcher("/chiSiamo"),
+                    new AntPathRequestMatcher("/api/message") // test per verificare se Vue JS funziona, toglilo pure questo in futuro
             ).permitAll(); // per poter accedere in modalità anonima
 
         //TODO: endpoint che sono accessibili <b>solo da utente medico (che sarebbe l'amministratore)</b>
