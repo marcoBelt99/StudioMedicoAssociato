@@ -22,7 +22,7 @@ import java.util.*;
 
 /** Classe di utilita' che genera liste di dati utili per la classe di test {@link PianificazioneComponentTest}  */
 @SpringBootTest
-public class PianificatoreTest {
+public class PianificatoreTests {
 
 
     private final DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();

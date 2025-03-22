@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class PianificazioneComponentDisponibilitaMediciTest extends PianificazioneComponentTest {
+public class PianificazioneComponentDisponibilitaMediciTests extends PianificazioneComponentTest {
 
     /// #################################################################################
     /// #########################   3) DISPONIBILITÀ MEDICI   #########################

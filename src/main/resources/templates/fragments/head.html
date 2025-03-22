@@ -52,13 +52,15 @@
         <!-- TODO: importo i Fonts tramite CSS -->
         <link th:href="@{/css/carica-fonts-bootstrap-italia-css.css}" rel="stylesheet"  />
 
+        <!-- TODO: Importo un mio tema colori personalizzato per il calendario (tale tema l'ho auto-generato dalla pagina di daypilot)-->
+        <link th:href="@{/css/dayplot-smatheme.css}" rel="stylesheet" />
 
-        <!-- TODO: Importo il file Vue.js -->
-        <script th:src="@{/js/vue.global.js}"></script>
 
-        <script>
-            console.log("Vue:", Vue);
-        </script>
+        <!-- TODO: Importo il file JS di DayPilot per usare il calendario  -->
+        <script th:src="@{/js/daypilot-all.min.js}"></script>
+
+
+
 
         <title th:text="${title}"></title>
 

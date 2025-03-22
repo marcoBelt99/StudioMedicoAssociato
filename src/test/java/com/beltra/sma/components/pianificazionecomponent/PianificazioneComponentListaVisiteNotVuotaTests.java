@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class PianificazioneComponentListaVisiteNotVuotaTest extends PianificazioneComponentTest {
+public class PianificazioneComponentListaVisiteNotVuotaTests extends PianificazioneComponentTest {
 
 
 /// ###########################   2) CASO INDUTTIVO: LISTA VISITE NON VUOTA   ############################

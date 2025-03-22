@@ -75,6 +75,32 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
 
 
 
+//    /** Per l'utente medico: elenco delle visite prenotate dai pazientie non effettuate */
+//    @Query(
+//            """
+//                SELECT new com.beltra.sma.dto.VisitaPrenotataDTO(
+//                pren.dataPrenotazione,
+//                vis.dataVisita, vis.ora, vis.numAmbulatorio,
+//                utente.anagrafica.nome, utente.anagrafica.cognome,
+//                vis.prestazione.titolo
+//            )
+//                FROM Visita vis, Prenotazione pren, Utente utente
+//                WHERE
+//                vis.idVisita = pren.visita.idVisita
+//                AND pren.effettuata = :effettuata
+//                AND utente.anagrafica.idAnagrafica = pren.anagrafica.idAnagrafica
+//                AND utente.username = :username
+//            """
+//    )
+//    List<VisitaPrenotataDTO> findAllVisitePrenotateByUsernameMedico(
+//            @Param("username") String username,
+//            @Param("effettuata") Boolean effettuata
+//    )
+
+
+
+
+
     /** Elenco di tutte le visite prenotate e non effettuate */
     @Query(
             """

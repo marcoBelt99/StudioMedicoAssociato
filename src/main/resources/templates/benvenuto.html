@@ -24,38 +24,7 @@
         </div>
 
 
-        <div id="app">
-            <h2>{{ message }}</h2>
-            <button @click="fetchMessage">Carica Messaggio dal Backend</button>
-        </div>
 
-
-
-        <!-- TODO: interessante l'uso di th:inline="javascript"    -->
-        <script th:inline="javascript">
-            const { createApp } = Vue;
-
-            const app = createApp({
-                data() {
-                    return {
-                        message: "Messaggio iniziale"
-                    };
-                },
-                methods: {
-                    async fetchMessage() {
-                        try {
-                            const response = await fetch("/api/message");
-                            const data = await response.json();
-                            this.message = data.message;
-                        } catch (error) {
-                            console.error("Errore nel recupero dei dati:", error);
-                        }
-                    }
-                }
-            });
-
-            app.mount("#app");
-        </script>
 
 
         <div th:insert="~{fragments/foot.html :: foot}"></div>

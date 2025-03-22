@@ -21,6 +21,11 @@ public interface VisitaService {
      * La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).  */
     List<VisitaPrenotataDTO> getAllVisite();
 
+    /** @apiNote Riservato ad utente di tipo "MEDICO".
+     * @return Recupera l'elenco di Visite usufruite dai pazienti della settimana corrente.<br>
+     * La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).  */
+    List<VisitaPrenotataDTO> getVisitePrenotateSettimana();
+
     /** @apiNote Riservato ad utente di tipo "PAZIENTE".
      *  @return Recupera l'elenco delle visite prenotate ma non ancora effettuate, dato lo username di uno specifico paziente.<br>
      *  La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).

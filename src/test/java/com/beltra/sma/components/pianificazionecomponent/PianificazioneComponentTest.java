@@ -52,11 +52,8 @@ public class PianificazioneComponentTest {
 
 
 
-
-/// ###################################
 /// ###################################
 /// SEZIONE GENERAZIONE DATI DI TEST
-/// ###################################
 /// ###################################
 
 
@@ -80,11 +77,11 @@ public class PianificazioneComponentTest {
     }
 
 
-/// ###################################################
-/// ###################################################
-/// ###################################################
 
 
+/// ###################################################
+/// METODI DI BASE
+/// ###################################################
 
     /**  Fattorizzo in una singola funzione le fasi di ARRANGE e ACT. <br>
      *   Antepongo "Param" al nome dei parametri formali per distinguerle dalle variabili globali di test.
@@ -133,19 +130,5 @@ public class PianificazioneComponentTest {
                 );
 
     }
-
-
-
-/// TODO: PARAMETRIZZO TUTTI I TESTS CON junit-params
-
-
-
-
-
-
-
-
-
-
 
 }

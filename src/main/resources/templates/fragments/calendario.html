@@ -1,0 +1,17 @@
+<div th:fragment="calendario">
+
+
+    <div id="dp">
+    </div>
+
+    <!-- TODO: interessante l'uso di th:inline="javascript"    -->
+    <script th:inline="javascript">
+        const dp = new DayPilot.Calendar("dp", {
+            viewType: "Week", // se voglio visualizzare il singolo giorno devo usare "Day"
+            theme: "smatheme", // Carico il mio tema colori personalizzato
+            startDate: DayPilot.Date.today() // Il calendario inizia da oggi
+
+        });
+        dp.init();
+    </script>
+</div>

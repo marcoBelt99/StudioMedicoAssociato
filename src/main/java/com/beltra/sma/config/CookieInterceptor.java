@@ -24,4 +24,7 @@ public class CookieInterceptor implements HandlerInterceptor {
         request.setAttribute("userName", username);
         return true;
     }
+
+
+
 }

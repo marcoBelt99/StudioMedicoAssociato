@@ -10,8 +10,12 @@ import com.beltra.sma.utils.SlotDisponibile;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 
 /** In questa classe si fa parecchio uso della classe "operazionale" Service: {@link PianificazioneComponent} */
@@ -60,6 +64,21 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findAllVisitePrenotateOrderByDataVisitaAsc(false);
     }
 
+    @Override
+    public List<VisitaPrenotataDTO> getVisitePrenotateSettimana() {
+        LocalDate oggi = LocalDate.now(); // Inizio da oggi
+        LocalDate fineSettimana = oggi.plusDays(7); // Oggi + 7 giorni
+
+        return getAllVisite()
+                .stream()
+                .filter(vp -> {
+                    LocalDate dataVisita = vp.getDataVisita().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate(); // Conversione a LocalDate
+                    return !dataVisita.isBefore(oggi) && !dataVisita.isAfter(fineSettimana);
+                }) // Filtra le visite tra oggi e 7 giorni da oggi
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<Visita> getAllVisiteOrderByDataVisitaAsc() {
@@ -87,6 +106,7 @@ public class VisitaServiceImpl implements VisitaService {
     public List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data) {
         return visitaRepository.findByAnagraficaAndDataVisita( medico.getAnagrafica(), data );
     }
+
 
 
 

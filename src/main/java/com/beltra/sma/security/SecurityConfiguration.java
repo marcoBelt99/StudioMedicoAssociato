@@ -163,7 +163,8 @@ public class SecurityConfiguration {
         .sessionManagement(
                 httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                        //.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))// Prima avevo questo
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // (22/03/2025) provo questo
 
 
         .csrf(csrf -> csrf

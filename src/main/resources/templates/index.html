@@ -12,14 +12,12 @@
 
 
 
-
         <div class="container">
             <div class="card">
 
                 <h1 th:text="${titolo}"></h1>
 
                 <hr/>
-
 
 
                 <div sec:authorize="hasRole('ROLE_PAZIENTE') or isAnonymous()">
@@ -32,11 +30,11 @@
 
                 <div sec:authorize="hasRole('ROLE_MEDICO')">
 
-
-                <!-- TODO: ...    -->
+                <!-- TODO: Visualizzazione Calendario    -->
+                    <h3 th:text="${sottotitolo}"></h3>
+                    <div th:insert="~{fragments/calendario.html :: calendario}"></div>
 
                 </div>
-
 
             </div>
 

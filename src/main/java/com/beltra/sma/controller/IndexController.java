@@ -1,8 +1,11 @@
 package com.beltra.sma.controller;
 
-import com.beltra.sma.repository.UtenteRepository;
 import com.beltra.sma.service.PrestazioneService;
 import com.beltra.sma.service.UtenteService;
+import com.beltra.sma.service.VisitaService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +15,13 @@ public class IndexController {
 
     private final UtenteService utenteService;
     private final PrestazioneService prestazioneService;
+    private final VisitaService visitaService;
 
-    public IndexController(UtenteService utenteService, PrestazioneService prestazioneService) {
+
+    public IndexController(UtenteService utenteService, PrestazioneService prestazioneService, VisitaService visitaService) {
         this.utenteService = utenteService;
         this.prestazioneService = prestazioneService;
+        this.visitaService = visitaService;
     }
 
 
@@ -50,19 +56,31 @@ public class IndexController {
                     userId)
                 );
 
-        model.addAttribute("sottotitolo", // (per paziente)
-                "Prenota subito una visita tra le seguenti:");
+        // Ottieni l'utente attualmente connesso (autenticato)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        String ruolo = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst().orElseThrow().trim(); // Prendo il primo ruolo trovato (potrebbe succedere che un utente ne abbia piu' di uno)
 
 
- // TODO: Se utente e' paziente mostrami le card con le prestazioni disponibili
-        model.addAttribute("prestazioni",
-                prestazioneService.getAllPrestazioniDisponibili() );
 
+        // Attuo comportamenti diversi in base al ruolo utente attualmente connesso
+        switch (ruolo) {
+            // TODO: Se utente e' paziente mostrami le card con le prestazioni disponibili
+            case "ROLE_PAZIENTE" -> {
+                model.addAttribute("sottotitolo", "Prenota subito una visita tra le seguenti:");
+                model.addAttribute("prestazioni",
+                        prestazioneService.getAllPrestazioniDisponibili() );
 
-        // TODO: Se utente e' medico mostrami il quadro orario
-        // TODO:
-
-
+            }
+            // TODO: Se utente e' medico mostrami il quadro orario
+            case "ROLE_MEDICO" -> {
+                model.addAttribute("sottotitolo", "Elenco settimanale dei tuoi appuntamenti:");
+                model.addAttribute("appuntamenti",
+                        visitaService.getAllVisite() ); // TODO: cambiare questa lista se necessario con la lista delle sole visite comprese da lunedì a venerdì
+            }
+        };
 
         return "index";
     }

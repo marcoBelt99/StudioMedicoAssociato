@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // Serve per evitare di mettere static il metodo di providing dei dati di test che servirà poi al metodo di test vero e proprio
 @SpringBootTest
-public class PianificazioneComponentListaVisiteVuotaTest extends PianificazioneComponentTest {
+public class PianificazioneComponentListaVisiteVuotaTests extends PianificazioneComponentTest {
 
 
 
