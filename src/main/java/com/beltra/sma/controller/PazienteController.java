@@ -49,15 +49,6 @@ public class PazienteController {
     }
 
 
-
-    // E' da vedere se serve questo endpoint....
-    // secondo me no....
-    @GetMapping("/prenota")
-        public String goToPrenotaVisita() {
-            return "pazientePrenotaVisitaOld2";
-        }
-
-
 }
 
 

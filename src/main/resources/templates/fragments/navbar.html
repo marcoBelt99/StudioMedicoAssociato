@@ -48,8 +48,11 @@
         <!-- ######################################################## -->
         <!-- Bottone login/logout: da trasformare in dropdown   -->
         <!-- ######################################################## -->
-                                <!-- TODO: UTENTE NON LOGGATO -->
-                                <div th:if="${userName == null}" >
+                <!-- ######################## -->
+                <!-- TODO: UTENTE NON LOGGATO -->
+                <!-- ######################## -->
+                            <!-- <div th:if="${userName == null or userName == ''}" > &lt;!&ndash; Approccio deprecato!! &ndash;&gt;-->
+                                <div sec:authorize="!isAuthenticated"> <!-- !!! MEGLIO QUESTO, così delego la gestione direttamente a Spring Security !!! -->
                                     <a class="btn btn-primary btn-icon btn-full" th:href="@{/login}" title="Accedi all'area personale" aria-label="Accedi all'area personale">
                                         <span class="rounded-icon">
                                           <svg class="icon icon-primary">
@@ -59,9 +62,11 @@
                                         <span class="d-none d-lg-block">Accedi all'area personale</span>
                                     </a>
                                 </div>
-
-                                <!-- TODO: UTENTE LOGGATO -->
-                                <div th:if="${userName != null}">
+                <!-- ######################## -->
+                <!-- TODO: UTENTE LOGGATO -->
+                <!-- ######################## -->
+                          <!--  <div th:if="${userName != null and userName != ''}"> &lt;!&ndash; Approccio deprecato!! &ndash;&gt; -->
+                                <div sec:authorize="isAuthenticated"> <!-- !!! MEGLIO QUESTO, così delego la gestione direttamente a Spring Security !!! -->
                                     <div class="btn-group">
                                         <a type="button" class="btn btn-primary btn-icon dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="rounded-icon">
@@ -69,7 +74,8 @@
                                                     <use th:href="@{/svg/sprites.svg#it-user}"></use>
                                                 </svg>
                                             </span>
-                                            <span th:text="${userName}"></span>
+                                      <!-- <span th:text="${userName}"></span>--> <!-- !!! vecchio modo per mostrare lo username -->
+                                            <span sec:authentication="principal.username"></span> <!-- !!! meglio questo, così delego la gestione direttamente a Spring Security !!! -->
                                             <svg class="icon-expand icon icon-sm icon-light">
                                                 <use th:href="@{/svg/sprites.svg#it-expand}"></use>
                                             </svg>
@@ -189,9 +195,9 @@
                                     </div>
                                     <div class="menu-wrapper">
 
-                            <!-- ###################### -->
-                            <!-- TODO: PAZIENTE -->
-                            <!-- ###################### -->
+                        <!-- ###################### -->
+                        <!-- TODO: PAZIENTE -->
+                        <!-- ###################### -->
                                         <ul sec:authorize="hasRole('ROLE_PAZIENTE')"
                                             class="navbar-nav">
 
@@ -245,7 +251,6 @@
                                                 </a>
                                             </li>
 
-
                                             <li class="nav-item ">
                                                 <a class="nav-link "
                                                    th:href="@{/chiSiamo}">
@@ -254,13 +259,12 @@
                                                 </a>
                                             </li>
 
-
                                         </ul>
 
 
-                                        <!-- ###################### -->
-                                        <!-- TODO: MEDICO -->
-                                        <!-- ###################### -->
+                        <!-- ###################### -->
+                        <!-- TODO: MEDICO -->
+                        <!-- ###################### -->
                                         <ul sec:authorize="hasRole('ROLE_MEDICO')"
                                             class="navbar-nav">
 

@@ -6,12 +6,66 @@
 
     <!-- TODO: interessante l'uso di th:inline="javascript"    -->
     <script th:inline="javascript">
-        const dp = new DayPilot.Calendar("dp", {
-            viewType: "Week", // se voglio visualizzare il singolo giorno devo usare "Day"
-            theme: "smatheme", // Carico il mio tema colori personalizzato
-            startDate: DayPilot.Date.today() // Il calendario inizia da oggi
+
+        // TODO: Configurazione del calendario
+        const calendario = new DayPilot.Calendar("dp", {
+
+            // Se voglio visualizzare il singolo giorno devo usare "Day". Se voglio vedere i giorni della settimana uso "Week"
+            // viewType: "Week",
+            viewType: "Resources",
+
+
+            // Carico il mio tema colori personalizzato
+            theme: "smatheme",
+
+            // Il calendario inizia da oggi
+            startDate: DayPilot.Date.today(),
+
+            // Alcune colonne di test
+            columns: [
+                { name: "Visita 1", id: "V1"},
+                { name: "Visita 2", id: "V2" },
+                { name: "Visita 6", id: "V3" },
+                { name: "Visita 11", id: "V11" },
+                { name: "Visita 16", id: "V16" },
+                { name: "Visita 17", id: "V17" },
+            ]
 
         });
-        dp.init();
+        calendario.init();
+
+
+
+        // TODO: Sezione dati
+        const app = {
+            init() {
+                const columns = [
+                    { name: "Meeting Room A", id: "A" },
+                    { name: "Meeting Room B", id: "B" },
+                    { name: "Meeting Room C", id: "C" },
+                    { name: "Meeting Room D", id: "D" },
+                    { name: "Meeting Room E", id: "E" },
+                    { name: "Meeting Room F", id: "F" },
+                ];
+                const events = [
+                    {
+                        start: "2026-03-25T12:00:00",
+                        end: "2026-03-25T14:00:00",
+                        id: "1",
+                        text: "Event 1",
+                        resource: "B",
+                    },
+                    {
+                        start: "2026-03-25T15:00:00",
+                        end: "2026-03-25T17:00:00",
+                        id: "2",
+                        text: "Event 2",
+                        resource: "C",
+                    },
+                ];
+                calendar.update({columns, events});
+            },
+        };
+        app.init();
     </script>
 </div>

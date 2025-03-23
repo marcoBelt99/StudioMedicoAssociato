@@ -23,21 +23,20 @@ public class LogoutController {
             HttpServletResponse response) {
 
         /** Ripulisco la sessione (la invalido) */
-        HttpSession session = request.getSession(false);
+        HttpSession session;
         SecurityContextHolder.clearContext();
 
         session = request.getSession(false);
 
-        if(session != null) {
+        if(session != null)
             session.invalidate();
-        }
 
         /** Ciclo su qualsiasi cookie sia presente imponendogli un maxAge a 0  */
         for(Cookie cookie : request.getCookies()) {
             cookie.setMaxAge(0);
         }
 
-        /** Elimino fisicamente il cookie dove ho memorizzato lo username dell'utente */
+        /** Elimino fisicamente il cookie dove ho memorizzato lo username dell'utente: gli metto come valore la "" */
         ResponseCookie springCookie = ResponseCookie.from("user-id", "")
                 .maxAge(0)
                 .build();
@@ -46,8 +45,6 @@ public class LogoutController {
 
         /** Redirect sulla schermata di logout con un parametro  logout=true */
         return "redirect:/login?logout=true";
-
-
 
     }
 }

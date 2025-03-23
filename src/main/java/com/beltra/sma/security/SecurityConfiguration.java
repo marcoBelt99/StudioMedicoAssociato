@@ -81,10 +81,10 @@ public class SecurityConfiguration {
                     new AntPathRequestMatcher("/svg/**"),
                     new AntPathRequestMatcher("/fonts/**"),
                     new AntPathRequestMatcher("/images/**"),
-                    new AntPathRequestMatcher("/benvenuto"), // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
+                    new AntPathRequestMatcher("/benvenuto"), // Pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
                     new AntPathRequestMatcher("/prestazioni/all"), // endpoint della pagina di benvenuto
                     new AntPathRequestMatcher("/chiSiamo"),
-                    new AntPathRequestMatcher("/api/message") // test per verificare se Vue JS funziona, toglilo pure questo in futuro
+                    new AntPathRequestMatcher("/logout") // Test per fixare problema dello username che rimane nella navbar dopo riavvio dell'app
             ).permitAll(); // per poter accedere in modalità anonima
 
         //TODO: endpoint che sono accessibili <b>solo da utente medico (che sarebbe l'amministratore)</b>
@@ -165,7 +165,6 @@ public class SecurityConfiguration {
                         httpSecuritySessionManagementConfigurer
                         //.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))// Prima avevo questo
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // (22/03/2025) provo questo
-
 
         .csrf(csrf -> csrf
                 .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
