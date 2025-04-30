@@ -1,4 +1,4 @@
-package com.beltra.sma.components.data;
+package com.beltra.sma.data;
 
 import com.beltra.sma.model.Anagrafica;
 

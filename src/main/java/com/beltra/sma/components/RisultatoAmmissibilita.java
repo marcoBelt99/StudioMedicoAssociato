@@ -8,7 +8,7 @@ package com.beltra.sma.components;
  *      <li>NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO = orario dopo le 21:00  </li>
  *  </ul>
  * */
-public enum Risultato {
+public enum RisultatoAmmissibilita {
     AMMISSIBILE,
     NO_BECAUSE_BEFORE_APERTURA_MATTINA,
     NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,

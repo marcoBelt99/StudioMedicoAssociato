@@ -1,14 +1,15 @@
 package com.beltra.sma.datastructures;
 
 import com.beltra.sma.components.pianificazionecomponent.PianificazioneComponentTest;
-import com.beltra.sma.components.data.*;
-import com.beltra.sma.components.data.DatiVisiteTest;
+import com.beltra.sma.data.*;
 import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 
 
+import com.beltra.sma.utils.VisitaCSVReader;
+import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /** Classe di utilita' che genera liste di dati utili per la classe di test {@link PianificazioneComponentTest}  */
@@ -115,7 +117,7 @@ public class PianificatoreTests {
         pianificatore.stampaListaAndMappa();
 
         /** TODO: Assert */
-        Assertions.assertEquals( Set.of(3L, 2L, 1L),  pianificatore.getMediciMap().keySet());
+        Assertions.assertEquals( Set.of(3L, 2L, 1L),  pianificatore.getMediciMap().keySet() );
     }
 
 
@@ -174,7 +176,151 @@ public class PianificatoreTests {
         Assertions.assertEquals( Set.of(2L, 1L, 3L),  pianificatore.getMediciMap().keySet());
         Assertions.assertEquals(LocalTime.of(11,55), // mi aspetto che il medico di id 3 si liberi alle 11:55
                 pianificatore.getMediciMap().get(3L).getOraFine().toLocalTime()); // 3L è il medico di id 3
+    }
 
+
+    @DisplayName("Pianificando una qualsiasi visita dopo queste 9, deve essere pianificata al Pomeriggio")
+    @Test
+    @Order(4)
+    void testPianificatore_pianificaNuovaVisita_With9Visite_isPianificatoInInizioPomeriggio() {
+        Visita v4 = new Visita();
+        pianificatore.pianificaNuovaVisita( v4, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v5 = new Visita();
+        pianificatore.pianificaNuovaVisita( v5, dataAttualeDiTest, listaPrestazioni.get(6) ); // 20 min
+
+        Visita v6 = new Visita();
+        pianificatore.pianificaNuovaVisita( v6, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v7 = new Visita();
+        pianificatore.pianificaNuovaVisita(v7, dataAttualeDiTest, listaPrestazioni.get(0) ); // 15 min
+
+        Visita v8 = new Visita();
+        pianificatore.pianificaNuovaVisita(v8, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v9 = new Visita();
+        pianificatore.pianificaNuovaVisita(v9, dataAttualeDiTest, listaPrestazioni.get(1)); // 2 ore
+
+
+        /// ASSERT
+        // Mi aspetto che davanti ci sia il medico che si libera per primo: con queste visite è il medico 3
+        Assertions.assertEquals( Set.of(1L, 3L, 2L),  pianificatore.getMediciMap().keySet());
+        Assertions.assertEquals(LocalTime.of(16,5), // mi aspetto che il medico di id 2 si liberi alle 16:05
+                pianificatore.getMediciMap().get(2L).getOraFine().toLocalTime()); // 2L è il medico di id 2
+    }
+
+
+
+    @DisplayName("Pianificando una qualsiasi visita dopo queste 10, deve essere pianificata al Pomeriggio")
+    @Test
+    @Order(5)
+    void testPianificatore_pianificaNuovaVisita_With10Visite_isPianificatoInInizioPomeriggio() {
+        Visita v4 = new Visita();
+        pianificatore.pianificaNuovaVisita( v4, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v5 = new Visita();
+        pianificatore.pianificaNuovaVisita( v5, dataAttualeDiTest, listaPrestazioni.get(6) ); // 20 min
+
+        Visita v6 = new Visita();
+        pianificatore.pianificaNuovaVisita( v6, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v7 = new Visita();
+        pianificatore.pianificaNuovaVisita(v7, dataAttualeDiTest, listaPrestazioni.get(0) ); // 15 min
+
+        Visita v8 = new Visita();
+        pianificatore.pianificaNuovaVisita(v8, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v9 = new Visita();
+        pianificatore.pianificaNuovaVisita(v9, dataAttualeDiTest, listaPrestazioni.get(1)); // 2 ore
+
+        Visita v10 = new Visita();
+        pianificatore.pianificaNuovaVisita(v10, dataAttualeDiTest, listaPrestazioni.get(2)); // 3 ore
+
+
+
+
+        /// ASSERT
+        // Mi aspetto che davanti ci sia il medico che si libera per primo: con queste visite è il medico 3
+        Assertions.assertEquals( Set.of(3L, 2L, 1L),  pianificatore.getMediciMap().keySet());
+        Assertions.assertEquals(LocalTime.of(17,5), // mi aspetto che il medico di id 2 si liberi alle 17:05
+                pianificatore.getMediciMap().get(1L).getOraFine().toLocalTime()); // 1L è il medico di id 1
+    }
+
+
+    @DisplayName("Pianificando una qualsiasi visita dopo queste 11, deve essere pianificata al Pomeriggio")
+    @Test
+    @Order(6)
+    void testPianificatore_pianificaNuovaVisita_With11Visite_isPianificatoInInizioPomeriggio() {
+        Visita v4 = new Visita();
+        pianificatore.pianificaNuovaVisita( v4, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v5 = new Visita();
+        pianificatore.pianificaNuovaVisita( v5, dataAttualeDiTest, listaPrestazioni.get(6) ); // 20 min
+
+        Visita v6 = new Visita();
+        pianificatore.pianificaNuovaVisita( v6, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v7 = new Visita();
+        pianificatore.pianificaNuovaVisita(v7, dataAttualeDiTest, listaPrestazioni.get(0) ); // 15 min
+
+        Visita v8 = new Visita();
+        pianificatore.pianificaNuovaVisita(v8, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v9 = new Visita();
+        pianificatore.pianificaNuovaVisita(v9, dataAttualeDiTest, listaPrestazioni.get(1)); // 2 ore
+
+        Visita v10 = new Visita();
+        pianificatore.pianificaNuovaVisita(v10, dataAttualeDiTest, listaPrestazioni.get(2)); // 3 ore
+
+        Visita v11 = new Visita();
+        pianificatore.pianificaNuovaVisita(v11, dataAttualeDiTest, listaPrestazioni.get(0)); // 15 min
+
+
+        /// ASSERT
+        // Mi aspetto che davanti ci sia il medico che si libera per primo: con queste visite è il medico 3
+        Assertions.assertEquals( Set.of(3L, 2L, 1L),  pianificatore.getMediciMap().keySet());
+        Assertions.assertEquals(LocalTime.of(14,20), // mi aspetto che il medico di id 3 si liberi alle 14:20
+                pianificatore.getMediciMap().get(3L).getOraFine().toLocalTime()); // 3L è il medico di id 3
+    }
+
+
+    @DisplayName("Pianificando una qualsiasi visita dopo queste 12, deve essere pianificata al Pomeriggio")
+    @Test
+    @Order(7)
+    void testPianificatore_pianificaNuovaVisita_With12Visite_isPianificatoInInizioPomeriggio() {
+        Visita v4 = new Visita();
+        pianificatore.pianificaNuovaVisita( v4, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v5 = new Visita();
+        pianificatore.pianificaNuovaVisita( v5, dataAttualeDiTest, listaPrestazioni.get(6) ); // 20 min
+
+        Visita v6 = new Visita();
+        pianificatore.pianificaNuovaVisita( v6, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v7 = new Visita();
+        pianificatore.pianificaNuovaVisita(v7, dataAttualeDiTest, listaPrestazioni.get(0) ); // 15 min
+
+        Visita v8 = new Visita();
+        pianificatore.pianificaNuovaVisita(v8, dataAttualeDiTest, listaPrestazioni.get(1) ); // 2 ore
+
+        Visita v9 = new Visita();
+        pianificatore.pianificaNuovaVisita(v9, dataAttualeDiTest, listaPrestazioni.get(1)); // 2 ore
+
+        Visita v10 = new Visita();
+        pianificatore.pianificaNuovaVisita(v10, dataAttualeDiTest, listaPrestazioni.get(2)); // 3 ore
+
+        Visita v11 = new Visita();
+        pianificatore.pianificaNuovaVisita(v11, dataAttualeDiTest, listaPrestazioni.get(0)); // 15 min
+
+        Visita v12 = new Visita();
+        pianificatore.pianificaNuovaVisita(v12, dataAttualeDiTest, listaPrestazioni.get(4)); // 4.5 ore
+
+
+        /// ASSERT
+        // Mi aspetto che davanti ci sia il medico che si libera per primo: con queste visite è il medico 3
+        Assertions.assertEquals( Set.of(2L, 1L, 3L),  pianificatore.getMediciMap().keySet());
+        Assertions.assertEquals(LocalTime.of(18,55), // mi aspetto che il medico di id 3 si liberi alle 18:55
+                pianificatore.getMediciMap().get(3L).getOraFine().toLocalTime()); // 3L è il medico di id 3
     }
 
 
@@ -182,4 +328,56 @@ public class PianificatoreTests {
     void teardown() {
         pianificatore.clear();
     }
+
+
+    /*
+    @Ignore
+    @Test
+    @Order(8)
+    void testPianificatore(){
+        // arrange
+
+        List<Visita> listaVisite = VisitaCSVReader.leggiVisiteDaCsv("src/test/resources/visiteMattinaFull.csv", listaMedici, listaPrestazioni);
+        List<Visita> listaVisiteAppoggio = listaVisite;
+
+        listaVisite.forEach(vL1 ->
+                listaVisiteAppoggio.forEach(vL2 ->
+                        pianificatore.pianificaNuovaVisita(vL1, dataAttualeDiTest, vL2.getPrestazione())
+                )
+        );
+
+        // act
+
+//        pianificatore.setListaVisite( listaVisite );
+//        pianificatore.aggiornaMediciMap();
+
+        Visita vTest = new Visita();
+        pianificatore.pianificaNuovaVisita(vTest, dataAttualeDiTest, listaPrestazioni.get(2));
+
+        // Forse devo aggiornare con la nuova visita
+        //listaVisite.add( vTest );
+        pianificatore.setListaVisite( listaVisite );
+        pianificatore.aggiornaMediciMap();
+
+       // System.out.println(pianificatore);
+
+        pianificatore.stampaListaAndMappa();
+
+        Medico medicoAssegnato = listaMedici.stream()
+                .filter(medico ->
+                Objects.equals(medico.getIdAnagrafica(), vTest.getAnagrafica().getIdAnagrafica()))
+                .findFirst()
+                .get();
+
+        // assert
+        assertEquals( 3L, medicoAssegnato.getIdAnagrafica() );
+        // Mi aspetto che davanti ci sia il medico che si libera per primo: con queste visite è il medico 3
+        assertEquals( Set.of(3L, 2L, 1L),  pianificatore.getMediciMap().keySet());
+        assertEquals(LocalTime.of(17,5), // mi aspetto che il medico di id 1 si liberi alle 17:05 (come su carta)
+                pianificatore.getMediciMap().get(1L).getOraFine().toLocalTime()); // 3L è il medico di id 3
+        //assertEquals( pianificatore.get, risultato.get().getMedico().getMatricola() );
+    }
+
+
+     */
 }

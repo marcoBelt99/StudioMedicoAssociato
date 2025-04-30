@@ -29,7 +29,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
     /// listaMedici = (m1, m2, m3) ==> m3 è libero
     /// oraAttualeTest = 06:55 (< oraAperturaMattina)
     @Test
-    public  void testTrovaPrimoSlotDisponibile_WithOneFreeMedico_WithOraAttualeBeforeOraAperturaMattina() {
+    public  void testTrovaSlotDisponibile_WithOneFreeMedico_WithOraAttualeBeforeOraAperturaMattina() {
 
         // ARRANGE
         Double durataMediaPrestazioneTest = 90.0;
@@ -51,7 +51,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
         // ACT
         Optional<SlotDisponibile> risultato =
-                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                pianificazioneComponent.trovaSlotDisponibile(
                         durataMediaPrestazioneTest,
                         dataTest,
                         oraAttualeTest,
@@ -81,7 +81,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
     ///
     /// in questo caso fineVisita vale 07:20 (è l'elemento minimo di mediciMap)
     @Test
-    public  void testTrovaPrimoSlotDisponibile_WithOneFreeMedico_WithOraAttualeInMattina_BeforeOraFineMinima() {
+    public  void testTrovaSlotDisponibile_WithOneFreeMedico_WithOraAttualeInMattina_BeforeOraFineMinima() {
 
         // ARRANGE
         Double durataMediaPrestazioneTest = 90.0;
@@ -103,7 +103,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
         // ACT
         Optional<SlotDisponibile> risultato =
-                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                pianificazioneComponent.trovaSlotDisponibile(
                         durataMediaPrestazioneTest,
                         dataTest,
                         oraAttualeTest,
@@ -128,7 +128,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
     /// listaMedici = (m1, m2, m3) ==> m3 è libero
     /// oraAttualeTest = 07:30 (> oraAperturaMattina)
     @Test
-    public  void testTrovaPrimoSlotDisponibile_WithOneFreeMedico_WithOraAttualeInMattina_AfterOraFineMinima() {
+    public  void testTrovaSlotDisponibile_WithOneFreeMedico_WithOraAttualeInMattina_AfterOraFineMinima() {
 
         // ARRANGE
         Double durataMediaPrestazioneTest = 90.0;
@@ -150,7 +150,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
         // ACT
         Optional<SlotDisponibile> risultato =
-                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                pianificazioneComponent.trovaSlotDisponibile(
                         durataMediaPrestazioneTest,
                         dataTest,
                         oraAttualeTest,
@@ -178,7 +178,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
     ///
     /// mi aspetto che venga assegnato m2 !!
     @Test
-    public void testTrovaPrimoSlotDisponibile_WithTwoFreeMedici() {
+    public void testTrovaSlotDisponibile_WithTwoFreeMedici() {
 
         // ARRANGE
         Double durataMediaPrestazioneTest = 90.0;
@@ -199,7 +199,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
         // ACT
         Optional<SlotDisponibile> risultato =
-                pianificazioneComponent.trovaPrimoSlotDisponibile(
+                pianificazioneComponent.trovaSlotDisponibile(
                         durataMediaPrestazioneTest,
                         dataTest,
                         oraAttualeTest,

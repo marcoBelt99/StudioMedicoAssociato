@@ -1,7 +1,5 @@
 package com.beltra.sma.components;
 
-import com.beltra.sma.functional.TriPredicate;
-
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -47,7 +45,7 @@ public interface CalcolatoreAmmissibilitaComponent {
 
 
     /** Metodo di supporto ad <b>isOrarioAmmissibile</b> per semplificare alcune logiche di calcolo  */
-    Risultato getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione);
+    RisultatoAmmissibilita getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione);
 
 
     boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia);
@@ -72,6 +70,10 @@ public interface CalcolatoreAmmissibilitaComponent {
      *  - prima di mezzanotte <br>
      * Non c'è controllo di ammissibilità*/
     boolean isOrarioInPomeriggio(LocalTime ora);
+
+    /** Controlla che ora sia dopo oraAperturaPomeriggio<br>
+     * e prima di mezzanotte */
+    boolean isOrarioAfterAperturaPomeriggio(LocalTime ora);
 
 
     /** Verifica che durataMedia sia compreso tra (oraFine-orarioChiusura) */

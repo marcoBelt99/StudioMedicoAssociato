@@ -66,7 +66,7 @@ public class PrenotazioneController {
 
         Optional<SlotDisponibile> slotDisponibile =
                 //pianificazioneComponent.trovaPrimoSlotDisponibileITERATIVO( prestazione.getDurataMedia(),
-                pianificazioneComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(),
+                pianificazioneComponent.trovaSlotDisponibile( prestazione.getDurataMedia(),
                         new Date(), // data di oggi
                         LocalTime.now(), // orario attuale
                         medicoService.getAllMedici(),

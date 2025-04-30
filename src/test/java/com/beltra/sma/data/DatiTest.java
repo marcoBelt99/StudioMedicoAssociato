@@ -1,4 +1,4 @@
-package com.beltra.sma.components.data;
+package com.beltra.sma.data;
 
 
 import java.util.Calendar;

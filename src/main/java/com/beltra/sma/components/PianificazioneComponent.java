@@ -2,6 +2,7 @@ package com.beltra.sma.components;
 
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
+import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
@@ -14,18 +15,18 @@ import java.util.Optional;
 
 /** Le operazioni presenti in questa interfaccia sono di supporto per la corretta gestione delle visite.
  *  <br>
- *  L'operazione (di ricerca) piu' importante e' descritta dal metodo <b>trovaPrimoSlotDisponibile()</b>.*/
+ *  L'operazione (di ricerca) piu' importante e' descritta dal metodo <b>trovaSlotDisponibile()</b>.*/
 public interface PianificazioneComponent {
 
     /** Orari di apertura e chisura dello SMA */
-    LocalTime orarioAperturaMattina =    LocalTime.of(7, 0);
-    LocalTime orarioChiusuraMattina =    LocalTime.of(12, 0);
-    LocalTime orarioAperturaPomeriggio = LocalTime.of(14, 0);
-    LocalTime orarioChiusuraPomeriggio = LocalTime.of(21, 0);
+    LocalTime orarioAperturaMattina =    Parameters.orarioAperturaMattina;
+    LocalTime orarioChiusuraMattina =    Parameters.orarioChiusuraMattina    ;
+    LocalTime orarioAperturaPomeriggio = Parameters.orarioAperturaPomeriggio ;
+    LocalTime orarioChiusuraPomeriggio = Parameters.orarioChiusuraPomeriggio ;
 
 
     /** Tolleranza / Pausa in minuti tra una visita e l'altra. */
-    long pausaFromvisite = 5;
+    long pausaFromvisite = Parameters.pausaFromvisite;
 
 
 
@@ -42,11 +43,11 @@ public interface PianificazioneComponent {
      * @param visiteGiornaliere lista di visite presenti in una determinata data.
      * @return slot disponibile: una tripla composta da Data, Orario, Medico.
      * */
-    Optional<SlotDisponibile> trovaPrimoSlotDisponibile(Double durata,
-                                                        Date dataAttuale,
-                                                        LocalTime oraAttuale,
-                                                        List<Medico> listaMedici,
-                                                        List<Visita> visiteGiornaliere);
+    Optional<SlotDisponibile> trovaSlotDisponibile(Double durata,
+                                                   Date dataAttuale,
+                                                   LocalTime oraAttuale,
+                                                   List<Medico> listaMedici,
+                                                   List<Visita> visiteGiornaliere);
 
     List<Visita> getAllVisiteByData(Date dataCorrente);
 

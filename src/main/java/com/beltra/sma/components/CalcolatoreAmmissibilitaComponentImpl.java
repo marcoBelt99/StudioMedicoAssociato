@@ -1,10 +1,8 @@
 package com.beltra.sma.components;
 
 import com.beltra.sma.functional.TriPredicate;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Calendar;
@@ -13,7 +11,6 @@ import java.util.GregorianCalendar;
 import java.util.function.BiPredicate;
 
 @Component
-
 public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissibilitaComponent {
 
     /** ATTRIBUTI */
@@ -28,7 +25,7 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     private LocalTime orarioChiusuraMattina = PianificazioneComponent.orarioChiusuraMattina;
     private LocalTime orarioAperturaPomeriggio = PianificazioneComponent.orarioAperturaPomeriggio;
     private LocalTime orarioChiusuraPomeriggio = PianificazioneComponent.orarioChiusuraPomeriggio;
-
+    private Long pausaFromVisite = PianificazioneComponent.pausaFromvisite;
 
     /** COSTRUTTORI */
     public CalcolatoreAmmissibilitaComponentImpl() {
@@ -88,7 +85,7 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
 
 
-    public Risultato getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione) {
+    public RisultatoAmmissibilita getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione) {
 
         // Basta che uno solo dei due orari ( o quello da controllare o quello maggiorato) sforino i limiti consentiti
         // e risultato sarà negativo
@@ -98,17 +95,17 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
         if ( ( (orarioDaControllare.isBefore(orarioAperturaMattina) ) ||
                (orarioMaggioratoDaDurata.isBefore(orarioAperturaMattina)) ) &&
              !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
-            return Risultato.NO_BECAUSE_BEFORE_APERTURA_MATTINA;
+            return RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA;
         else if( ( (orarioDaControllare.isAfter(orarioChiusuraMattina) && orarioDaControllare.isBefore(orarioAperturaPomeriggio) ) ||
                    (orarioMaggioratoDaDurata.isAfter(orarioChiusuraMattina) && orarioMaggioratoDaDurata.isBefore(orarioAperturaPomeriggio)) ) &&
                   !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
-            return Risultato.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO;
+            return RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO;
         else if( ( (orarioDaControllare.isAfter(orarioChiusuraPomeriggio)) ||
                  (orarioMaggioratoDaDurata.isAfter(orarioChiusuraPomeriggio)) ) &&
                   !isOrarioAmmissibile(orarioDaControllare, durataPrestazione)  )
-            return Risultato.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO;
+            return RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO;
         else
-            return Risultato.AMMISSIBILE;
+            return RisultatoAmmissibilita.AMMISSIBILE;
     }
 
 
@@ -152,7 +149,12 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     public boolean isOrarioInPomeriggio(LocalTime ora) {
         return  ora.isAfter(orarioChiusuraMattina) &&
                 ora.isBefore(LocalTime.MAX);
+    }
 
+    @Override
+    public boolean isOrarioAfterAperturaPomeriggio(LocalTime ora) {
+        return  ora.isAfter(orarioAperturaPomeriggio.plusMinutes(pausaFromVisite)) &&
+                ora.isBefore(LocalTime.MAX);
     }
 
 

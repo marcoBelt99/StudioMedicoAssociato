@@ -1,18 +1,16 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
 import com.beltra.sma.components.PianificazioneComponent;
-import com.beltra.sma.components.data.DatiMediciTest;
-import com.beltra.sma.components.data.DatiPrestazioniTest;
-import com.beltra.sma.components.data.DatiTest;
-import com.beltra.sma.components.data.DatiVisiteTest;
+import com.beltra.sma.data.DatiMediciTest;
+import com.beltra.sma.data.DatiPrestazioniTest;
+import com.beltra.sma.data.DatiTest;
+import com.beltra.sma.data.DatiVisiteTest;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.utils.SlotDisponibile;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -121,13 +119,13 @@ public class PianificazioneComponentTest {
 
 
         // ACT
-        return pianificazioneComponent.trovaPrimoSlotDisponibile(
+        return pianificazioneComponent.trovaSlotDisponibile(
                     durataMediaPrestazioneTest,
                     dataTest,
                     oraAttualeTest,
                     listaMediciTest,
                     listaVisiteTest
-                );
+        );
 
     }
 

@@ -10,60 +10,103 @@
         // TODO: Configurazione del calendario
         const calendario = new DayPilot.Calendar("dp", {
 
-            // Se voglio visualizzare il singolo giorno devo usare "Day". Se voglio vedere i giorni della settimana uso "Week"
-            // viewType: "Week",
-            viewType: "Resources",
-
-
             // Carico il mio tema colori personalizzato
             theme: "smatheme",
+
+
+            // Tipo di visualizzazione che voglio avere:
+            // -  "Day" per il singolo giorno.
+            // -  "Week" per i giorni della settimana
+            // -  "Resources" per avere nomi custom nelle colonne
+            viewType: "Week",
+
+            locale: "it-it",
+            headerDateFormat: "d MMMM yyyy",
 
             // Il calendario inizia da oggi
             startDate: DayPilot.Date.today(),
 
-            // Alcune colonne di test
-            columns: [
-                { name: "Visita 1", id: "V1"},
-                { name: "Visita 2", id: "V2" },
-                { name: "Visita 6", id: "V3" },
-                { name: "Visita 11", id: "V11" },
-                { name: "Visita 16", id: "V16" },
-                { name: "Visita 17", id: "V17" },
-            ]
+            // Di default Daypilot mi visualizza AM e PM, ma io non li voglio, quindi:
+            // dayBeginsHour: 0,
+            // dayEndsHour: 24,
+            timeFormat: "Clock24Hours", // Imposta il formato 24 ore
+            hourHeaderFormat: "HH:mm", // Formatta le righe con ore e minuti // TODO: non va per ora
+            timeHeaderFormat: "HH:mm", // Imposta il formato degli orari nella colonna degli orari
+            // Imposta il formato dell'orario nella colonna delle righe (orari)
+            rowHeaderFormat: "HH:mm",  // Questo definisce il formato degli orari nella colonna delle righe
+
+            // Imposto solo il range di ore che mi interessa
+            businessBeginsHour: 7, // TODO: potrebbe leggerlo magari dal file di testo o da java tramite API ?
+            businessEndsHour: 22,
+            heightSpec: "BusinessHoursNoScroll", // per evitare lo scrolling
+
+            // Altezza delle colonne dell'intestazione
+            headerHeightAutoFit: false,
+            headerHeight: 55,
+
+
+            // Larghezza della prima colonna (contenente in ogni cella l'orario )
+            // rowHeaderAutoFit: false,
+            rowHeaderWidth: 300,
+            rowHeaderWidthMin: 50,
+            width: "100%",
+
+
+            // Cambia il formato della colonna oraria con il callback
+            onBeforeRowHeaderRender: function (args) {
+                console.log("Rendering row: " + args.start); // Debug,
+                // Trasforma il formato delle ore nella colonna oraria
+                args.html = args.start.toString("HH:mm");
+            },
+
+
+            // CONFIGURAZIONE DEGLI EVENTI:
+            eventMoveHandling: "Disabled", // Non posso ridimensionarlo manualmente
+            eventResizeHandling: "Update",
 
         });
         calendario.init();
 
 
 
+
         // TODO: Sezione dati
         const app = {
             init() {
+
+                // Definisco le mie colonne (con i nomi dei giorni)
                 const columns = [
-                    { name: "Meeting Room A", id: "A" },
-                    { name: "Meeting Room B", id: "B" },
-                    { name: "Meeting Room C", id: "C" },
-                    { name: "Meeting Room D", id: "D" },
-                    { name: "Meeting Room E", id: "E" },
-                    { name: "Meeting Room F", id: "F" },
-                ];
+                    { name: "Lunedì",       id: "G1" },
+                    { name: "Martedì",      id: "G2" },
+                    { name: "Mercoledì",    id: "G3" },
+                    { name: "Giovedì",      id: "G4" },
+                    { name: "Venerdì",      id: "G5" },
+                    { name: "Sabato",       id: "G6" },
+                    { name: "Domenica",     id: "G7" }
+                ]
+
                 const events = [
                     {
-                        start: "2026-03-25T12:00:00",
-                        end: "2026-03-25T14:00:00",
-                        id: "1",
-                        text: "Event 1",
-                        resource: "B",
+                        "id": 1,
+                        "start": "2025-03-23T10:00:00",
+                        "end": "2025-03-23T12:00:00",
+                        "text": "Event 1"
                     },
                     {
-                        start: "2026-03-25T15:00:00",
-                        end: "2026-03-25T17:00:00",
-                        id: "2",
-                        text: "Event 2",
-                        resource: "C",
+                        "id": 2,
+                        "start": "2025-03-23T13:00:00",
+                        "end": "2025-03-23T14:00:00",
+                        "text": "Event 2"
                     },
+                    {
+                        "id": 3,
+                        "start": "2025-03-24T15:00:00",
+                        "end": "2025-03-24T20:00:00",
+                        "text": "Event 3",
+                        "allday": true
+                    }
                 ];
-                calendar.update({columns, events});
+                calendario.update({columns, events});
             },
         };
         app.init();

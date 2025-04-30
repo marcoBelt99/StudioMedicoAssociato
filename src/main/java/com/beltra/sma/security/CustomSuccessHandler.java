@@ -24,8 +24,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(600)
-                //.sameSite("Strict") // La sessione si distrugge quando l'utente chiude il browser
+                //.maxAge(600)
+                .sameSite("Strict") // La sessione si distrugge quando l'utente chiude il browser
                 .build();
         // Quindi, aggiungo un header ed Inserisco il cookie
         response.addHeader(HttpHeaders.SET_COOKIE, springCookie.toString());

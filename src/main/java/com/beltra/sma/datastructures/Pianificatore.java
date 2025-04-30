@@ -5,9 +5,7 @@ import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.utils.FineVisita;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /** Data una <b>lista di visite</b>, consente di trovare il medico che si libera per primo.
  *  <br>
@@ -22,6 +20,9 @@ import java.util.Map;
 public interface Pianificatore {
 
     long pausa5Minuti = 5;
+
+    PriorityQueue<FineVisita> codaMedici  = new PriorityQueue<>(Comparator.comparing(FineVisita::getOraFine));
+
 
     /**  Aggiunge una visita sia in listaVisite sia nella mappa <br>
      *   L'ordine di inserimento e' importante: e' obbligatorio inserire prima in lista

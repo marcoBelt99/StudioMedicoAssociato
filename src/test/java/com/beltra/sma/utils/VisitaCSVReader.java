@@ -1,16 +1,21 @@
 package com.beltra.sma.utils;
 
+import com.beltra.sma.datastructures.Pianificatore;
+import com.beltra.sma.model.Medico;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Prestazione;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -22,37 +27,47 @@ import java.util.List;
 public class VisitaCSVReader {
 
     /** Metodo di lettura da file CSV */
-    public static List<Visita> leggiVisiteDaCSV(String filePath) {
+    public static List<Visita> leggiVisiteDaCsv(String filePath, List<Medico> medici, List<Prestazione> prestazioni) {
         List<Visita> visite = new ArrayList<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String line;
 
-        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
-            List<String[]> rows = reader.readAll();
-            rows.remove(0); // Rimuove l'intestazione
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            // Salta la prima riga (intestazione del CSV)
+            br.readLine();
 
-            // Scorri le righe del CSV, quelle contenenti i valori
-            for (String[] row : rows) {
+            SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
+            DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm");
+
+            // Leggi ogni riga e map nelle visite
+            while ((line = br.readLine()) != null) {
+                String[] fields = line.split(","); // Dividi per virgola
+
                 Visita visita = new Visita();
-                visita.setIdVisita(Long.parseLong(row[0]));
-                visita.setDataVisita(dateFormat.parse(row[1]));
-                visita.setOra(Time.valueOf(row[2]));
-                visita.setNumAmbulatorio(Integer.parseInt(row[3]));
 
-                // Creazione di oggetti fittizi per Anagrafica e Prestazione
-                Anagrafica anagrafica = new Anagrafica();
-                anagrafica.setIdAnagrafica(Long.parseLong(row[4]));
 
-                Prestazione prestazione = new Prestazione();
-                prestazione.setIdPrestazione(Long.parseLong(row[5]));
+                Anagrafica anag = medici.stream().filter(m -> m.getIdAnagrafica() == Long.parseLong((fields[4]))).findFirst().get().getAnagrafica();
+                Prestazione prest = prestazioni.stream().filter(p -> p.getIdPrestazione() == Long.parseLong((fields[5]))).findFirst().get();
 
-                visita.setAnagrafica(anagrafica);
-                visita.setPrestazione(prestazione);
+                visita.setIdVisita( Long.parseLong(fields[0])); // id
+                visita.setDataVisita( formatterDate.parse( fields[1] ) ); // data
+
+                visita.setOra( Time.valueOf(LocalTime.parse(fields[2], formatterTime)) ); // ora
+                visita.setNumAmbulatorio( Integer.parseInt(fields[3]) ); // num ambulatorio
+                visita.setAnagrafica( anag );
+                visita.setPrestazione( prest );
 
                 visite.add(visita);
+                // pianificatore.setListaVisite( visite);
+                // pianificatore.aggiornaMediciMap();
             }
-        } catch (IOException | CsvException | ParseException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Errore durante la lettura del file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Errore nel formato dei numeri nel CSV: " + e.getMessage());
+        } catch (ParseException e) {
+            System.err.println("Errore di parsing della data nel CSV: " + e.getMessage());
         }
+
         return visite;
     }
 }

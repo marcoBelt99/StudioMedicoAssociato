@@ -2,7 +2,7 @@ package com.beltra.sma.components.calcolatoreammissibilitacomponent;
 
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
 import com.beltra.sma.components.PianificazioneComponent;
-import com.beltra.sma.components.Risultato;
+import com.beltra.sma.components.RisultatoAmmissibilita;
 import com.beltra.sma.model.Prestazione;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -83,7 +83,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         Prestazione prestazioneTest = createPrestazioneTest();
 
         assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia() ) );
-        Assertions.assertEquals( Risultato.AMMISSIBILE,
+        Assertions.assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
@@ -98,7 +98,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
 
         assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
 
-        assertEquals( Risultato.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
+        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
@@ -118,7 +118,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
 
         assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest, prestazioneTest.getDurataMedia()) );
 
-        assertEquals( Risultato.AMMISSIBILE,
+        assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
     }
 
@@ -133,7 +133,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         // Questo test deve essere false: orarioTest + durataMedia sfora orario di chiusura
         assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
 
-        assertEquals( Risultato.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO,
+        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
     }
 
@@ -143,7 +143,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         LocalTime orarioTest = LocalTime.of(12, 45);
 
         assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
-        assertEquals( Risultato.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
+        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario( orarioTest, prestazioneTest.getDurataMedia() )
         );
     }

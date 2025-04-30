@@ -1,4 +1,4 @@
-package com.beltra.sma.components.data;
+package com.beltra.sma.data;
 
 
 import com.beltra.sma.datastructures.Pianificatore;
@@ -8,6 +8,7 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.VisitaService;
+import com.beltra.sma.utils.VisitaCSVReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,6 +66,7 @@ public class DatiVisiteTest implements DatiTest<Visita> {
     }
 
     public List<Visita> getListaDiDueVisite() {
+
         PianificatoreImpl pmLocal = new PianificatoreImpl(); // TODO: Nuova istanza
 
         for(int i=0;i < getListaMediciTest().size()-1;i++) { // faccio solo 2 giri nel for
@@ -168,7 +170,22 @@ public class DatiVisiteTest implements DatiTest<Visita> {
     }
 
 
+    public List<Visita> getListaVisiteFull(){
 
+        List<Visita> listaVisite = new ArrayList<>();
+
+
+        return listaVisite;
+
+    }
+
+
+    /** Legge le visite dal relativo file CSV passato nel parametro <b>path</b>.<br>
+     *  Vengono considerate la lista dei medici e la lista delle prestazioni designate per i test (quelle su carta).
+     * */
+    public List<Visita> getListaVisiteFromCSV(String path) {
+        return VisitaCSVReader.leggiVisiteDaCsv( path, getListaMediciTest(), getListaPrestazioniTest() );
+    }
 
 
 
@@ -204,4 +221,7 @@ public class DatiVisiteTest implements DatiTest<Visita> {
     public List<Visita> getListaVisite_OF_DATABASE() {
         return visitaService.getAll();
     }
+
+
+
 }

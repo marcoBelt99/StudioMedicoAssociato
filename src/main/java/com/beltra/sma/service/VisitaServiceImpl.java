@@ -157,7 +157,7 @@ public class VisitaServiceImpl implements VisitaService {
 
         // Trova il primo slot disponibile
         Optional<SlotDisponibile> slotDisponibile =
-                pianificazioneComponent.trovaPrimoSlotDisponibile( nuovaVisita.getPrestazione().getDurataMedia(), new Date(), LocalTime.now(), medicoServiceImpl.getAllMedici() ,getAllVisiteByData( dataAttuale ) );
+                pianificazioneComponent.trovaSlotDisponibile( nuovaVisita.getPrestazione().getDurataMedia(), new Date(), LocalTime.now(), medicoServiceImpl.getAllMedici() ,getAllVisiteByData( dataAttuale ) );
 
         if (slotDisponibile.isPresent()) {
             // Pianifica la visita nello slot disponibile

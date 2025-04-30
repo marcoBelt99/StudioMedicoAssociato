@@ -155,6 +155,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!--  TODO: Groovy-->
+        <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>4.0.24</version>
+            <type>pom</type>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -194,6 +204,47 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+    <!-- TODO: AGGIUNGERE PLUGIN PER MAVEN COMPILER + GROOVY ECLIPSE COMPILER + GROOVY ECLIPSE BATCH            -->
+
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.13.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.gmavenplus</groupId>-->
+<!--                <artifactId>gmavenplus-plugin</artifactId>-->
+<!--                <version>1.13.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>addSources</goal>-->
+<!--                            <goal>addTestSources</goal>-->
+<!--                            <goal>compile</goal>-->
+<!--                            <goal>compileTests</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.gmaven</groupId>-->
+<!--                <artifactId>gmaven-plugin</artifactId>-->
+<!--                <version>1.5</version>-->
+<!--                -->
+<!--            </plugin>-->
+
 
         </plugins>
     </build>

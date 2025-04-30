@@ -1,24 +1,15 @@
 package com.beltra.sma.datastructures;
 
-import com.beltra.sma.generator.VisitaGenerator;
-import com.beltra.sma.model.Visita;
-import com.beltra.sma.utils.FineVisita;
-import com.pholser.junit.quickcheck.From;
-import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-
-import java.sql.Time;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 //@Disabled
 //@RunWith(JUnitQuickcheck.class)
-//public class PianificatorePropertyBasedTest {
+public class CodaMediciDisponibiliPropertyBasedTest {
 
 
 //    @Disabled
@@ -53,4 +44,4 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 
-//}
+}

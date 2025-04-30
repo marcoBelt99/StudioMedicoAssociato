@@ -1,31 +1,28 @@
 package com.beltra.sma.datastructures;
 
 
-import com.beltra.sma.functional.TriPredicate;
+import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
+import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl;
+import com.beltra.sma.components.PianificazioneComponent;
+import com.beltra.sma.components.RisultatoAmmissibilita;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 
-import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.utils.FineVisita;
 import lombok.Getter;
-import lombok.Setter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Time;
 import java.util.*;
 
 
-
-
+@Deprecated
 @Getter
 @Component
 public class PianificatoreImpl implements Pianificatore {
 
-//    @Autowired
-//    private MedicoService medicoService;
 
     /** Lista di visite aggiunte man mano (simula la tabella a database) */
     private List<Visita> listaVisite;
@@ -87,6 +84,8 @@ public class PianificatoreImpl implements Pianificatore {
     @Override
     public Visita pianificaNuovaVisita(Visita Vi, Date data, Prestazione prestazione) {
 
+        CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilita = new CalcolatoreAmmissibilitaComponentImpl();
+
         /** Cerco la visita che contiene il medico che si libera per primo */
         Visita Vx = searchVisitaConOraFineMinima();
 
@@ -95,6 +94,21 @@ public class PianificatoreImpl implements Pianificatore {
         // Se e' mattina e voglio creare una nuova visita che sfora l'orario di apertura SMA,
         // allora se non ce ne sono gia' pianificate devo pianificarla per il pomeriggio.
         Time oraInizio = Time.valueOf( Vx.calcolaOraFine().toLocalTime().plusMinutes( pausa5Minuti )); // Ci aggiungo la pausa di 5 minuti
+
+        RisultatoAmmissibilita risultatoAmmissibilita = calcolatoreAmmissibilita.getRisultatoCalcoloAmmissibilitaOrario(oraInizio.toLocalTime(), prestazione.getDurataMedia());
+
+       /** Se sforo con (oraInizio della nuova visita + durata prestazione della nuova visita) allora passo al pomeriggio.
+        *  Quando sforo, è come resettare la mappa assegnando come ora di inizio le 14:05 e come id dei medici gli id dei vari medici
+        *  */
+        if( ( risultatoAmmissibilita.equals(RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO) ||
+              calcolatoreAmmissibilita.isOrarioAfterAperturaPomeriggio( oraInizio.toLocalTime().plusMinutes( prestazione.getDurataMedia().intValue() ))
+            ) &&
+            ( listaVisite.stream()
+                    .filter( v -> PianificazioneComponent.orarioAperturaPomeriggio.plusMinutes(pausa5Minuti).equals( v.getOra().toLocalTime() ) )
+                    .count() ) < mediciMap.size()) {
+            oraInizio = Time.valueOf(PianificazioneComponent.orarioAperturaPomeriggio.plusMinutes(pausa5Minuti));
+            // TODO: devo fare che il medico diventa
+        }
 
 
         Vi.setIdVisita( (long) ( getListaVisite().size()+1 ) );
@@ -153,9 +167,11 @@ public class PianificatoreImpl implements Pianificatore {
             idMedicoDaAssegnare =  getMediciMap().keySet().iterator().next(); // scelgo il primo medico (come risaputo, sono sicuro che sia il primo medico della mappa)
 
 
-        return listaMedici.stream().filter(medico -> medico.getIdAnagrafica().equals(idMedicoDaAssegnare)).findFirst().get(); // Ora uso la lista
+        return listaMedici.stream()
+                .filter(medico -> medico.getIdAnagrafica().equals(idMedicoDaAssegnare))
+                .findFirst()
+                .get();
 
-        //medicoService.getMedicoByIdAnagrafica(idMedicoDaAssegnare); // Prima usavo il service
     }
 
 

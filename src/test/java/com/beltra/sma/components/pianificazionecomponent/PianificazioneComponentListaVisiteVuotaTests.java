@@ -99,12 +99,12 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
 
     @ParameterizedTest
     @MethodSource("provideDatiTestCase_ListaVisiteEmpty") // ARRANGE me la fa questo metodo di providing dei dati
-    public void testTrovaPrimoSlotDisponibile_ListaVisiteVuota(Double durataMediaPrestazioneTest, Date dataTest, LocalTime oraAttualeTest,
-                                                               List<Medico> listaMediciTest, List<Visita> listaVisiteTest,
-                                                               Date dataExpected, LocalTime oraExpected, Medico medicoExpected) {
+    public void testTrovaSlotDisponibile_ListaVisiteVuota(Double durataMediaPrestazioneTest, Date dataTest, LocalTime oraAttualeTest,
+                                                          List<Medico> listaMediciTest, List<Visita> listaVisiteTest,
+                                                          Date dataExpected, LocalTime oraExpected, Medico medicoExpected) {
 
         // ACT
-        Optional<SlotDisponibile> risultato = pianificazioneComponent.trovaPrimoSlotDisponibile(
+        Optional<SlotDisponibile> risultato = pianificazioneComponent.trovaSlotDisponibile(
                 durataMediaPrestazioneTest,
                 dataTest,
                 oraAttualeTest,
@@ -135,7 +135,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
     ///                 altrimenti considero il pomeriggio
     ///
     @Test
-    public void testTrovaPrimoSlotDisponibile_ListaVisiteVuota_WithOraAttualeNotAmmissibileInPomeriggio() {
+    public void testTrovaSlotDisponibile_ListaVisiteVuota_WithOraAttualeNotAmmissibileInPomeriggio() {
 
         // ARRANGE & ACT
         Optional<SlotDisponibile> risultato = arrangeAndAct(
