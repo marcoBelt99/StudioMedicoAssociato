@@ -1,27 +1,12 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
 import com.beltra.sma.components.PianificazioneComponent;
-import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Medico;
-import com.beltra.sma.model.Prestazione;
-import com.beltra.sma.model.Visita;
 import com.beltra.sma.utils.SlotDisponibile;
 import com.beltra.sma.utils.VisitaCSVReader;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Optional;
@@ -133,8 +134,8 @@ public class PrenotazioneController {
     public String confermaPrenotazione(HttpSession session,
                                        RedirectAttributes redirectAttributes) {
 
-        String primaDataDisponibile = (String) session.getAttribute("primaDataDisponibile");
-        String primoOrarioDisponibile = (String) session.getAttribute("primoOrarioDisponibile");
+        Date primaDataDisponibile = (Date) session.getAttribute("primaDataDisponibile");
+        Time primoOrarioDisponibile = (Time) session.getAttribute("primoOrarioDisponibile");
         //String titoloPrestazione = (String) session.getAttribute("titoloPrestazione");
 
         Prestazione prestazione = (Prestazione) httpSession.getAttribute("prestazione");

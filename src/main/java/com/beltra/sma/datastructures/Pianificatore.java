@@ -7,6 +7,7 @@ import com.beltra.sma.utils.FineVisita;
 
 import java.util.*;
 
+@Deprecated
 /** Data una <b>lista di visite</b>, consente di trovare il medico che si libera per primo.
  *  <br>
  *  La ricerca si basa sull'orario di fine visita di ogni visita della lista.

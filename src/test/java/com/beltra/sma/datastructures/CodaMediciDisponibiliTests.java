@@ -4,20 +4,17 @@ package com.beltra.sma.datastructures;
 import com.beltra.sma.data.DatiMediciTest;
 import com.beltra.sma.data.DatiPrestazioniTest;
 import com.beltra.sma.data.DatiVisiteTest;
+import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
-import com.beltra.sma.datastructures.CodaMediciDisponibiliGroovyImpl;
-import com.beltra.sma.datastructures.CodaMediciDisponibili;
 
-import com.beltra.sma.service.MedicoServiceImpl;
 import com.beltra.sma.utils.FineVisita;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
@@ -67,6 +64,15 @@ public class CodaMediciDisponibiliTests {
 
         /// Voglio simulare di inserire visite via via crescenti
         return Stream.of(
+
+//            /// []: Simulo la lista di visite vuote, ma la lista di medici non vuota
+//            Arguments.of(
+//                    new ArrayList<Visita>(),
+//                    listaPrestazioni.get(0).getDurataMedia(),
+//
+//                    m1,
+//                    new FineVisita(1L, Time.valueOf( LocalTime.of(7,20) ) )
+//            ),
 
             /// [v1]: simulo l'inserimento di v1
             Arguments.of(
@@ -213,7 +219,7 @@ public class CodaMediciDisponibiliTests {
             Arguments.of(
                     listaVisite.stream().limit(19).toList(),
                     listaPrestazioni.get(0).getDurataMedia(), // v19 durerà 15 min
-                    m1,
+                    m1, /// Nota bene: V17 ha la stessa ora fine di V18, quindi per scegliere quale medico assegnare viene scelto il medico avente id minore fra tutti
                     new FineVisita(listaVisite.stream().limit(19).count(), Time.valueOf( LocalTime.of(20, 55) ) )
             )
 
@@ -252,13 +258,29 @@ public class CodaMediciDisponibiliTests {
     }
 
 
-
+    /** Copre il caso in cui lista visite e' vuota ma lista medici non lo e',
+     *  quindi ritorna sempre il primo medico! */
     @Test
-    void testPrimoMedicoDisponibileIs1() {
+    void testGetPrimoMedicoDisponibile_WithListaVisiteEmptyAndListaMediciNotEmpty_IsM1() {
+
+        // Arrange
+        List<Medico> listaMedici = getAllDatiMediciTests();
+
+        // Act
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, new ArrayList<>(), LocalTime.now(), 20.0);
+
+        // Assert
+       assertEquals(1L,  codaMediciDisponibili.getPrimoMedicoDisponibile(20.0).getKey().getIdAnagrafica() );
+    }
+
+
+    /** Casistica mentre sto aumentando di visite: arrivato alla 18°-esima voglio esattamente il comportamento aspettato */
+    @Test
+    void testGetPrimoMedicoDisponibile_WithListaVisiteNotEmptyAndListaMediciNotEmpty_WorksCorrectly() {
         inizializzaDati();
         CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite.stream().limit(18).toList(), LocalTime.now(), 0.0);
 
-        assertTrue(coda.getPrimoMedicoDisponibile(0.0).getIdAnagrafica().equals(1L));
+        assertTrue(coda.getPrimoMedicoDisponibile(0.0).getKey().getIdAnagrafica().equals(1L));
     }
 
 

@@ -1,8 +1,9 @@
-package com.beltra.sma.datastructures
+package com.beltra.sma.groovy.datastructures
 
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl
 import com.beltra.sma.components.RisultatoAmmissibilita
+import com.beltra.sma.datastructures.CodaMediciDisponibili
 import com.beltra.sma.model.Medico
 import com.beltra.sma.model.Visita
 import com.beltra.sma.utils.FineVisita
@@ -14,6 +15,7 @@ import java.sql.Time
 import java.time.LocalTime
 import java.util.function.Function;
 
+
 class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
 
     /** Coda di priorità basata su FineVisita.getOraFine().<br>
@@ -21,24 +23,31 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
      *
      *  */
     @Setter
-    private Queue<Map.Entry<Medico, FineVisita>> mediciQueue;
+    private Queue<Map.Entry<Medico, FineVisita>> mediciQueue
 
 
     /** Mappa per legare ad ogni medico del sistema il rispettivo orario di fine visita. */
     @Getter
     @Setter
 
-    private Map<Medico, FineVisita> mediciMap;
+    private Map<Medico, FineVisita> mediciMap
 
 
-    private final CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilita;
+    private final CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilita
+
+//    private boolean isListaVisiteEmpty;
+//    private boolean isListaMediciEmpty;
+
+    List<Visita> listaVisite
+    List<Medico> listaMedici
+
 
     CodaMediciDisponibiliGroovyImpl(List<Medico> listaMedici, List<Visita> listaVisite, LocalTime oraAttuale,
                                      Double durataMediaNuovaVisita) {
 
-        calcolatoreAmmissibilita = new CalcolatoreAmmissibilitaComponentImpl();
+        calcolatoreAmmissibilita = new CalcolatoreAmmissibilitaComponentImpl()
 
-        mediciMap = new HashMap<>();
+        mediciMap = new HashMap<>()
 
         // Gestione dei comparatori per le priorità della coda: prima voglio ordinare per valore delle entry della mappa (per ora fine).
         // Poi in caso ottenga due orari uguali (ad esempio <1, 20:35> e <2, 20:35>) ordino per chiave delle entry della mappa.
@@ -54,9 +63,13 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
         // Soluzione funzionante:
         //mediciQueue = new PriorityQueue<>(Map.Entry.comparingByValue())
 
+        this.listaVisite = listaVisite
+        this.listaMedici = listaMedici
 
+//        isListaVisiteEmpty = listaVisite.empty
+//        isListaMediciEmpty = listaMedici.empty
 
-        build(listaVisite, listaMedici, durataMediaNuovaVisita);
+        build(listaVisite, listaMedici, durataMediaNuovaVisita)
 
     }
 
@@ -70,15 +83,29 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
 
 
     @Override
-    Medico getPrimoMedicoDisponibile(Double durataMediaNuovaVisita) {
-        if (mediciQueue.isEmpty()) return null
-        Map.Entry<Medico, FineVisita> entry = mediciQueue.peek() // non poll(), solo peek!
-        return entry.key
+    Map.Entry<Medico, FineVisita> getPrimoMedicoDisponibile(Double durataMediaNuovaVisita) {
+
+        // Nel caso lista visite sia vuota ma lista medici non lo sia, ritornami sempre il primo medico!
+
+        // Prima era: if(listaVisite.empty && !listaMedici.empty) return listaMedici[0];
+        //  new FineVisita() perche', visto che ci sono 0 visite inserite allora non ha senso basarsi sugli orari delle visite,
+        // dato che non ce ne sono ancora
+        if(listaVisite.empty && !listaMedici.empty) return Map.entry(listaMedici[0], new FineVisita())
+
+        // TODO: Testare se sia lista visite che lista medici sono vuote cosa succede.
+
+
+        // Prima era:  return mediciQueue.empty ? null : mediciQueue.peek().key;
+        return mediciQueue.empty ? null : mediciQueue.peek()
+
+//        if (mediciQueue.isEmpty()) return null
+//        Map.Entry<Medico, FineVisita> entry = mediciQueue.peek() // non poll(), solo peek!
+//        return entry.key
     }
 
     @Override
     Map<Medico, FineVisita> getMediciMap() {
-        return Collections.unmodifiableMap(mediciMap);
+        return Collections.unmodifiableMap(mediciMap)
     }
 
     @Override
@@ -89,6 +116,8 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
 
     /** Funzione builder. */
     private void build(List<Visita> listaVisite, List<Medico> listaMedici, Double durataMedia) {
+
+
         if (!listaVisite || !listaMedici) return
 
         // Caso lista visite < lista medici

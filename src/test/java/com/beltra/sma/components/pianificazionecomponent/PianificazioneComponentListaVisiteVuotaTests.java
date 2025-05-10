@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PianificazioneComponentListaVisiteVuotaTests extends PianificazioneComponentTest {
 
 
+    // TODO: per rafforzare il test, usa il verify() che, visto che sto gestendo il caso lista vuota,
+    // verify() calcolaSlotDisponibileConListaVisiteGiornaliereVuota() è chiamato, in tutti i test
 
     /// ######################   1) CASO BASE: LISTA VISITE VUOTA   #####################
     /// #########################################################################################

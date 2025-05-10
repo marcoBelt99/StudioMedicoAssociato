@@ -63,9 +63,9 @@ public class PazienteControllerTests {
 
         this.mockMvc
                 .perform(
-                        get("/paziente/visite")
-                                .param("effettuata", "true")
-                                .cookie(new Cookie("user-id", "marcobeltra")) // Aggiunta del cookie
+                    get("/paziente/visite")
+                    .param("effettuata", "true")
+                    .cookie(new Cookie("user-id", "marcobeltra")) // Aggiunta del cookie
                 )
                 //.andDo(print())
                 .andExpect( status().isOk() )

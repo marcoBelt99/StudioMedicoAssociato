@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 
+@Deprecated
 public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
 
 
@@ -29,7 +30,7 @@ public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
 
 
     /** Mappa per legare ad ogni medico del sistema il rispettivo orario di fine visita. */
-    @Getter
+
     @Setter
     private Map<Medico, FineVisita> mediciMap;
 
@@ -135,7 +136,7 @@ public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
 
 
     @Override
-    public Medico getPrimoMedicoDisponibile(Double durataMediaNuovaVisita) {
+    public Map.Entry<Medico, FineVisita> getPrimoMedicoDisponibile(Double durataMediaNuovaVisita) {
 
         //return mediciQueue.isEmpty() ? null : mediciQueue.peek().getKey();
         if (mediciQueue.isEmpty())
@@ -144,6 +145,7 @@ public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
 
         // Estraggo il medico con il FineVisita attuale
         Map.Entry<Medico, FineVisita> entry = mediciQueue.poll();
+
         Medico medicoEstratto = entry.getKey();
 
         // TODO: Aggiorno il valore di FineVisita in mediciMap (simulando una nuova visita)
@@ -151,9 +153,10 @@ public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
         mediciMap.put(medicoEstratto, nuovoFineVisita);
 
         // TODO: Reinserisco il medico aggiornato nella coda
-        mediciQueue.offer(Map.entry(medicoEstratto, nuovoFineVisita));
+        entry = Map.entry(medicoEstratto, nuovoFineVisita);
+        mediciQueue.offer(entry);
 
-        return medicoEstratto;
+        return entry;
     }
 
     private FineVisita aggiornaOraFineVisita(Medico medico, Double durataMediaNuovaVisita) {
@@ -184,7 +187,7 @@ public class CodaMediciDisponibiliImpl implements CodaMediciDisponibili {
                 mediciMap.put(medico, fineVisita);
             } else {
                 // Giri successivi: prendo il medico con FineVisita più vicino e lo aggiorno
-                Medico medicoDisponibile = getPrimoMedicoDisponibile(durataMediaNuovaVisita);
+                Medico medicoDisponibile = getPrimoMedicoDisponibile(durataMediaNuovaVisita).getKey();
 
                 // opzionalmente: salva anche l'associazione visita-medico, se ti serve altrove
             }

@@ -3,6 +3,7 @@ package com.beltra.sma.datastructures;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.utils.FineVisita;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public interface CodaMediciDisponibili {
 
 
     /** Estrae il primo elemento dalla coda dei medici, aggiornando opportunamente le altre strutture dati di supporto. */
-    Medico getPrimoMedicoDisponibile(Double durataMediaNuovaVisita);
+    Map.Entry<Medico, FineVisita> getPrimoMedicoDisponibile(Double durataMediaNuovaVisita);
 
 
     /** Ritorna una versione non modificabile di mediciMap */
