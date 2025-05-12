@@ -42,7 +42,7 @@ public class CodaMediciDisponibiliTests {
     Medico m3;
 
 
-    final String pathCSV_E = "src/test/resources/visiteMattinaFull.csv";
+    final String pathCSV_visiteGiornaliereFull = "src/test/resources/visiteGiornaliereFull.csv";
 
 
     void inizializzaDati() {
@@ -223,12 +223,8 @@ public class CodaMediciDisponibiliTests {
                     new FineVisita(listaVisite.stream().limit(19).count(), Time.valueOf( LocalTime.of(20, 55) ) )
             )
 
-
         );
     }
-
-
-
 
 
     @ParameterizedTest
@@ -284,8 +280,14 @@ public class CodaMediciDisponibiliTests {
     }
 
 
+
+
+    // #################################################################
+    // OTTENIMENTO DATI
+    // #################################################################
+
     protected List<Visita> getAllVisiteByData() {
-        return datiVisiteTest.getListaVisiteFromCSV( pathCSV_E );
+        return datiVisiteTest.getListaVisiteFullFromCSV();
     }
 
     protected List<Medico> getAllDatiMediciTests() {
@@ -297,6 +299,14 @@ public class CodaMediciDisponibiliTests {
         DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
         return datiPrestazioniTest.getDatiTest();
     }
+
+
+    // TODO:
+    //  TEST DI SFORAMENTO VISITE GIORNALIERE: CHE SUCCEDE?
+    //  Per la coda deve essere trasparente che il giorno sia ammissibile o meno, ma deve solo "resettare"
+    //  e ripartire dal medico 1, 2, 3, ... e dalla mattina.
+
+
 
 
 

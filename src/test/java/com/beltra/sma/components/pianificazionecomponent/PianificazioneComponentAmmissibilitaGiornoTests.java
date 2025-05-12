@@ -44,7 +44,5 @@ public class PianificazioneComponentAmmissibilitaGiornoTests extends Pianificazi
         assertTrue( slot.isPresent() );
         assertEquals( dataLunedi20Gennaio2025Test, slot.get().getData() );
 
-
-
     }
 }

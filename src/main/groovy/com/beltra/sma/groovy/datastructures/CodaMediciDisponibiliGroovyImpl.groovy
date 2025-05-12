@@ -35,9 +35,6 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
 
     private final CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilita
 
-//    private boolean isListaVisiteEmpty;
-//    private boolean isListaMediciEmpty;
-
     List<Visita> listaVisite
     List<Medico> listaMedici
 
@@ -65,9 +62,6 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili{
 
         this.listaVisite = listaVisite
         this.listaMedici = listaMedici
-
-//        isListaVisiteEmpty = listaVisite.empty
-//        isListaMediciEmpty = listaMedici.empty
 
         build(listaVisite, listaMedici, durataMediaNuovaVisita)
 

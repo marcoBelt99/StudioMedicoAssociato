@@ -2,6 +2,9 @@ package com.beltra.sma.utils;
 
 import java.time.LocalTime;
 
+/** Classe contenente i parametri piu' di interesse dell'applicazione.<br>
+ *  Questa "centralizzazione" e' stata pensata per una miglior gestione della
+ *  probabile variabilita' futura dei parametri.*/
 public class Parameters {
 
     /** Orari di apertura e chisura dello SMA */

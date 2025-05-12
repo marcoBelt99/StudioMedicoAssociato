@@ -1,10 +1,10 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
-import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.datastructures.CodaMediciDisponibili;
 import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
+import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +25,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
 
 
+
     /// 3.A
     /// CASO IN CUI C'È UN MEDICO LIBERO
     /// listaVisite = (v1, v2)
@@ -37,7 +38,8 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         Double durataMediaPrestazioneTest = 90.0;
         Date dataTest = new GregorianCalendar(2025, Calendar.JANUARY, 17 ).getTime();
         LocalTime oraAttualeTest = LocalTime.of( 6, 55  );
-        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite(); // TODO: prendo solo 2 visite
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite();
+        List<Visita> listaVisiteTest = getListaDiDueVisite(); // TODO: prendo solo 2 visite
         List<Medico> listaMediciTest = getAllDatiMediciTests(); // come dati di test mi servono anche i medici (sono != da quelli a DB)
 
 
@@ -45,7 +47,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( LocalTime.of(7, 0).plusMinutes( PianificazioneComponent.pausaFromvisite ) ); // Mi aspetto 07:05
+        Time oraExpected = Time.valueOf( LocalTime.of(7, 0).plusMinutes( Parameters.pausaFromvisite ) ); // Mi aspetto 07:05
         Medico medicoExpected = listaMediciTest.get(2); // mi aspetto il medico 3
 
         SlotDisponibile slotDisponibileExpected =
@@ -103,7 +105,9 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         Double durataMediaPrestazioneTest = 90.0;
         Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();
         LocalTime oraAttualeTest = LocalTime.of( 7, 10  ); // Tengo fissa l'ora attuale ( simulo now() )
-        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite(); // TODO: prendo solo 2 visite
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite(); // TODO: prendo solo 2 visite
+        List<Visita> listaVisiteTest = getListaDiDueVisite(); // TODO: prendo solo 2 visite
+
         List<Medico> listaMediciTest = getAllDatiMediciTests(); // come dati di test mi servono anche i medici (sono != da quelli a DB)
 
 
@@ -111,7 +115,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( PianificazioneComponent.pausaFromvisite ) ); // TODO: Mi aspetto 07:15, perchè tanto listaVisite.size < listaMedici.size!
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) ); // TODO: Mi aspetto 07:15, perchè tanto listaVisite.size < listaMedici.size!
         Medico medicoExpected = listaMediciTest.get(2);
 
         SlotDisponibile slotDisponibileExpected =
@@ -165,7 +169,8 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         Double durataMediaPrestazioneTest = 90.0;
         Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();
         LocalTime oraAttualeTest = LocalTime.of( 7, 30  ); // Tengo fissa l'ora attuale ( simulo now() )
-        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite(); // TODO: prendo solo 2 visite
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiDueVisite();
+        List<Visita> listaVisiteTest = getListaDiDueVisite(); // TODO: prendo solo 2 visite
         List<Medico> listaMediciTest = getAllDatiMediciTests(); // come dati di test mi servono anche i medici (sono != da quelli a DB)
 
 
@@ -173,7 +178,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( PianificazioneComponent.pausaFromvisite ) ); // Mi aspetto 07:35
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) ); // Mi aspetto 07:35
         Medico medicoExpected = listaMediciTest.get(2);
 
         SlotDisponibile slotDisponibileExpected =
@@ -229,9 +234,10 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
         // ARRANGE
         Double durataMediaPrestazioneTest = 90.0;
-        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();
+        Date dataTest = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime(); // TODO: centralizzare parametri di test
         LocalTime oraAttualeTest = LocalTime.of( 7, 30 );
-        List<Visita> listaVisiteTest = datiVisiteTest.getListaDiUnaVisita(); // TODO: prendo solo 1 visita
+        // List<Visita> listaVisiteTest = datiVisiteTest.getListaDiUnaVisita(); // TODO: prendo solo 1 visita
+        List<Visita> listaVisiteTest = getListaDiUnaVisita(); // TODO: prendo solo 1 visita
         List<Medico> listaMediciTest = getAllDatiMediciTests(); // come dati di test mi servono anche i medici (sono != da quelli a DB)
 
 
@@ -239,7 +245,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3] ==> m2 ed m3 sono liberi
         // mediciMap = [<1, {1, 07:20}>, <2, {0, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( PianificazioneComponent.pausaFromvisite ) );
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) );
         Medico medicoExpected = listaMediciTest.get(1); // mi aspetto m2
 
         SlotDisponibile slotDisponibileExpected = new SlotDisponibile( dataExpected, oraExpected , medicoExpected );
@@ -276,4 +282,22 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
 
     }
+
+
+    /** A partire dalla lista visite giornaliere di default, restituisce una lista lunga 1 dalla lista  */
+    public List<Visita> getListaDiUnaVisita() {
+
+//        CSVAbstractReader<Visita> csvReader = new VisitaCSVReader();
+//        return new VisitaCSVReader().leggiCSV(csvReader.getRightFilePath()).stream().limit(1).toList();
+
+        return datiVisiteTest.getListaVisiteTest().stream().limit(1).toList();
+
+    }
+
+    /** A partire dalla lista visite giornaliere di default, ritorna una lista lunga 2 */
+    public List<Visita> getListaDiDueVisite() {
+        return datiVisiteTest.getListaVisiteTest().stream().limit(2).toList();
+    }
+
+
 }

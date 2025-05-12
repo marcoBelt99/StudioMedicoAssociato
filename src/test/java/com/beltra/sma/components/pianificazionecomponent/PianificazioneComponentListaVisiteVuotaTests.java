@@ -1,8 +1,8 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
-import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
+import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,7 +35,6 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
     private Stream<Arguments> provideDatiTestCase_ListaVisiteEmpty() {
 
 
-
         return Stream.of(
                 /// 1.A: oraAttuale before oraAperturaMattina
                 /// Se (oraAttuale < oraAperturaMattina)
@@ -48,7 +47,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         new ArrayList<Visita>(), // lista vuota
 
                         dataVenerdi17Gennaio2025Test,
-                        PianificazioneComponent.orarioAperturaMattina.plusMinutes(PianificazioneComponent.pausaFromvisite),
+                        Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite),
                         medicoService.getAllMedici().get(0)
                 ),
 
@@ -63,7 +62,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         new ArrayList<Visita>(),
 
                         dataVenerdi17Gennaio2025Test,
-                        LocalTime.of( 7, 50  ).plusMinutes( (PianificazioneComponent.pausaFromvisite)),
+                        LocalTime.of( 7, 50  ).plusMinutes( (Parameters.pausaFromvisite)),
                         medicoService.getAllMedici().get(0)
                 ),
 
@@ -78,7 +77,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         new ArrayList<Visita>(),
 
                         dataVenerdi17Gennaio2025Test,
-                        PianificazioneComponent.orarioAperturaPomeriggio.plusMinutes( PianificazioneComponent.pausaFromvisite ), // Mi aspetto 14:05
+                        Parameters.orarioAperturaPomeriggio.plusMinutes( Parameters.pausaFromvisite ), // Mi aspetto 14:05
                         medicoService.getAllMedici().get(0) // Mi aspetto m1
                 ),
 
@@ -105,6 +104,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                                                           List<Medico> listaMediciTest, List<Visita> listaVisiteTest,
                                                           Date dataExpected, LocalTime oraExpected, Medico medicoExpected) {
 
+
         // ACT
         Optional<SlotDisponibile> risultato = pianificazioneComponent.trovaSlotDisponibile(
                 durataMediaPrestazioneTest,
@@ -113,6 +113,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                 listaMediciTest,
                 listaVisiteTest
         );
+
 
         // ASSERT
         assertTrue( risultato.isPresent(), "Il risultato dovrebbe essere presente");

@@ -32,9 +32,8 @@ public class PianificazioneComponentTest {
     @Autowired
     protected MedicoService medicoService;
 
-    @Autowired
-    protected DatiVisiteTest datiVisiteTest;
-
+    //@Autowired
+    protected DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
 
 
     /// PARAMETRI DI TEST
@@ -61,7 +60,8 @@ public class PianificazioneComponentTest {
         return datiVisiteTest
                 .getListaVisiteTest()
                 .stream()
-                .filter( v -> v.getDataVisita().after( DatiTest.dataTest_16Gennaio2025 ) ).toList();
+                .filter( v -> v.getDataVisita().after( DatiTest.dataTest_16Gennaio2025 ) )
+                .toList();
     }
 
     protected List<Medico> getAllDatiMediciTests() {

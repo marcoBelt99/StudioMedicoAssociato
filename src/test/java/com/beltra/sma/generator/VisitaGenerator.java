@@ -1,7 +1,7 @@
 package com.beltra.sma.generator;
 
 
-import com.beltra.sma.datastructures.Pianificatore;
+//import com.beltra.sma.datastructures.Pianificatore;
 import com.beltra.sma.model.Visita;
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;

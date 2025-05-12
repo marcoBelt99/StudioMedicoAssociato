@@ -1,10 +1,9 @@
 package com.beltra.sma.components.calcolatoreammissibilitacomponent;
 
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
-import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.components.RisultatoAmmissibilita;
 import com.beltra.sma.model.Prestazione;
-import org.junit.jupiter.api.Assertions;
+import com.beltra.sma.utils.Parameters;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,8 +55,6 @@ public class CalcolatoreAmmissibilitaCompontentTests {
 
 
 
-
-
     Prestazione createPrestazioneTest() {
 
         Prestazione prestazioneTest = new Prestazione();
@@ -83,7 +80,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         Prestazione prestazioneTest = createPrestazioneTest();
 
         assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia() ) );
-        Assertions.assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
+        assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
@@ -102,8 +99,6 @@ public class CalcolatoreAmmissibilitaCompontentTests {
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
-
-
 
 
 
@@ -244,7 +239,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
     Arguments.of(LocalTime.of(23, 1), false), // 23:01
             Arguments.of(LocalTime.MAX, false), // 23:59:59.99999999
             Arguments.of(LocalTime.MIDNIGHT, false), // 00:00
-            Arguments.of(PianificazioneComponent.orarioChiusuraMattina, false), // 12:00
+            Arguments.of(Parameters.orarioChiusuraMattina, false), // 12:00
             Arguments.of(LocalTime.of(0, 1), true), // 00:01
             Arguments.of(LocalTime.of(8, 35), true), // 08:35
             Arguments.of(LocalTime.of(11, 59), true) // 11:59
@@ -265,17 +260,17 @@ public class CalcolatoreAmmissibilitaCompontentTests {
                 Arguments.of(LocalTime.MIDNIGHT, true), // 00:00
                 Arguments.of(LocalTime.of(0,1), false), // 00:01 (da qui compreso inizia la mattina)
                 Arguments.of(LocalTime.of(11,59), false), // siamo ancora in mattina
-                Arguments.of(PianificazioneComponent.orarioChiusuraMattina, true), // 12:00 (da qui compreso inizia il pomeriggio)
+                Arguments.of(Parameters.orarioChiusuraMattina, true), // 12:00 (da qui compreso inizia il pomeriggio)
                 Arguments.of(LocalTime.of(12, 1), true), // 12:01
-                Arguments.of(PianificazioneComponent.orarioAperturaPomeriggio, true), // 14:00
-                Arguments.of(PianificazioneComponent.orarioChiusuraPomeriggio, true) // 21:00
+                Arguments.of(Parameters.orarioAperturaPomeriggio, true), // 14:00
+                Arguments.of(Parameters.orarioChiusuraPomeriggio, true) // 21:00
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideDatiForIsOrarioInPomeriggio")
     public void testIsOrarioInPomeriggio(LocalTime orarioInput, boolean expected) {
-        assertEquals(!calcolatoreAmmissibilitaComponent.isOrarioInMattina(orarioInput), expected);
+        assertEquals(expected, !calcolatoreAmmissibilitaComponent.isOrarioInMattina(orarioInput));
     }
 
     @Test
@@ -284,6 +279,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         LocalTime orarioFineTest = LocalTime.of(11, 35);
         LocalTime orarioChiusuraTest = LocalTime.of(12,0);
         Double durataTest = 19.0;
+
         boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
 
         assertTrue(risultato);
@@ -296,6 +292,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         LocalTime orarioFineTest = LocalTime.of(11, 35);
         LocalTime orarioChiusuraTest = LocalTime.of(12,0);
         Double durataTest = 20.0;
+
         boolean risultato = calcolatoreAmmissibilitaComponent.isDurataMediaContenuta(durataTest, orarioFineTest, orarioChiusuraTest);
 
         assertTrue(risultato);
@@ -326,7 +323,6 @@ public class CalcolatoreAmmissibilitaCompontentTests {
         assertTrue(risultato);
 
     }
-
 
 
 }

@@ -3,8 +3,8 @@ package com.beltra.sma.components;
 
 import com.beltra.sma.datastructures.CodaMediciDisponibili;
 import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
-import com.beltra.sma.datastructures.Pianificatore;
-import com.beltra.sma.datastructures.PianificatoreImpl;
+//import com.beltra.sma.datastructures.Pianificatore;
+//import com.beltra.sma.datastructures.PianificatoreImpl;
 import com.beltra.sma.functional.TriFunction;
 
 import com.beltra.sma.model.Medico;
@@ -31,7 +31,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     // Code Injection
     private final VisitaService visitaService;
 
-    private final Pianificatore pianificatore;
+    //private final Pianificatore pianificatore;
 
     private final CalcolatoreAmmissibilitaComponentImpl calcolatore;
 
@@ -43,10 +43,10 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
      * Nota bene: @Lazy per evitare dipendenze circolari tra i Bean: PianificazioneComponentImpl e VisitaServiceImpl
      */
     public PianificazioneComponentImpl(@Lazy VisitaService visitaService,
-                                       PianificatoreImpl pianificatore, // TODO: da rimuovere quando finisco il passaggio delle strutture dati
+                                       //PianificatoreImpl pianificatore, // TODO: da rimuovere quando finisco il passaggio delle strutture dati
                                        CalcolatoreAmmissibilitaComponentImpl calcolatore) {
         this.visitaService = visitaService;
-        this.pianificatore = pianificatore; // TODO: da rimuovere quando finisco il passaggio delle strutture dati
+        //this.pianificatore = pianificatore; // TODO: da rimuovere quando finisco il passaggio delle strutture dati
         this.calcolatore = calcolatore;
     }
 
