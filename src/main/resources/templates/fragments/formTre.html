@@ -1,26 +1,26 @@
-
-
 <div th:fragment="formTre">
-    <h3>Riepilogo Prenotazione</h3>
-    <form th:action="@{/prenotazione/conferma}" method="post">
-        <div>
-            <h3>Paziente:</h3>
-            <p>Nome: <span th:text="${session.primaDataDisponibile}"></span></p>
-            <p>Cognome: <span th:text="${session.primoOrarioDisponibile}"></span></p>
-        </div>
 
-        <div>
-            <h3>Medico:</h3>
-        </div>
+    <h3 class="mb-4 text-center">Riepilogo Prenotazione</h3>
+    <hr/>
+    <form>
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Paziente:</h4>
+                <p><span th:text="${nomePaziente + ' ' + cognomePaziente}"></span></p>
+<!--                <p>Cognome: <span th:text="${cognomePaziente}"></span></p>-->
+            </div>
 
-        <div>
-            <h3>Prestazione: <span th:text="${session.prestazione.getTitolo()}"></span></h3>
-        </div>
+            <div class="col-md-4">
+                <h4>Medico:</h4>
+                <p><span th:text="${medicoCandidato}"></span></p>
+            </div>
 
-        <div>
-            <h3>Costo totale: <span th:text="${session.prestazione.getCosto()+session.prestazione.getTicket()} + ' €'" ></span></h3>
-        </div>
+            <div class="col-md-4">
+                <h4>Prestazione: </h4>
+                <span th:text="${session.prestazione.getTitolo()}"></span>
+                <p>Costo totale: <span th:text="${session.prestazione.getCosto()+session.prestazione.getTicket()} + ' €'" ></span></p>
+            </div>
 
-        <button class="btn btn-success" type="submit">Conferma</button>
+        </div>
     </form>
 </div>

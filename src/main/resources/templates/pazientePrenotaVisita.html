@@ -10,14 +10,12 @@
 
         <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
-
         <div class="container">
             <div class="card">
 
-
                 <!-- TODO: STEPPER -->
-                <div class="steppers">
 
+                <div class="steppers">
 
                     <div class="steppers-header">
                         <ul>
@@ -43,6 +41,7 @@
                         <span class="steppers-index" aria-hidden="true">2/6</span>
                     </div>
 
+                    <!-- Inserisco il giusto fragments, sulla base dello step in cui mi trovo    -->
                     <!-- Stepper Content -->
                     <div class="steppers-content" aria-live="polite">
                         <div th:if="${step == 1}" th:insert="~{fragments/formPrestazione}"></div>
@@ -66,9 +65,23 @@
                             </svg>Avanti
                         </a>
 
-                        <button th:if="${step == 3}" type="submit"
+                <!-- TODO: probabilmente questo è da tenere, mentre quello presente in formTre.html è da rimuovere                        -->
+                <!-- Vecchio modo:-->
+<!--                        <button th:if="${step == 3}" type="submit"-->
+<!--                                class="btn btn-primary btn-sm steppers-btn-confirm d-none d-lg-block"-->
+<!--                                >-->
+<!--                            Conferma-->
+<!--                        </button>-->
+                <!-- Nuovo modo:                        -->
+                    <form th:if="${step == 3}" th:action="@{/prenotazione/conferma}" method="post">
+                        <button type="submit"
                                 class="btn btn-primary btn-sm steppers-btn-confirm d-none d-lg-block">
-                            Conferma</button>
+                            Conferma
+                        </button>
+                    </form>
+
+
+
                     </nav>
 
                 </div>

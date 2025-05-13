@@ -1,11 +1,15 @@
 package com.beltra.sma.controller;
 
 import com.beltra.sma.components.PianificazioneComponent;
+import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.service.PrestazioneService;
+import com.beltra.sma.service.UtenteService;
 import com.beltra.sma.utils.SlotDisponibile;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,18 +31,21 @@ import java.util.Optional;
 public class PrenotazioneController {
 
     private final PrestazioneService prestazioneService;
-    private final HttpSession httpSession; /** Faccio il code Injection anche della sessione!! */
-    private final PianificazioneComponent pianificazioneComponent;
+    private final UtenteService utenteService;
     private final MedicoService medicoService;
+    private final PianificazioneComponent pianificazioneComponent;
+    private final HttpSession httpSession; /** Faccio il code Injection anche della sessione!! */
 
     PrenotazioneController(PrestazioneService prestazioneService,
                            HttpSession httpSession,
                            PianificazioneComponent pianificazioneComponent,
-                           MedicoService medicoService) {
+                           MedicoService medicoService,
+                           UtenteService utenteService) {
         this.prestazioneService = prestazioneService;
         this.httpSession = httpSession;
         this.pianificazioneComponent = pianificazioneComponent;
         this.medicoService = medicoService;
+        this.utenteService = utenteService;
     }
 
 
@@ -53,12 +60,19 @@ public class PrenotazioneController {
         /** Recupero dalla sessione l'attributo "prestazione" che contiene l'oggetto prestazione */
         Prestazione prestazione = (Prestazione) httpSession.getAttribute("prestazione");
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        Anagrafica anagraficaPazientePrenotante = utenteService.getUtenteByUsername( auth.getName() ).getAnagrafica();
+        String nomePaziente = anagraficaPazientePrenotante.getNome();
+        String cognomePaziente = anagraficaPazientePrenotante.getCognome();
 
 
         /** Necessario aggiungere al model l'oggetto prestazione recuperato dalla sessione,
          * altrimenti il pulsante "Indietro" dello stepper non funziona !! */
         if(prestazione != null)
+//            model.addAttribute("prestazione", prestazione);
             model.addAttribute("prestazione", prestazione);
+
 
 
         // TODO: aggiungo il valore dello SlotDisponibile:
@@ -66,7 +80,6 @@ public class PrenotazioneController {
         // dalla data attuale (ci pensa poi il metodo a verificare che il giorno non sia un sabato o una domenica).
 
         Optional<SlotDisponibile> slotDisponibile =
-                //pianificazioneComponent.trovaPrimoSlotDisponibileITERATIVO( prestazione.getDurataMedia(),
                 pianificazioneComponent.trovaSlotDisponibile( prestazione.getDurataMedia(),
                         new Date(), // data di oggi
                         LocalTime.now(), // orario attuale
@@ -74,10 +87,11 @@ public class PrenotazioneController {
                         pianificazioneComponent.getAllVisiteByData(new Date() ) ); // gli passo la data di oggi
 
         slotDisponibile.ifPresent(slot -> {
-            model.addAttribute("primaDataDisponibile", slot.getData() );
-            model.addAttribute("primoOrarioDisponibile", slot.getOrario() );
-            model.addAttribute("medicoCandidato", slot.getMedico().getNominativo()   );
-
+            model.addAttribute("primaDataDisponibile", slot.getData() )
+                 .addAttribute("primoOrarioDisponibile", slot.getOrario() )
+                 .addAttribute("medicoCandidato", slot.getMedico().getNominativo()   )
+                 .addAttribute("nomePaziente", nomePaziente )
+                 .addAttribute("cognomePaziente", cognomePaziente); // Notare l'uso del method chaining
             System.out.println( slotDisponibile.get() );
         });
 
@@ -100,8 +114,6 @@ public class PrenotazioneController {
      *  */
     @PostMapping("/step2")
     public String step2(
-//            @RequestParam String nome,
-//            @RequestParam String cognome,
             @RequestParam String primaDataDisponibile,
             @RequestParam String primoOrarioDisponibile,
             @RequestParam String medicoCandidato,
@@ -130,7 +142,10 @@ public class PrenotazioneController {
         return "pazientePrenotaVisita";
     }
 
+
+    /** Ultimo stadio della prenotazione */
     @PostMapping("/conferma")
+//    @PostMapping("/step/3")
     public String confermaPrenotazione(HttpSession session,
                                        RedirectAttributes redirectAttributes) {
 

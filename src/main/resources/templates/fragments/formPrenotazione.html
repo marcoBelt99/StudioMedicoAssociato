@@ -1,11 +1,9 @@
-<!--<div th:fragment="formDue">-->
-
-
 <div th:fragment="formPrenotazione">
-    <h3>Disponibilita'</h3>
+
+    <h3 class="mb-4 text-center">Disponibilita'</h3>
+    <hr/>
     <form th:action="@{/prenotazione/step2}" method="post">
         <div class="form-group">
-<!--            <label for="prima_data_disponibile">La prima data disponibile per la visita e':</label>-->
             <p>La prima data disponibile per la visita e':</p>
             <input class="form-control" type="text"
                    name="primaDataDisponibile"
@@ -38,12 +36,10 @@
 
         <div class="row mt-4">
             <div class="form-group col text-center">
-                <button type="submit" class="btn btn-primary">Avanti</button>
+<!--                <button type="submit" class="btn btn-primary">Avanti</button>-->
                 <button type="button" class="btn btn-secondary">Cambia Data</button>
             </div>
         </div>
-
-
 
 
     </form>

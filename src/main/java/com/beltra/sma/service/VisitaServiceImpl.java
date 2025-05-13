@@ -148,11 +148,8 @@ public class VisitaServiceImpl implements VisitaService {
 
 
 
-        // TODO: A che ora la assegno?? Chiamata a metodo trovaPrimoSlotDisponibile() del calcolatoreAmmissibilitaComponent.
+        // TODO: A che ora la assegno?? Chiamata a metodo trovaPrimoSlotDisponibile() del pianificazioneComponent.
         //Optional<SlotDisponibile> slotDisponibile = calcolatoreAmmissibilitaComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(), data );
-
-
-
 
 
         // Trova il primo slot disponibile

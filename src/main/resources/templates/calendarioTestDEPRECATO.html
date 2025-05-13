@@ -30,11 +30,10 @@
 
 
 
-
-<!--TODO: I seguenti script in questo esatto ordine sono stati generati al di fuori di questo progetto
-          tramite npm, poi ho preso dalle varie cartelle /dist di ogni sottomodulo i file .js necessari.
+    <!-- TODO: importo SCHEDULE-X: importantissimo è preservare l'ordine con cui sono importati gli script-->
+<!--    TODO: I seguenti script in questo esatto ordine sono stati generati al di fuori di questo progetto
+         tramite npm, poi ho preso dalle varie cartelle /dist di ogni sottomodulo i file .js necessari.
 -->
-
 
     <script th:src="@{/js/schedule-x/preact.min.umd.js}"></script>
     <script th:src="@{/js/schedule-x/hooks.umd.js}"></script>
@@ -64,7 +63,7 @@
         const { createCalendar, viewWeek } = window.SXCalendar;
 
 
-        //const { createDragAndDropPlugin } = window.SXDragAndDrop;
+        //const { createDragAndDropPlugin } = window.SXDragAndDrop; // disabilito il drago and drop
 
         const plugins = [
             //createDragAndDropPlugin(),

@@ -61,11 +61,11 @@ public interface VisitaService {
     List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data);
 
 
-    /** Creazione di una nuova visita: implica la creazione nella stessa transazione sia dell'entità Visita, che dell'entità Prenotazione.
-     *  La prenotazione avrà come data la data attuale.
+    /** Creazione di una nuova visita: implica la creazione, nella stessa transazione, sia dell'entità Visita, che dell'entità Prenotazione.
+     *  La prenotazione avrà come data la data attuale. <br>
      *  La visita avrà come data una data calcolata sulla base di vari fattori, tra cui le visite già esistenti e
      *  sulla durata della prestazione richiesta.
-     * @param prestazione: definisce l'oggetto della visita, descrive lo scopo della visita
+     * @param prestazione: definisce l'oggetto della visita, ooverosia descrive lo scopo della visita.
      * */
     Visita createVisita( String usernameUtente, Prestazione prestazione );
 

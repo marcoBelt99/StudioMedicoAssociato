@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
+/** Gestisce cosa vuoi vedere nella pagina di index, sulla base del tipo di utente.  */
 @Controller
 public class IndexController {
 
@@ -56,9 +58,9 @@ public class IndexController {
                     userId)
                 );
 
-        // Ottieni l'utente attualmente connesso (autenticato)
+        // Ottieni l'utente attualmente connesso (autenticato), che servirà poi per
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+//        String username = auth.getName();
         String ruolo = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst().orElseThrow().trim(); // Prendo il primo ruolo trovato (potrebbe succedere che un utente ne abbia piu' di uno)
