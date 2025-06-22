@@ -36,7 +36,7 @@ public interface PianificazioneComponent {
      * disponibili tra le visite esistenti.<br>
      * Va richiamato sia nel Controller della Prenotazione, per poter stamapare a video e in HTML nello stepper lo SlotDisponibile,
      * Sia in fase di Creazione Visita (e prenotazione).
-     * @param durata durata media della prestazione a cui fa riferimento la visita che si sta creando .
+     * @param durata durata media della prestazione a cui fa riferimento la visita che si sta creando.
      * @param dataAttuale data di partenza da cui iniziare a cercare lo slot.
      * @param oraAttuale ora attuale di riferimento (dalla quale iniziare la ricerca).
      * @param listaMedici elenco di tutti i medici del sistema su cui ricercare il prossimo medico disponibile.

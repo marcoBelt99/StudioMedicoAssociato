@@ -5,6 +5,7 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 //import com.beltra.sma.utils.CSV.VisitaCSVReader;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalTime;
@@ -186,11 +187,11 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
 
     }
 
-/*
-    @Ignore
+
+
     /// 2.E visite sia al mattino che al pomeriggio.
     ///     TODO: come listaVisite da qui in poi leggo da file CSV.
-    ///     File usato: visiteGiornaliereFull.csv
+    ///     File usato: visiteGiornaliereFull_Caso_E.csv
     ///     TODO: simulo l'inserimento di v10: Mi aspetto di ottenere lo stesso comportamento di quanto fatto nei fogli di carta
     ///
     @Test
@@ -198,7 +199,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         // ARRANGE & ACT
         Date dataExpected = dataVenerdi17Gennaio2025Test;
         LocalTime oraExpected =  // visto che so che: con gli orari sforo la fascia del mattino, e non ci sono visite al pomeriggio, pianifico per 14:05
-                PianificazioneComponent.orarioAperturaPomeriggio.plusMinutes(PianificazioneComponent.pausaFromvisite);  //
+                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromvisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(2); // mi aspetterei che inizino a ripartire da capo anche i medici finchè non li rioccupo tutti gli assegnerei 14:05!! ==> TODO: implementare questo comportamento
 
         // TODO:
@@ -213,8 +214,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
                 dataVenerdi17Gennaio2025Test,
                 LocalTime.of( 8, 55  ), // ora ammissibile
                 getAllDatiMediciTests(), //  come dati di test mi servono anche i medici (sono != da quelli a DB),
-                VisitaCSVReader.leggiVisiteDaCsv("src/test/resources/visiteMattinaFull_9visite.csv", getAllDatiMediciTests(), getAllPrestazioniTests()
-                        ), // come dati di test ho le prime 9 visite (tra quelle disegnate su carta) // TODO: le recupero da CSV
+                datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteMattinaFull_Caso_E.csv"),
 
                 dataExpected,
                 oraExpected,
@@ -231,7 +231,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
 
     }
 
-    */
+
 
 
 
@@ -260,7 +260,6 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
                 new GregorianCalendar(2025, Calendar.MARCH, 26).getTime(),
                 LocalTime.of( 23, 17  ), // ora non ammissibile
                 getAllDatiMediciTests(), //  medici che ho su carta (sono != da quelli a DB),
-                //VisitaCSVReader.leggiVisiteDaCsv("src/test/resources/visiteMattinaFull_Caso_D.csv", getAllDatiMediciTests(), getAllPrestazioniTests()), // come dati di test ho le prime 8 visite (tra quelle disegnate su carta) // TODO: le recupero da CSV
                 datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteMattinaFull_Caso_D.csv"), // come dati di test ho le prime 8 visite (tra quelle disegnate su carta)
 
                 dataExpected,
@@ -278,5 +277,85 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
     }
 
 
+    /** ########################################################## */
+    /** ########################################################## */
+    /** ########################## SFORAMENTO #################### */
+    /** ########################################################## */
+    /** ########################################################## */
+
+//    @Test
+//    /// 2.F lista visite full!!.
+//    ///     File usato: visiteGiornaliereFull.csv
+//    @DisplayName("1 visita diventa non ammissibile, e sarà pianificata nel successivo giorno ammissibile")
+//    public void testTrovaSlotDisponibile_WithOraAttualeAmmissibileWithMattinaFull_AndPomeriggioFull_AfterV19() {
+//
+//        // ARRANGE & ACT
+//        Date dataExpected = dataLunedi20Gennaio2025Test; // TODO: come data di test mi aspetto la prossima disponibile!!
+//        LocalTime oraExpected =
+//                        Parameters
+//                        .orarioAperturaMattina
+//                        .plusMinutes(Parameters.pausaFromvisite);  // TODO: mattina, perchè so che per i dati di test che ho (che sto usando ora) sarà la prima visita al mattino
+//        Medico medicoExpected = getAllDatiMediciTests().get(0); // TODO: mi aspetto m1 come medico
+//
+//
+//        Optional<SlotDisponibile> risultato = arrangeAndAct(
+//                getAllPrestazioniTests().get(2).getDurataMedia(),  // durata = 3 ore,
+//                dataVenerdi17Gennaio2025Test,
+//                LocalTime.of( 15, 55  ), // ora ammissibile
+//                getAllDatiMediciTests(),
+//                datiVisiteTest.getListaVisiteFullFromCSV(),
+//
+//                dataExpected,
+//                oraExpected,
+//                medicoExpected
+//        );
+//
+//
+//        // ASSERT
+//        assertTrue(risultato.isPresent(), "Il risultato dovrebbe essere presente");
+//        assertEquals( slotDisponibileExpected.getData(), risultato.get().getData() );
+//        assertEquals( slotDisponibileExpected.getOrario(), risultato.get().getOrario() );
+//        assertEquals( slotDisponibileExpected.getMedico().getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() );
+//        assertEquals( slotDisponibileExpected.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() );
+//
+//    }
+//
+//
+//    @DisplayName("2 visite diventano non ammissibili, e saranno pianificate nel successivo giorno ammissibile.")
+//    @Test
+//    /// 2.G lista visite full sforamento !!.
+//    ///     File usato: visiteGiornaliereFullSforamento.csv
+//    public void testTrovaSlotDisponibile_WithOraAttualeAmmissibileWithMattinaFull_AndPomeriggioFull_AfterV20() {
+//
+//        // ARRANGE & ACT
+//        Date dataExpected = dataLunedi20Gennaio2025Test; // TODO: come data di test mi aspetto la prossima disponibile!!
+//        LocalTime oraExpected =
+//                Parameters
+//                        .orarioAperturaMattina
+//                        .plusMinutes(Parameters.pausaFromvisite);  // TODO: mattina, perchè so che per i dati di test che ho (che sto usando ora) sarà la prima visita al mattino
+//        Medico medicoExpected = getAllDatiMediciTests().get(1); // TODO: mi aspetto m2 come medico!
+//
+//
+//        Optional<SlotDisponibile> risultato = arrangeAndAct(
+//                getAllPrestazioniTests().get(2).getDurataMedia(),  // durata = 3 ore,
+//                dataVenerdi17Gennaio2025Test,
+//                LocalTime.of( 15, 55  ), // ora ammissibile
+//                getAllDatiMediciTests(),
+//                datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteGiornaliereFullSforamento.csv"),
+//
+//                dataExpected,
+//                oraExpected,
+//                medicoExpected
+//        );
+//
+//
+//        // ASSERT
+//        assertTrue(risultato.isPresent(), "Il risultato dovrebbe essere presente");
+//        assertEquals( slotDisponibileExpected.getData(), risultato.get().getData() );
+//        assertEquals( slotDisponibileExpected.getOrario(), risultato.get().getOrario() );
+//        assertEquals( slotDisponibileExpected.getMedico().getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() );
+//        assertEquals( slotDisponibileExpected.getMedico().getMatricola(), risultato.get().getMedico().getMatricola() );
+//
+//    }
 
 }

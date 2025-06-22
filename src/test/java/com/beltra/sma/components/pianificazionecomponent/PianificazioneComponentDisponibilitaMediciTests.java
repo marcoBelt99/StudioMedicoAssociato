@@ -4,10 +4,12 @@ import com.beltra.sma.datastructures.CodaMediciDisponibili;
 import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
+import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+
 
 import java.sql.Time;
 import java.time.LocalTime;
@@ -16,8 +18,13 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+//@SpringBootTest
 public class PianificazioneComponentDisponibilitaMediciTests extends PianificazioneComponentTest {
+
+
+    @Mock
+    VisitaService visitaService;
+
 
     /// #################################################################################
     /// #########################   3) DISPONIBILITÀ MEDICI   #########################
@@ -28,7 +35,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
     /// 3.A
     /// CASO IN CUI C'È UN MEDICO LIBERO
-    /// listaVisite = (v1, v2)
+    /// listaVisite = [v1, v2]
     /// listaMedici = (m1, m2, m3) ==> m3 è libero
     /// oraAttualeTest = 06:55 (< oraAperturaMattina)
     @Test
@@ -65,7 +72,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
                 );
 
         // ACT
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest);
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest, visitaService);
 
         Medico medicoCheNonLavora = listaMediciTest.stream()
                 .filter( med -> !codaMediciDisponibili.getMediciQueue()
@@ -93,7 +100,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
     /// 3.B
     /// CASO IN CUI C'È UN MEDICO LIBERO
-    /// listaVisite = (v1, v2)
+    /// listaVisite = [v1, v2]
     /// listaMedici = (m1, m2, m3) ==> m3 è libero
     /// oraAttualeTest = 07:10 (> oraAperturaMattina) && (< fineVisita.oraFine)
     ///
@@ -132,7 +139,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
                 );
 
         // ACT
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest);
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest, visitaService);
         Medico medicoCheNonLavora = listaMediciTest.stream()
                 .filter( med -> !codaMediciDisponibili.getMediciQueue()
                         .stream()
@@ -195,7 +202,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
                 );
 
         // ACT
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest);
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest, visitaService);
         Medico medicoCheNonLavora = listaMediciTest.stream()
                 .filter( med -> !codaMediciDisponibili.getMediciQueue()
                         .stream()
@@ -261,7 +268,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
                 );
 
         // ACT
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest);
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMediciTest, listaVisiteTest,LocalTime.now(), durataMediaPrestazioneTest, visitaService);
         Medico medicoCheNonLavora = listaMediciTest.stream()
                 .filter( med -> !codaMediciDisponibili.getMediciQueue()
                         .stream()
@@ -286,12 +293,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
 
     /** A partire dalla lista visite giornaliere di default, restituisce una lista lunga 1 dalla lista  */
     public List<Visita> getListaDiUnaVisita() {
-
-//        CSVAbstractReader<Visita> csvReader = new VisitaCSVReader();
-//        return new VisitaCSVReader().leggiCSV(csvReader.getRightFilePath()).stream().limit(1).toList();
-
         return datiVisiteTest.getListaVisiteTest().stream().limit(1).toList();
-
     }
 
     /** A partire dalla lista visite giornaliere di default, ritorna una lista lunga 2 */

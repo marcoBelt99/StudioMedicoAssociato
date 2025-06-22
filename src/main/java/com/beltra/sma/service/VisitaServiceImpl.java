@@ -38,6 +38,7 @@ public class VisitaServiceImpl implements VisitaService {
         this.medicoServiceImpl = medicoServiceImpl;
     }
 
+
     @Override
     public List<Visita> getAll() {
         return visitaRepository.findAll();

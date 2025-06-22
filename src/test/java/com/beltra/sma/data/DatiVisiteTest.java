@@ -30,19 +30,8 @@ public class DatiVisiteTest implements DatiTest<Visita> {
          *  entro gli orari di apertura di mattina e pomeriggio, e se una visita poi sfora la
          *  giornata di venerdì, deve essere assegnata a lunedì 20 gennaio.
          * */
-
-        // TODO:
-        //  NUOVA VERSIONE CON CSV READER
         return getListaVisiteFullFromCSV().stream().limit(6).toList();
     }
-
-
-//    @Test
-//    void prova() {
-//        getListaVisiteTest().forEach(v -> System.out.println( v.getIdVisita() + ") " +  v) );
-//        System.out.println();
-//        getListaMediciTest().forEach(m -> System.out.println( m.getIdAnagrafica() + ") " +  m.getNominativo()) );
-//    }
 
 
     /** Legge le visite dal relativo file CSV passato nel parametro <b>path</b>.<br>

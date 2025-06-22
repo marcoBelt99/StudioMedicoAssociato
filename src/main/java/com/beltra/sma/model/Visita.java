@@ -2,6 +2,7 @@ package com.beltra.sma.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,6 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-
 public class Visita {
 
     @Id
@@ -32,7 +32,6 @@ public class Visita {
     @ManyToOne
     @JoinColumn(name = "id_prestazione")
     private Prestazione prestazione;
-
 
 
     // Getters and Setters
@@ -68,4 +67,7 @@ public class Visita {
     public Time calcolaOraFine() {
         return Time.valueOf( getOra().toLocalTime().plusMinutes( Math.round( getPrestazione().getDurataMedia() ) ) );
     }
+
+
+
 }

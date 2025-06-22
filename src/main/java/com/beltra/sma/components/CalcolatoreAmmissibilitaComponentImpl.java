@@ -1,13 +1,13 @@
 package com.beltra.sma.components;
 
 import com.beltra.sma.functional.TriPredicate;
+import com.beltra.sma.utils.Parameters;
 import org.springframework.stereotype.Component;
+
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 @Component
@@ -21,25 +21,26 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     private Double durataPrestazione;
 
 
-    private LocalTime orarioAperturaMattina = PianificazioneComponent.orarioAperturaMattina;
-    private LocalTime orarioChiusuraMattina = PianificazioneComponent.orarioChiusuraMattina;
-    private LocalTime orarioAperturaPomeriggio = PianificazioneComponent.orarioAperturaPomeriggio;
-    private LocalTime orarioChiusuraPomeriggio = PianificazioneComponent.orarioChiusuraPomeriggio;
-    private Long pausaFromVisite = PianificazioneComponent.pausaFromvisite;
+    private LocalTime orarioAperturaMattina = Parameters.orarioAperturaMattina;
+    private LocalTime orarioChiusuraMattina = Parameters.orarioChiusuraMattina;
+    private LocalTime orarioAperturaPomeriggio = Parameters.orarioAperturaPomeriggio;
+    private LocalTime orarioChiusuraPomeriggio = Parameters.orarioChiusuraPomeriggio;
+    private Long pausaFromVisite = Parameters.pausaFromvisite;
 
     /** COSTRUTTORI */
     public CalcolatoreAmmissibilitaComponentImpl() {
     }
 
-    public CalcolatoreAmmissibilitaComponentImpl(Double durataPrestazione) {
-        this.orarioDaControllare = LocalTime.now();
-        this.durataPrestazione = durataPrestazione;
-    }
+// Questi due costruttori sono inutili molto probabilmente
+//    public CalcolatoreAmmissibilitaComponentImpl(Double durataPrestazione) {
+//        this.orarioDaControllare = LocalTime.now();
+//        this.durataPrestazione = durataPrestazione;
+//    }
 
-    public CalcolatoreAmmissibilitaComponentImpl(LocalTime orarioDaControllare, Double durataPrestazione) {
-        this.orarioDaControllare = orarioDaControllare;
-        this.durataPrestazione = durataPrestazione;
-    }
+//    public CalcolatoreAmmissibilitaComponentImpl(LocalTime orarioDaControllare, Double durataPrestazione) {
+//        this.orarioDaControllare = orarioDaControllare;
+//        this.durataPrestazione = durataPrestazione;
+//    }
 
 
     /** METODI */
@@ -70,10 +71,10 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     public Boolean condizioneSoddisfacibilita(LocalTime orarioDaControllare) { return
                 ( !orarioDaControllare.isBefore(orarioAperturaMattina) &&
-                        !orarioDaControllare.isAfter(orarioChiusuraMattina)
+                  !orarioDaControllare.isAfter(orarioChiusuraMattina)
                 ) ||
                 ( !orarioDaControllare.isBefore(orarioAperturaPomeriggio) &&
-                        !orarioDaControllare.isAfter(orarioChiusuraPomeriggio)
+                  !orarioDaControllare.isAfter(orarioChiusuraPomeriggio)
                 );
     }
 
@@ -112,12 +113,11 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     /** Aggiunge il parametro durataMedia all'orario passato come parametro e la pausa di 5 minuti (tra una visita e la successiva).*/
     public LocalTime aggiungiDurataAndPausa(LocalTime ora, Double durataMedia) {
-        return ora.plusMinutes(durataMedia.intValue() + PianificazioneComponent.pausaFromvisite);
+        return ora.plusMinutes(durataMedia.intValue() + Parameters.pausaFromvisite);
     }
 
     @Override
-    public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia)
-    {
+    public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia) {
         return
             !isOrarioAmmissibile(ora, durataMedia) &&
             (ora.isBefore(LocalTime.MAX) &&
@@ -158,6 +158,12 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     }
 
 
+    @Override
+    public boolean isOrarioAfterChiusuraPomeriggio(LocalTime ora) {
+        return ora.compareTo(orarioChiusuraPomeriggio) > 0; // in questo caso io NON sto comprendendo il fatto che esattamente le "21:00" sia dopo chiusura pomeriggio
+    }
+
+
 
     public boolean isOrarioBetweenMidnightAndAperturaMattina(LocalTime ora) {
         return ora.isAfter(LocalTime.MIDNIGHT) && ora.isBefore(orarioAperturaMattina);
@@ -181,4 +187,18 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
         return lambdaIsDurataMediaContenuta.test(durataMedia, oraFine, orarioChiusura);
     }
 
+    @Override
+    public Date findNextGiornoAmmissibile(Date dataDiPartenza, Calendar calendar) {
+
+        calendar.setTime(dataDiPartenza);
+        calendar.add(Calendar.DAY_OF_MONTH, 1); // Partiamo dal giorno successivo
+        Date dataSuccessiva = calendar.getTime();
+
+        while (!isGiornoAmmissibile(dataSuccessiva)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            dataSuccessiva = calendar.getTime();
+        }
+
+        return dataSuccessiva;
+    }
 }

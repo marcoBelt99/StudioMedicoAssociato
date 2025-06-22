@@ -1,6 +1,7 @@
 package com.beltra.sma.components;
 
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 
 /** Classe che supporta le principali operazioni di verifica e controllo sulle specifiche riguardanti Date e Orari.
@@ -75,7 +76,20 @@ public interface CalcolatoreAmmissibilitaComponent {
      * e prima di mezzanotte */
     boolean isOrarioAfterAperturaPomeriggio(LocalTime ora);
 
+    /** Controlla che ora sia dopo ora chiusura pomeriggio.
+     *
+     *  */
+    boolean isOrarioAfterChiusuraPomeriggio(LocalTime ora);
+
 
     /** Verifica che durataMedia sia compreso tra (oraFine-orarioChiusura) */
     boolean isDurataMediaContenuta(Double durataMedia, LocalTime oraFine, LocalTime orarioChiusura);
+
+
+    /** Metodo di utilità che ritorna il primo giorno ammissibile.<br>
+     * @param dataDiPartenza data da analizzare e, se non ammissibile (cioè se è sabato o domenica) da incrementare.
+     * @param calendar necessario per effettuare l'eventuale incremento di data.
+     * @return il successivo giorno ammissibile, rispetto a dataDaControllare. */
+    Date findNextGiornoAmmissibile(Date dataDiPartenza, Calendar calendar);
+
 }

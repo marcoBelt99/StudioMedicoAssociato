@@ -15,20 +15,20 @@ import java.util.*;
 
 
 
-@SpringBootTest
+//@SpringBootTest
 public class MedicoServiceTests {
 
-    @Autowired
-    MedicoRepository medicoRepository;
-
-
-
-    @Autowired
-    VisitaService visitaService;
-
-    @Autowired
-    private PrestazioneRepository prestazioneRepository;
-
-    // TODO
+//    @Autowired
+//    MedicoRepository medicoRepository;
+//
+//
+//
+//    @Autowired
+//    VisitaService visitaService;
+//
+//    @Autowired
+//    private PrestazioneRepository prestazioneRepository;
+//
+//    // TODO
 
 }

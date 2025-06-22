@@ -32,7 +32,6 @@ public class PianificazioneComponentTest {
     @Autowired
     protected MedicoService medicoService;
 
-    //@Autowired
     protected DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
 
 
@@ -41,6 +40,7 @@ public class PianificazioneComponentTest {
     protected Date dataTest;
     protected Date dataVenerdi17Gennaio2025Test = new GregorianCalendar(2025, Calendar. JANUARY, 17 ).getTime();
     protected Date dataSabato18Gennaio2025Test = new GregorianCalendar(2025, Calendar. JANUARY, 18 ).getTime();
+    protected Date dataDomenica19Gennaio2025Test = new GregorianCalendar(2025, Calendar. JANUARY, 19 ).getTime();
     protected Date dataLunedi20Gennaio2025Test = new GregorianCalendar(2025, Calendar. JANUARY, 20 ).getTime();
     protected LocalTime oraAttualeTest;
     protected List<Medico> listaMediciTest;
@@ -54,9 +54,11 @@ public class PianificazioneComponentTest {
 /// ###################################
 
 
-    /**  TODO: In questo metodo inserisco i dati di test per i vari casi di test specifici. */
+    /**  In questo metodo inserisco i dati di test per i vari casi di test specifici.
+     *   Viene usato solo nelle suite di test con lista visite non vuota. */
     protected List<Visita> getAllVisiteByData() {
-        DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
+        DatiVisiteTest datiVisiteTest = new DatiVisiteTest(); // todo: forse è da togliere
+
         return datiVisiteTest
                 .getListaVisiteTest()
                 .stream()

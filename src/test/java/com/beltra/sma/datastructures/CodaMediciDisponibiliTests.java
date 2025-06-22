@@ -9,13 +9,13 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 
+import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.FineVisita;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import com.beltra.sma.utils.Parameters;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
 
 
 
@@ -24,12 +24,12 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest
+//@SpringBootTest
 public class CodaMediciDisponibiliTests {
 
     List<Visita> listaVisite = new ArrayList<>();
@@ -37,14 +37,18 @@ public class CodaMediciDisponibiliTests {
     List<Prestazione> listaPrestazioni = new ArrayList<>();
     DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
 
+    //@Autowired
+    private VisitaService visitaService;
+
     Medico m1;
     Medico m2;
     Medico m3;
 
+//    public CodaMediciDisponibiliTests(VisitaService visitaService) {
+//        this.visitaService = visitaService;
+//    }
 
-    final String pathCSV_visiteGiornaliereFull = "src/test/resources/visiteGiornaliereFull.csv";
-
-
+    @BeforeAll
     void inizializzaDati() {
         listaVisite = getAllVisiteByData();
         listaMedici = getAllDatiMediciTests();
@@ -53,26 +57,22 @@ public class CodaMediciDisponibiliTests {
         m1 = listaMedici.get(0);
         m2 = listaMedici.get(1);
         m3 = listaMedici.get(2);
+
+        visitaService = mock(VisitaService.class); // per rispettare la "unitarietà" dei test.
+        // se dovessi iniettare il VisitaService allora a livello di memoria avrei maggior overhead.
+
     }
+
 
 
 
     /** Metodo di providing dei dati, necessario per i test con @ParameterizedTest e @MethodSource */
     private Stream<Arguments> provideDatiTestMediciMapAndMediciQueue() {
 
-        inizializzaDati();
+        //inizializzaDati();
 
         /// Voglio simulare di inserire visite via via crescenti
         return Stream.of(
-
-//            /// []: Simulo la lista di visite vuote, ma la lista di medici non vuota
-//            Arguments.of(
-//                    new ArrayList<Visita>(),
-//                    listaPrestazioni.get(0).getDurataMedia(),
-//
-//                    m1,
-//                    new FineVisita(1L, Time.valueOf( LocalTime.of(7,20) ) )
-//            ),
 
             /// [v1]: simulo l'inserimento di v1
             Arguments.of(
@@ -232,8 +232,8 @@ public class CodaMediciDisponibiliTests {
     void testFunzionamentoMediciMapAndMediciQueue(List<Visita> visiteEsistentiTest, Double durataMediaTest,
                   Medico medicoExpected, FineVisita fineVisitaExpected) {
 
-        // ACT
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, visiteEsistentiTest, LocalTime.now(), durataMediaTest);
+        /// ACT
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, visiteEsistentiTest, LocalTime.now(), durataMediaTest, visitaService);
 
         FineVisita fineVisitaActual = codaMediciDisponibili.getMediciMap().get(medicoExpected);
 
@@ -245,8 +245,8 @@ public class CodaMediciDisponibiliTests {
                 .orElseThrow()
                 .getKey();
 
-        // ASSERT
-        assertEquals(Math.min(listaMedici.size(), visiteEsistentiTest.size()), codaMediciDisponibili.getMediciMap().size());
+        /// ASSERT
+        assertEquals( Math.min(listaMedici.size(), visiteEsistentiTest.size()), codaMediciDisponibili.getMediciMap().size());
         assertEquals(medicoExpected.getMatricola(), medicoActual.getMatricola());
         assertTrue( codaMediciDisponibili.getMediciMap().containsKey(medicoExpected) );
         assertEquals( fineVisitaExpected.getOraFine(),  fineVisitaActual.getOraFine()  );
@@ -254,30 +254,287 @@ public class CodaMediciDisponibiliTests {
     }
 
 
-    /** Copre il caso in cui lista visite e' vuota ma lista medici non lo e',
-     *  quindi ritorna sempre il primo medico! */
+    /** Copre il caso in cui lista visite e' vuota ma lista medici non lo e', quindi ritorna sempre il primo medico! */
     @Test
-    void testGetPrimoMedicoDisponibile_WithListaVisiteEmptyAndListaMediciNotEmpty_IsM1() {
+    void testGetPrimoMedicoDisponibile_WithEmptyListaVisite_AndNotEmptyListaMedici_AlwaysIsM1() {
+        /// []: Simulo la lista di visite vuote, ma la lista di medici non vuota
 
-        // Arrange
-        List<Medico> listaMedici = getAllDatiMediciTests();
+        /// Arrange & Act
+        Double durataTest = listaPrestazioni.get(0).getDurataMedia();
+        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, new ArrayList<>(), LocalTime.now(), durataTest, visitaService);
 
-        // Act
-        CodaMediciDisponibili codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, new ArrayList<>(), LocalTime.now(), 20.0);
-
-        // Assert
-       assertEquals(1L,  codaMediciDisponibili.getPrimoMedicoDisponibile(20.0).getKey().getIdAnagrafica() );
+        /// Assert
+       assertEquals(1L,  codaMediciDisponibili.getPrimoMedicoDisponibile(durataTest).getKey().getIdAnagrafica() );
     }
 
 
-    /** Casistica mentre sto aumentando di visite: arrivato alla 18°-esima voglio esattamente il comportamento aspettato */
+    /** Casistica mentre sto aumentando di visite: arrivato alla 18°-esima voglio esattamente il comportamento aspettato. */
     @Test
-    void testGetPrimoMedicoDisponibile_WithListaVisiteNotEmptyAndListaMediciNotEmpty_WorksCorrectly() {
-        inizializzaDati();
-        CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite.stream().limit(18).toList(), LocalTime.now(), 0.0);
-
+    void testGetPrimoMedicoDisponibile_WithNotEmptyListaVisite_AndNotEmptyListaMedici_WorksCorrectly() {
+        /// ACT
+        CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite.stream().limit(18).toList(), LocalTime.now(),
+                0.0, visitaService);
+        /// ASSERT
         assertTrue(coda.getPrimoMedicoDisponibile(0.0).getKey().getIdAnagrafica().equals(1L));
     }
+
+
+    @Test
+    void testGetListaVisiteGiornaliereNextGiornoAmmissibile_ShouldReturnNotNullList() {
+
+        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, LocalTime.now(),
+                0.0, visitaService);
+        assertNotNull( coda.getListaVisiteNextGiornoAmmissibile(), "La lista non deve essere null" );
+    }
+
+/// #####################################################################
+/// #####################################################################
+/// #####################################################################
+
+    /**
+     * TEST DI SFORAMENTO VISITE GIORNALIERE: CHE SUCCEDE?
+     * Per la coda deve essere trasparente che il giorno sia ammissibile o meno, ma deve solo "resettare"
+     * e ripartire dal medico 1, 2, 3, ... e dalla mattina.
+     * Perchè l'ho disabilitato? (18/06/2025)
+     * ==> Perche' il codice soggetto a test fa una chiamata a DB per farsi restituire la lista di visite presenti nel successivo
+     *  giorno ammissibile => questo è un comportamento non deterministico (non so quali visite effettivamente io abbia: ci possono essere
+     *  cancellazioni, inserimenti vari, etc).
+     *  Allora come faccio? Questo si risolve grazie al Mocking e Stubbing, ben gestito dalla classe
+     * @see CodaMediciDisponibiliMockingTests
+     */
+    @Disabled
+    @Test
+    void testGetPrimoMedicoDisponibile_WithListaVisiteFull_AndListaMediciNotEmpty_AndSforamento_WorksCorrectly_() {
+
+        Double durataTest = 180.0;
+
+        CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, LocalTime.now(), durataTest, visitaService);
+
+        Map.Entry<Medico, FineVisita> entryMedicoDisponibile = coda.getPrimoMedicoDisponibile(durataTest);
+
+        assertEquals(1L, (long) entryMedicoDisponibile.getKey().getIdAnagrafica());
+
+        assertEquals(entryMedicoDisponibile.getValue().getOraFine(), Time.valueOf(LocalTime.of(20, 35)));
+
+    }
+
+
+    /** TODO: potrei anche toglierlo: questo comportamento qui è soggetto a variazioni, ad errori non predicibili.
+     * Per testare al meglio questo comportamento, devo sempre fare uso del mocking.
+     * @see CodaMediciDisponibiliMockingTests */
+    @Disabled
+    @Test
+    void testGetPrimoMedicoDisponibile_WithListaVisiteNotEmpty_AndListaMediciNotEmpty_Sforamento_WorksCorrectly() {
+
+        Double durataTest = 180.0;
+
+        CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, LocalTime.now(), durataTest, visitaService);
+
+        Map.Entry<Medico, FineVisita> entryMedicoDisponibile = coda.getPrimoMedicoDisponibile(durataTest);
+
+        // Mi aspetto 1L perchè effettivamente, se non ci sono altre visite il successivo (futuro) giorno ammissibile,
+        // allora la visita che sta sforando in questo momento sarà l'unica visita presente in tale giorno futuro.
+        assertEquals(1L, (long) entryMedicoDisponibile.getKey().getIdAnagrafica());
+        assertEquals(Time.valueOf(LocalTime.of(10, 5)), entryMedicoDisponibile.getValue().getOraFine() );
+    }
+
+
+//    @Test
+//    void testGetPrimoMedicoDisponibile_WithListaVisiteEmpty() {
+//        inizializzaDati();
+//        CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici,
+//                new ArrayList<>(), LocalTime.now(), 0.0, visitaService);
+//
+//        assertEquals(1L, coda.getPrimoMedicoDisponibile(0.0).getKey().getIdAnagrafica() );
+//    }
+
+
+
+
+//    /// ###################################################
+//    /// TEST CLOSURE: visitaNotAmmissibileInPomeriggio
+//    /// ###################################################
+//    private Stream<Arguments> provideDatiTestFor_VisitaNotAmmissibileWorkForSingleVisita() {
+//
+//        Double durataTest = 20.0;
+//
+//        return Stream.of(
+//
+//        /// Casi true: (è vero che le visite che hanno questi orari NON sono ammissibili in pomeriggio perchè appunto sono prima di ora pomeriggio)
+//                Arguments.of(LocalTime.MIDNIGHT, durataTest, true),
+//                Arguments.of(LocalTime.of(3,5), durataTest, true),
+//                Arguments.of(Parameters.orarioAperturaMattina, durataTest, true ),
+//                Arguments.of(LocalTime.of(10, 0), durataTest, true ),
+//                Arguments.of(LocalTime.of(11,39), durataTest, true),
+//                Arguments.of(LocalTime.of(11, 40), durataTest, true),
+//                Arguments.of(LocalTime.of(12, 41), durataTest, true),
+//                Arguments.of(LocalTime.of(13, 39), durataTest, true),
+//
+//                // Questi non sono ammissibili perche' sforano
+//                Arguments.of(LocalTime.of(20, 40), durataTest, true),
+//                Arguments.of(LocalTime.of(20, 41), durataTest, true),
+//                Arguments.of(LocalTime.of(20, 39), durataTest, true), // true
+//                Arguments.of(LocalTime.of(20, 59), durataTest, true),
+//                Arguments.of(Parameters.orarioChiusuraPomeriggio, durataTest, true),
+//                Arguments.of(LocalTime.of(21, 1), durataTest, true),
+//
+//
+//        /// Casi false: (è vero che le visite che hanno questi orari sono ammissibili in pomeriggio)
+//                Arguments.of(LocalTime.of(13, 40), durataTest, false), // da qui in poi, comprese le 14:00, inizia l'orario di lavoro nel pomeriggio
+//                Arguments.of(LocalTime.of(13, 41), durataTest, false),
+//                Arguments.of(LocalTime.of(19, 0), durataTest, false),
+//                Arguments.of(LocalTime.of(20, 1), durataTest, false),
+//                Arguments.of(LocalTime.of(20, 15), durataTest, false),
+//                Arguments.of(LocalTime.of(20, 34), durataTest, false) // caso limite?
+//
+//        );
+//    }
+
+
+//    @ParameterizedTest
+//    @MethodSource("provideDatiTestFor_VisitaNotAmmissibileWorkForSingleVisita")
+//    void testVisitaIsNotAmmissibileInPomeriggioWorkForSingleVisita(LocalTime oraAttuale, Double durataTest, Boolean expected) {
+//
+//        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, oraAttuale, durataTest, visitaService);
+//        Visita visita = new Visita();
+//        Prestazione p = new Prestazione();
+//        Anagrafica a = new Anagrafica();
+//
+//        visita.setIdVisita(1L);
+//        visita.setNumAmbulatorio(1);
+//        visita.setOra(Time.valueOf(oraAttuale));
+//        a.setIdAnagrafica(1L);
+//        visita.setAnagrafica(a);
+//        p.setDurataMedia(durataTest);
+//        visita.setPrestazione(p);
+//
+//        Closure<Boolean> closure = coda.visitaNotAmmissibileInPomeriggio();
+//
+//        assertEquals( expected,  closure.call(visita) );
+//    }
+
+
+    /// ###################################################
+    /// TEST CLOSURE: IsVisitaAfterChiusuraPomeriggio
+    /// ###################################################
+    private Stream<Arguments> provideDatiTestFor_IsOrarioVisitaAfterChiusuraPomeriggio() {
+
+        Double durataTest = 20.0;
+
+        return Stream.of(
+
+            /// Casi false: (non è vero che gli orari di queste visite superano l'ora di chiusura del pomeriggio)
+
+            Arguments.of(LocalTime.MIN, durataTest, false),
+            Arguments.of(LocalTime.MIDNIGHT, durataTest, false),
+            Arguments.of(LocalTime.of(3,5), durataTest,     false),
+            Arguments.of(Parameters.orarioAperturaMattina, durataTest,  false ),
+            Arguments.of(LocalTime.of(10, 0), durataTest,   false ),
+            Arguments.of(LocalTime.of(11,39), durataTest,   false),
+            Arguments.of(LocalTime.of(11, 40), durataTest,  false),
+            Arguments.of(LocalTime.of(12, 41), durataTest,  false),
+            Arguments.of(LocalTime.of(13, 39), durataTest,  false),
+            Arguments.of(LocalTime.of(13, 40), durataTest, false), // da qui in poi, comprese le 14:00, inizia l'orario di lavoro nel pomeriggio
+            Arguments.of(LocalTime.of(13, 41), durataTest, false),
+            Arguments.of(LocalTime.of(14, 41), durataTest, false),
+            Arguments.of(LocalTime.of(20, 34), durataTest, false),
+            Arguments.of(LocalTime.of(20, 35), durataTest, false), // aggiunge la pausa anche (5 min) + 20 = 21:00, che in questo caso sono ancora comprese
+
+            /// Casi true: (è vero che le visite che hanno questi orari non sono ammissibili in pomeriggio perchè appunto sono prima di ora pomeriggio)
+            Arguments.of(LocalTime.of(20, 36), durataTest, true), // già da questo non è più ammissibile perchè si va alle 21:01 (5 min + 20 min)
+            Arguments.of(LocalTime.of(20, 37), durataTest, true),
+            Arguments.of(LocalTime.of(20, 38), durataTest, true),
+            Arguments.of(LocalTime.of(20, 40), durataTest,  true),
+            Arguments.of(LocalTime.of(20, 41), durataTest,  true),
+            Arguments.of(LocalTime.of(20, 39), durataTest, true),// ultimo minuto in cui si lavora al pomeriggio
+            Arguments.of(LocalTime.of(20, 59), durataTest, true),
+            Arguments.of(Parameters.orarioChiusuraPomeriggio, durataTest, true),
+            Arguments.of(LocalTime.of(21, 1), durataTest, true),
+            Arguments.of(LocalTime.MAX, 0.0, true) // durata per forza 0, altrimenti è come se si resettasse l'orario
+                // e passa la mezzanotte, quindi diventa mattina,e ricado nei casi false.
+
+        );
+    }
+
+
+//    @ParameterizedTest
+//    @MethodSource("provideDatiTestFor_IsOrarioVisitaAfterChiusuraPomeriggio")
+//    void testIsOrarioVisitaAfterChiusuraPomeriggio(LocalTime oraAttuale, Double durataTest, Boolean expected) {
+//        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, oraAttuale, durataTest, visitaService);
+//        Visita visita = new Visita();
+//        Prestazione p = new Prestazione();
+//        Anagrafica a = new Anagrafica();
+//        visita.setIdVisita(1L);
+//        visita.setNumAmbulatorio(1);
+//        visita.setOra(Time.valueOf(oraAttuale));
+//        a.setIdAnagrafica(1L);
+//        visita.setAnagrafica(a);
+//        p.setDurataMedia(durataTest);
+//        visita.setPrestazione(p);
+//
+//        Closure<Boolean> closure = coda.isOrarioVisitaAfterChiusuraPomeriggio();
+//        assertEquals( expected,  closure.call(visita));
+//    }
+
+
+
+
+    /// ################################
+    ///  test metodo: testValutaNextGiornoAmmissibile
+    /// ################################
+
+
+//
+//    @Test
+//    void testValutaNextGiornoAmmissibile_ShouldReturnTrue() {
+//        // ARRANGE
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteGiornaliereFullSforamento.csv");
+//        Double durataTest = 180.0;
+//        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisiteTest, LocalTime.now(),
+//                0.0, visitaService);
+//
+//        // ACT & ASSERT
+//        assertTrue( coda.valutaNextGiornoAmmissibile() );
+//    }
+
+
+
+//    @Test
+//    void testValutaNextGiornoAmmissibile_ShouldReturnFalse() {
+//
+//        // ARRANGE
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteMattinaFull_Caso_E.csv");
+//        Double durataTest = 180.0;
+//        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisiteTest, LocalTime.now(),
+//                0.0, visitaService);
+//
+//        // ACT & ASSERT
+//        assertFalse( coda.valutaNextGiornoAmmissibile() );
+//
+//    }
+
+
+    // TODO:
+    /// ################################
+    ///  test metodo: getListaVisiteGiornaliereNonAmmissibili
+    /// ################################
+//    @Test
+//    void testGetListaVisiteGiornaliereNonAmmissibili_ShouldReturnNotEmptyList() {
+//        List<Visita> listaVisiteTest = datiVisiteTest.getListaVisiteFullFromCSV("src/test/resources/visiteGiornaliereNotAmmissibili.csv");
+//        Double durataTest = 180.0;
+//        CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisiteTest, LocalTime.now(),
+//                0.0, visitaService);
+//
+//        // ACT
+//        List<Visita> listaVisiteNonAmmissibili = coda.getListaVisiteGiornaliereNonAmmissibili(durataTest);
+//
+//
+//        // ACT
+//        assertNotNull( listaVisiteNonAmmissibili );
+//        assertEquals( 4, listaVisiteNonAmmissibili.size() );
+//    }
+
+
 
 
 
@@ -299,16 +556,5 @@ public class CodaMediciDisponibiliTests {
         DatiPrestazioniTest datiPrestazioniTest = new DatiPrestazioniTest();
         return datiPrestazioniTest.getDatiTest();
     }
-
-
-    // TODO:
-    //  TEST DI SFORAMENTO VISITE GIORNALIERE: CHE SUCCEDE?
-    //  Per la coda deve essere trasparente che il giorno sia ammissibile o meno, ma deve solo "resettare"
-    //  e ripartire dal medico 1, 2, 3, ... e dalla mattina.
-
-
-
-
-
 
 }

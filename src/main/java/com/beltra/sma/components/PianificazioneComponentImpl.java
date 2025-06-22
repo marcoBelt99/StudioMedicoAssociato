@@ -3,8 +3,6 @@ package com.beltra.sma.components;
 
 import com.beltra.sma.datastructures.CodaMediciDisponibili;
 import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
-//import com.beltra.sma.datastructures.Pianificatore;
-//import com.beltra.sma.datastructures.PianificatoreImpl;
 import com.beltra.sma.functional.TriFunction;
 
 import com.beltra.sma.model.Medico;
@@ -31,7 +29,6 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     // Code Injection
     private final VisitaService visitaService;
 
-    //private final Pianificatore pianificatore;
 
     private final CalcolatoreAmmissibilitaComponentImpl calcolatore;
 
@@ -43,10 +40,8 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
      * Nota bene: @Lazy per evitare dipendenze circolari tra i Bean: PianificazioneComponentImpl e VisitaServiceImpl
      */
     public PianificazioneComponentImpl(@Lazy VisitaService visitaService,
-                                       //PianificatoreImpl pianificatore, // TODO: da rimuovere quando finisco il passaggio delle strutture dati
                                        CalcolatoreAmmissibilitaComponentImpl calcolatore) {
         this.visitaService = visitaService;
-        //this.pianificatore = pianificatore; // TODO: da rimuovere quando finisco il passaggio delle strutture dati
         this.calcolatore = calcolatore;
     }
 
@@ -61,7 +56,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         // Nota bene: e' obbligatorio inizializzarla qui ai fini del funzionamento degli altri metodi di calcolo dello slot disponibile
         // Nota bene: inizializzandola sempre qui all'inizio sono in grado di passarle la giusta lista di visite giornaliere
         // quindi dovrei risolvere le ambiguita'
-        this.codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, visiteGiornaliere, oraAttuale, durata);
+        codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, visiteGiornaliere, oraAttuale, durata, visitaService);
 
         // Settaggio del calendario alla dataAttuale
         Calendar calendar = Calendar.getInstance();
@@ -90,7 +85,13 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                     calcolaSlotDisponibileConListaVisiteGiornaliereVuota(calendar, dataAttuale, oraAttuale, durata, listaMedici) :
 
                     /// CASO INDUTTIVO: LISTA VISITE NON VUOTA
-                    calcolaSlotDisponibileConListaVisiteGiornaliereNonVuota(calendar, dataAttuale, oraAttuale, durata, visiteGiornaliere,listaMedici);
+                    //      TODO:se ultima visita della lista e' non ammissibile allora passa al giorno successivo ammissibile
+                    //       ===> trovaSlotGiornoSuccessivo()
+                        // !calcolatore.isOrarioAmmissibile(visiteGiornaliere.get( visiteGiornaliere.size()-1 ).getOra().toLocalTime(), durata)
+                        (RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO.equals(calcolatore.getRisultatoCalcoloAmmissibilitaOrario(visiteGiornaliere.get( visiteGiornaliere.size()-1 ).getOra().toLocalTime(), durata))  ?
+                                trovaSlotGiornoSuccessivo(calendar, durata, listaMedici) :
+                                calcolaSlotDisponibileConListaVisiteGiornaliereNonVuota(calendar, dataAttuale, oraAttuale, durata, visiteGiornaliere,listaMedici)
+                        );
 
     }
 
@@ -99,7 +100,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereVuota(Calendar calendar, Date dataDiRicerca, LocalTime oraAttuale, Double durataMedia, List<Medico> listaMedici) {
 
         // TODO: inizializzo codaMediciDisponibili con i giusti dati
-        codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, new ArrayList<>(), oraAttuale, durataMedia);
+        codaMediciDisponibili = new CodaMediciDisponibiliGroovyImpl(listaMedici, new ArrayList<>(), oraAttuale, durataMedia, visitaService);
 
         /// CASO PARTICOLARE DELLA MEZZANOTTE
         // Se (oraAttuale+durataMedia) supera la mezzanotte rientro nel giorno successivo, e di conseguenza
@@ -110,11 +111,8 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
             // ti richiami ricorsivamente sul giorno successivo, con una nuova listaVisiteGiornaliere (relativa al giorno successivo)
             return trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici);
 
-        // #################################
-        // TODO:  SOSTITUIRE LA STRUTTURA DATI
-        // #################################
+
         // Il medico da assegnare allo slot deve sempre essere il PRIMO MEDICO, dato che listaVisiteGiornaliera e' vuota
-        //Medico medico = pianificatore.getPrimoMedicoDisponibile(new ArrayList<Visita>(), listaMedici); // ORIGINALE
         Medico medico = codaMediciDisponibili.getPrimoMedicoDisponibile(durataMedia).getKey(); // NUOVA
 
         SlotDisponibile slotDisponibile = new SlotDisponibile(dataDiRicerca,medico);
@@ -162,41 +160,21 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
 /**
- *  ///     RICERCA BINARIA: splitto listaVisiteGiornaliera in <br>
-*  ///      1)     listaVisiteGiornalieraMattina<br>
-*  ///      2)     listaVisiteGiornalieraPomeriggio <br>
-*  ///    Prima provo con 1) e, basandomi sull'ultima visita presente in lista, se oraFineUltimaVisita+durata+5' è ammissibile accodo
-*  ///    e ritorno slotDisponibile in mattinata
-*  ///    Altrimenti, provo con 2) ripetendo il controllo fatto per 1)
-*  ///    Altrimenti, passo al giorno successivo
+ *       RICERCA BINARIA: splitto listaVisiteGiornaliera in <br>
+ *         1)     listaVisiteGiornalieraMattina<br>
+ *         2)     listaVisiteGiornalieraPomeriggio <br>
+ *       Prima provo con 1) e, basandomi sull'ultima visita presente in lista, se oraFineUltimaVisita+durata+5' è ammissibile accodo
+ *       e ritorno slotDisponibile in mattinata
+ *       Altrimenti, provo con 2) ripetendo il controllo fatto per 1)
+ *       Altrimenti, passo al giorno successivo
  * */
     private Optional<SlotDisponibile> calcolaSlotDisponibileConListaVisiteGiornaliereNonVuota(Calendar calendar, Date dataDiRicerca, LocalTime oraAttuale, Double durataMedia, List<Visita> listaVisiteGiornaliere, List<Medico> listaMedici) {
 
-
-        // #################################
-        // TODO:  SOSTITUIRE LA STRUTTURA DATI
-        // #################################
-
-        //
-        // Devo recuperare tramite la mediciMap del pianificatore il primo medico disponibile sulla base della lista di visite // VECCHIO
-        // Medico medicoLiberato = new Medico(); // VECCHIO
-        //medicoLiberato = pianificatore.getPrimoMedicoDisponibile(listaVisiteGiornaliere, listaMedici); // VECCHIO
-
-        // NUOVO: codaMediciDisponibili dovrebbe gia' essere stata inizializzata
+        // NB: codaMediciDisponibili dovrebbe gia' essere stata inizializzata
 
         Map.Entry<Medico, FineVisita> entryMedicoDisponibile = codaMediciDisponibili.getPrimoMedicoDisponibile(durataMedia);
         Medico medicoLiberato = entryMedicoDisponibile.getKey(); // NUOVO
 
-        // #################################
-        // TODO:  SOSTITUIRE LA STRUTTURA DATI
-        // #################################
-
-        // TODO: visto che qui sotto sto usando il FineVisita allora devo modificare il metodo
-        //      codaMediciDisponibili.getPrimoMedicoDisponibile(durataMedia) in modo che ritorni una
-        //  Entry<Medico, FineVisita> anzichè solo Medico
-
-        // RECUPERO DALLA MAPPA DEL pianificatore ANCHE LA VISITA AVENTE ORARIO DI FINE MINORE // VECCHIO
-        // FineVisita fineVisita = pianificatore.getMediciMap().get(medicoLiberato.getIdAnagrafica()); // VECCHIO
         FineVisita fineVisita = entryMedicoDisponibile.getValue();
 
         SlotDisponibile slotDisponibile = new SlotDisponibile(dataDiRicerca, medicoLiberato);
@@ -206,16 +184,16 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         return switch (calcolatore.getRisultatoCalcoloAmmissibilitaOrario(oraAttuale, durataMedia)) {
             case AMMISSIBILE ->
 
-                // Fichè listaVisiteGiornaliere.size() <= listaMedici.size()
-                    (listaVisiteGiornaliere.size() <= listaMedici.size()) ?
+                // Se listaVisiteGiornaliere.size() <= listaMedici.size()
+                    listaVisiteGiornaliere.size() <= listaMedici.size() ? // ho tolto le parentesi che ritenevo superflue
                             // allora come ora dello slot ho oraAttuale+5min (perchè ho subito almeno un medico libero)
-                            (setOrarioSlot(slotDisponibile, oraAttuale.plusMinutes(pausaFromvisite))) :
+                            setOrarioSlot(slotDisponibile, oraAttuale.plusMinutes(pausaFromvisite)) :
 
-                            // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio
-                            // a seconda di oraAttuale
-                            // isOrarioInMattina mi controlla 2 cose:
-                            // 1) che oraAttuale e poi anche oraAttuale+durataMedia+5min sia ammissibile
-                            // 2) che oraAttuale+durata+5min isBefore oraChiusuraMattina
+                // Altrimenti, calcolo lo slot usando o la sottolista di visite in mattino, oppure la sottolista di visite in pomeriggio
+                // a seconda di oraAttuale
+                // isOrarioInMattina mi controlla 2 cose:
+                // 1) che oraAttuale e poi anche oraAttuale+durataMedia+5min sia ammissibile
+                // 2) che oraAttuale+durata+5min isBefore oraChiusuraMattina
                             (calcolatore.isOrarioAmmissibileInMattina(oraAttuale, durataMedia) ? // Se isOrarioInMattina
                                     // allora mi pianifichi la visita in coda a quelle del mattino: Quando?
                                     // ==> serve sapere l'ultima visita del mattino per poter calcolare l'ora di pianificazione di questa nuova visita
@@ -369,12 +347,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         //      return Optional.of( setOrarioSlot( slotDisponibile, oraAperturaPomeriggio.plusMinutes(pausaFromVisite) )
         if(visiteGiornaliereDelPomeriggio.size() <= listaMedici.size())
         {
-            // #################################
-            // TODO:  SOSTITUIRE LA STRUTTURA DATI
-            // #################################
-            //pianificatore.setListaVisite( listaVisiteGiornaliere); // VECCHIO
-            //pianificatore.aggiornaMediciMap(); // VECCHIO
-            //slotDisponibile.setMedico(pianificatore.getPrimoMedicoDisponibile(listaVisiteGiornaliere, listaMedici)); // VECCHIO
+
             slotDisponibile.setMedico( codaMediciDisponibili.getPrimoMedicoDisponibile(durataMedia).getKey() ); // NUOVO
 
             return setOrarioSlot( slotDisponibile, orarioAperturaPomeriggio.plusMinutes(pausaFromvisite) ) ;
@@ -387,6 +360,11 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         LocalTime oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio =
                 ultimaVisitaPomeriggio != null ? ultimaVisitaPomeriggio.calcolaOraFine().toLocalTime().plusMinutes(pausaFromvisite) : null;
 
+        // TODO: Controllare qui la casistica dello sforamento!!
+        // 1) check se ultima visita pomeriggio è ammissibile
+        // 2) check se oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio è ammissibile
+        if(!calcolatore.isOrarioAmmissibileInPomeriggio(oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio, durataMedia))
+            return trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici); // Forse devo fare overloading del metodo trovaSlotGiornoSuccessivo passando anche la lista visite
 
         return setOrarioSlot( slotDisponibile, oraInizioPrevistaProssimaVisitaPomeriggioFromUltimaVisitaPomeriggio);
     }
@@ -402,6 +380,8 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                                                                 List<Medico> listaMedici) {
         calendar.add(Calendar.DAY_OF_MONTH, 1); // Incrementa di un giorno
         Date dataSuccessiva = calendar.getTime(); // Ottieni la nuova data
+
+        // Pensare al caso sforamento ?
 
         return trovaSlotDisponibile(durataMedia,
                 dataSuccessiva,
