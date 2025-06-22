@@ -1,12 +1,8 @@
 package com.beltra.sma.datastructures;
 
 import com.beltra.sma.model.Medico;
-import com.beltra.sma.model.Visita;
-import com.beltra.sma.utils.FineVisita;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.beltra.sma.utils.FineVisita;
 import java.util.Map;
 import java.util.Queue;
 

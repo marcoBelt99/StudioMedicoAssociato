@@ -6,8 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class CalendarioController {
 
-    @GetMapping("/calendario")
-    public String calendario() {
-        return "calendarioTestDEPRECATO";
-    }
+    // Il calendario lo gestisco sempre nella index.
+
+//    @GetMapping("/calendario")
+//    public String calendario() {
+//        return "calendarioTestDEPRECATO";
+//    }
+
+
 }
