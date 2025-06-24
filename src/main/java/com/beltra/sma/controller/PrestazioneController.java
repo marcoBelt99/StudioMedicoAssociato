@@ -27,6 +27,9 @@ public class PrestazioneController {
     public String mostraStep1(@PathVariable Long id,
                               Model model,
                               HttpSession session) {
+
+        /** Recupero, tramite service la prestazione avente quel determinato id */
+        // Cosa faccio se nel path scrivo prestazioni/100 ?? ==> Devo ritornare un errore
         Prestazione prestazione = prestazioneService.getPrestazioneById( id );
         model.addAttribute("prestazione", prestazione);
         model.addAttribute("step", 1);
@@ -34,8 +37,7 @@ public class PrestazioneController {
 
         // Salva alcuni dati nella sessione
         session.setAttribute("prestazione", prestazione); // mi salvo l'intero oggetto
-
-        session.setAttribute("titoloPrestazione", prestazione.getTitolo()); // mi salvo solo il titolo
+        session.setAttribute("titoloPrestazione", prestazione.getTitolo()); // mi salvo solo il titolo (forse non necessario)
 
         return "pazientePrenotaVisita";
     }

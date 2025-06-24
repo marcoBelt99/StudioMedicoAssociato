@@ -99,6 +99,20 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of(14, 10).plusMinutes(5),
                         medicoService.getAllMedici().get(0)
+                ),
+
+                /// Testo un bug trovato:
+                Arguments.of(
+                        45.0,
+                        new GregorianCalendar(2025, Calendar.JUNE, 24).getTime(),
+                        LocalTime.of(23, 21),
+                        medicoService.getAllMedici(), // Medici veri!
+                        listaVisiteTest,
+
+                        // Mi aspetto il giorno dopo!
+                        new GregorianCalendar(2025, Calendar.JUNE, 25).getTime(),
+                        Parameters.orarioAperturaMattina.plusMinutes(5),
+                        medicoService.getAllMedici().get(0)
                 )
         );
     }

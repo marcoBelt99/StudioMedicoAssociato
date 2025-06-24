@@ -107,7 +107,12 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         // risultatoCalcoloAmmissibilità mi darebbe NO_BECAUSE_BEFORE_APERTURA_MATTINA,
         // ma in realtà io sono in NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO !!!
         //    ==> allora passi a considerare come data il giorno successivo
-        if( calcolatore.isOrarioAfterMezzanotte(oraAttuale, durataMedia) )
+
+//        if( calcolatore.isOrarioAfterMezzanotte(oraAttuale, durataMedia) ) // VECCHIO => buggato!!!
+
+        if( calcolatore.isOrarioAfterChiusuraPomeriggio(oraAttuale) ||
+                (calcolatore.isOrarioAfterChiusuraPomeriggio(calcolatore.aggiungiDurataAndPausa(oraAttuale, durataMedia) ) &&
+                calcolatore.aggiungiDurataAndPausa(oraAttuale, durataMedia).isBefore(LocalTime.MAX) )) // NUOVO (24/06/2025)
             // ti richiami ricorsivamente sul giorno successivo, con una nuova listaVisiteGiornaliere (relativa al giorno successivo)
             return trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici);
 

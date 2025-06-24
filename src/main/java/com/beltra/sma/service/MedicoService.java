@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MedicoService {
 
-
+    /** Recupera tutti i medici (con o senza specializzazione) presenti nel sistema. */
     List<Medico> getAllMedici();
 
 

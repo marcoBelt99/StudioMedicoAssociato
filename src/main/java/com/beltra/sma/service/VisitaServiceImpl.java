@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,17 +24,18 @@ public class VisitaServiceImpl implements VisitaService {
     private final VisitaRepository visitaRepository;
     private final UtenteService utenteService;
     private final PianificazioneComponent pianificazioneComponent;
-    private final MedicoServiceImpl medicoServiceImpl;
+    private final PrenotazioneService prenotazioneService;
 
     public VisitaServiceImpl(VisitaRepository visitaRepository,
                              CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilitaComponent,
                              PianificazioneComponent pianificazioneComponent,
                              UtenteService utenteService,
-                             MedicoService medicoService, MedicoServiceImpl medicoServiceImpl) {
+                             PrenotazioneService prenotazioneService
+                             ) {
         this.visitaRepository = visitaRepository;
         this.pianificazioneComponent = pianificazioneComponent;
         this.utenteService = utenteService;
-        this.medicoServiceImpl = medicoServiceImpl;
+        this.prenotazioneService = prenotazioneService;
     }
 
 
@@ -108,7 +108,17 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findByAnagraficaAndDataVisita( medico.getAnagrafica(), data );
     }
 
-
+    @Override
+    public Visita creaVisita(Prestazione prestazione, SlotDisponibile slotDisponibile) {
+        Visita nuovaVisita = new Visita();
+        nuovaVisita.setPrestazione(prestazione);
+        nuovaVisita.setDataVisita( slotDisponibile.getData() );
+        nuovaVisita.setOra( slotDisponibile.getOrario() );
+        Medico medicoDisponibile = slotDisponibile.getMedico();
+        nuovaVisita.setAnagrafica(medicoDisponibile.getAnagrafica());
+        nuovaVisita.setNumAmbulatorio(medicoDisponibile.getIdAnagrafica().intValue()+1);// chissene frega del numero di ambulatorio... si aprirebbe tutta un'altra questione
+        return nuovaVisita;
+    }
 
 
 
@@ -119,59 +129,46 @@ public class VisitaServiceImpl implements VisitaService {
 
 
 
-
-
-
-
-    /** TODO:  */
     @Override
-    public Visita createVisita(String usernameUtente, Prestazione prestazione) {
-
-        // TODO: 1) trovi il primo slot dispobibile
-
-        // TODO: 2) Fai uso del componente Pianificazione
-
-        // TODO: 3) Inserimento transazionale di VISITA + PRENOTAZIONE
-        //          Nota che la prenotazione va salvata con la data attuale
-        //          Invece, la data visita viene calcolata in base alle logiche
-        //          del sistema.
-
-
-        // Recupero l'utente attualmente connesso,per poterlo assegnare alla prenotazione.
-        Utente utente = utenteService.getUtenteByUsername( usernameUtente );
-
-        // Recupero la data di oggi (attuale, di questo momento)
-        Date dataAttuale = new Date();
-
-        // TODO: Inizio a creare la visita
-        Visita nuovaVisita = new Visita();
-        nuovaVisita.setPrestazione( prestazione );
-
-
-
-        // TODO: A che ora la assegno?? Chiamata a metodo trovaPrimoSlotDisponibile() del pianificazioneComponent.
-        //Optional<SlotDisponibile> slotDisponibile = calcolatoreAmmissibilitaComponent.trovaPrimoSlotDisponibile( prestazione.getDurataMedia(), data );
-
-
-        // Trova il primo slot disponibile
-        Optional<SlotDisponibile> slotDisponibile =
-                pianificazioneComponent.trovaSlotDisponibile( nuovaVisita.getPrestazione().getDurataMedia(), new Date(), LocalTime.now(), medicoServiceImpl.getAllMedici() ,getAllVisiteByData( dataAttuale ) );
-
-        if (slotDisponibile.isPresent()) {
-            // Pianifica la visita nello slot disponibile
-            SlotDisponibile slot = slotDisponibile.get();
-            nuovaVisita.setDataVisita(slot.getData());
-            nuovaVisita.setOra(slot.getOrario());
-            nuovaVisita.setAnagrafica( slot.getMedico().getAnagrafica() ); // setto il medico
-        }
-
-
-        // SE NON È PRESENTE LO SLOT, ALLORA  METTO LA VISITA  IN FONDO ALLA LISTA...
-
-        // Salva la nuova visita
-        nuovaVisita = salvaVisita( nuovaVisita );
-        return nuovaVisita;
+    public void salvaVisitaAndPrenotazione(Visita visita, Prenotazione prenotazione ) {
+        salvaVisita(visita);
+        prenotazioneService.salvaPrenotazione(prenotazione);
     }
+
+
+//    public List<VisitaPrenotataDTO> getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(String username, Date oggi) {
+//        return
+//                getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username) // Prendo solo le visite dell'utente paziente di interesse.
+//                .stream()
+//                .filter( v -> v.getDataVisita().compareTo(oggi) == 0) // Ovviamente mi interessa controllare le visite odierne.
+//                .toList();
+//    }
+
+    public List<VisitaPrenotataDTO> getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(String username, Date oggi) {
+        // Converte la data di oggi in LocalDate (senza ora)
+        LocalDate oggiLocalDate = oggi.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        return getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username).stream()
+                .filter(v -> {
+                    // Converte anche la data della visita in LocalDate
+                    LocalDate dataVisita = v.getDataVisita().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    return dataVisita.equals(oggiLocalDate);
+                })
+                .toList();
+    }
+
+    /**  */
+    public boolean utenteOggiHaGiaPrenotatoAlmenoUnaVisita(String username, Date oggi) {
+        return !getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(username, oggi)
+                .isEmpty();
+    }
+
+
+
 
 
 }

@@ -116,12 +116,14 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
         return ora.plusMinutes(durataMedia.intValue() + Parameters.pausaFromvisite);
     }
 
+    // TODO: questo metodo è buggato!!!!!
     @Override
     public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia) {
         return
             !isOrarioAmmissibile(ora, durataMedia) &&
-            (ora.isBefore(LocalTime.MAX) &&
-             aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MAX));
+            //ora.isBefore(LocalTime.MAX);
+            ora.isAfter(LocalTime.MIDNIGHT) || aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MIDNIGHT);
+             //aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MAX));
     }
 
     @Override

@@ -75,34 +75,34 @@ public class CreatePrenotazioneVisitaTests {
 
 
 
-    // TODO: TEST FINALE
-    @Disabled
-    @Test
-    @Transactional
-    @Commit
-    public void testCreateNewVisitaAndThenNewPrenotazione() {
-
-        // 1) Creazione di una nuova visita
-        Visita visita = new Visita();
-
-        String usernameUtente = "marcobeltra";
-        Utente utente = utenteService.getUtenteByUsername( usernameUtente );
-
-        Optional<Prestazione> prestazione = prestazioneRepository.findById(2L);
-        //  visita.setOra( );
-        // Data visita desiderata
-        // ...
-
-
-        /** Check disponibilita' di medici in quella data */
-
-        // 2) Verifico che ci siano medici liberi
-
-
-
-        assertEquals( Optional.empty(), visitaService.createVisita( usernameUtente , prestazione.get() ) );
-
-
-    }
+//    // TODO: TEST FINALE
+//    @Disabled
+//    @Test
+//    @Transactional
+//    @Commit
+//    public void testCreateNewVisitaAndThenNewPrenotazione() {
+//
+//        // 1) Creazione di una nuova visita
+//        Visita visita = new Visita();
+//
+//        String usernameUtente = "marcobeltra";
+//        Utente utente = utenteService.getUtenteByUsername( usernameUtente );
+//
+//        Optional<Prestazione> prestazione = prestazioneRepository.findById(2L);
+//        //  visita.setOra( );
+//        // Data visita desiderata
+//        // ...
+//
+//
+//        /** Check disponibilita' di medici in quella data */
+//
+//        // 2) Verifico che ci siano medici liberi
+//
+//
+//
+//        assertEquals( Optional.empty(), visitaService.createVisita( usernameUtente , prestazione.get() ) );
+//
+//
+//    }
 
 }

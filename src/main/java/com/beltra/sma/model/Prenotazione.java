@@ -25,9 +25,9 @@ public class Prenotazione {
     @JoinColumn(name = "id_anagrafica")
     private Anagrafica anagrafica;
 
-    @ManyToOne
+    @ManyToOne // Vecchio
     @JoinColumn(name = "id_visita")
     private Visita visita;
 
-    // Getters and Setters
+
 }

@@ -1,10 +1,22 @@
 <!DOCTYPE HTML>
 
-<!-- TODO: importo il namespace xml di thymeleaf  -->
+<!-- importo il namespace xml di thymeleaf  -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <div th:insert="~{fragments/head.html :: head}"></div>
+
+<head>
+    <style>
+        /* Risolvo il problema dell'hover che non colora di "verde success" il button di conferma.  */
+        .btn-outline-success:hover {
+            background-color: #198754 !important;
+            color: #fff !important;
+            border-color: #198754 !important;
+        }
+    </style>
+</head>
+
 
     <body>
 
@@ -13,10 +25,12 @@
         <div class="container">
             <div class="card">
 
-                <!-- TODO: STEPPER -->
-
+                <!-- ######## -->
+                <!--  STEPPER -->
+                <!-- ######## -->
                 <div class="steppers">
 
+                    <!-- Intestazione stepper -->
                     <div class="steppers-header">
                         <ul>
 
@@ -41,6 +55,7 @@
                         <span class="steppers-index" aria-hidden="true">2/6</span>
                     </div>
 
+
                     <!-- Inserisco il giusto fragments, sulla base dello step in cui mi trovo    -->
                     <!-- Stepper Content -->
                     <div class="steppers-content" aria-live="polite">
@@ -50,6 +65,8 @@
                     </div>
 
 
+
+                    <!-- Barra di navigazione dello stepper -->
                     <nav class="steppers-nav">
                         <a th:if="${step > 1}" th:href="@{'/prenotazione/step' + ${step - 1}}"
                            class="btn btn-outline-primary btn-sm steppers-btn-prev">
@@ -65,25 +82,17 @@
                             </svg>Avanti
                         </a>
 
-                <!-- TODO: probabilmente questo è da tenere, mentre quello presente in formTre.html è da rimuovere                        -->
-                <!-- Vecchio modo:-->
-<!--                        <button th:if="${step == 3}" type="submit"-->
-<!--                                class="btn btn-primary btn-sm steppers-btn-confirm d-none d-lg-block"-->
-<!--                                >-->
-<!--                            Conferma-->
-<!--                        </button>-->
-                <!-- Nuovo modo:                        -->
+                    <!-- Bottone conferma -->
                     <form th:if="${step == 3}" th:action="@{/prenotazione/conferma}" method="post">
                         <button type="submit"
-                                class="btn btn-primary btn-sm steppers-btn-confirm d-none d-lg-block">
+                                class=" btn btn-sm steppers-btn-confirm btn-outline-success d-none d-lg-block">
+                            <!-- btn-primary btn -->
                             Conferma
                         </button>
                     </form>
 
 
-
                     </nav>
-
                 </div>
 
 
