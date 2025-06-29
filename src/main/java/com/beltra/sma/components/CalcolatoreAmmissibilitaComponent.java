@@ -49,8 +49,6 @@ public interface CalcolatoreAmmissibilitaComponent {
     RisultatoAmmissibilita getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione);
 
 
-    boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia);
-
     /**  @param ora orario da controllare
     *    @param durata durata con cui maggiorare l'orario da controllare */
     boolean isOrarioAmmissibileInMattina(LocalTime ora, Double durata);

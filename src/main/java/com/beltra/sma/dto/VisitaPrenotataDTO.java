@@ -17,6 +17,7 @@ public class VisitaPrenotataDTO {
     private String nomePaziente;
     private String cognomePaziente;
     private String titoloPrestazione;
+    private Double durataPrestazione; // durata delle prestazione della singola visita
 
     public VisitaPrenotataDTO(Date dataPrenotazione, Date dataVisita, Time ora, Integer numAmbulatorio,
                               String nomePaziente, String cognomePaziente, String titoloPrestazione) {
@@ -27,6 +28,18 @@ public class VisitaPrenotataDTO {
         this.nomePaziente = nomePaziente;
         this.cognomePaziente = cognomePaziente;
         this.titoloPrestazione = titoloPrestazione;
+    }
+
+    public VisitaPrenotataDTO(Date dataPrenotazione, Date dataVisita, Time ora, Integer numAmbulatorio,
+                              String nomePaziente, String cognomePaziente, String titoloPrestazione, Double durataPrestazione) {
+        this.dataPrenotazione = dataPrenotazione;
+        this.dataVisita = dataVisita;
+        this.ora = ora;
+        this.numAmbulatorio = numAmbulatorio;
+        this.nomePaziente = nomePaziente;
+        this.cognomePaziente = cognomePaziente;
+        this.titoloPrestazione = titoloPrestazione;
+        this.durataPrestazione = durataPrestazione;
     }
 
     @Override
@@ -40,5 +53,10 @@ public class VisitaPrenotataDTO {
                 ", cognomePaziente='" + cognomePaziente + '\'' +
                 ", titoloPrestazione='" + titoloPrestazione + '\'' +
                 '}';
+    }
+
+    /** Metodo per ricavare l'orario di fine della visita */
+    public Time calcolaOraFine() {
+        return Time.valueOf( getOra().toLocalTime().plusMinutes( Math.round( durataPrestazione ) ) );
     }
 }

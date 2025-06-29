@@ -1,11 +1,9 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
-import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 //import com.beltra.sma.utils.CSV.VisitaCSVReader;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalTime;
@@ -30,7 +28,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
 
         // ARRANGE & ACT
         Date dataExpected = dataVenerdi17Gennaio2025Test;
-        LocalTime oraExpected = LocalTime.of(9, 30).plusMinutes( Parameters.pausaFromvisite ); // Mi aspetto 09:35
+        LocalTime oraExpected = LocalTime.of(9, 30).plusMinutes( Parameters.pausaFromVisite); // Mi aspetto 09:35
         Medico medicoExpected = getAllDatiMediciTests().get(2); // prendo medico di id=2 (sta in terza posizione, a partire da 0)
 
         Optional<SlotDisponibile> risultato = arrangeAndAct(
@@ -65,7 +63,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         Date dataExpected = dataVenerdi17Gennaio2025Test;
         LocalTime oraExpected =  // visto che so che: con gli orari sforo la fascia del mattino,
                 // e soprattutto che non ci sono visite al pomeriggio, pianifico per 14:05
-                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromvisite);  //
+                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromVisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(0); // prendo il primo medico medico (di id=1), perchè non essendocene di occupati, si riparte dal primo in lista
 
 
@@ -107,7 +105,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         Date dataExpected = dataVenerdi17Gennaio2025Test;
         LocalTime oraExpected =  // visto che so che: con gli orari sforo la fascia del mattino,
                 // e non ci sono visite al pomeriggio, pianifico per 14:05
-                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromvisite);  //
+                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromVisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(0); // prendo il primo medico medico (di id=1), perchè al pomeriggio non c'è nessuno, quindi si inizia ad occupare il 1° medico
 
         // TODO:
@@ -154,7 +152,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         // ARRANGE & ACT
         Date dataExpected = dataVenerdi17Gennaio2025Test;
         LocalTime oraExpected =  // visto che so che: con gli orari sforo la fascia del mattino, e non ci sono visite al pomeriggio, pianifico per 14:05
-                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromvisite);  //
+                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromVisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(0); // mi aspetterei che inizino a ripartire da capo anche i medici finchè non li rioccupo tutti gli assegnerei 14:05!! ==> TODO: implementare questo comportamento
 
         // TODO:
@@ -199,7 +197,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         // ARRANGE & ACT
         Date dataExpected = dataVenerdi17Gennaio2025Test;
         LocalTime oraExpected =  // visto che so che: con gli orari sforo la fascia del mattino, e non ci sono visite al pomeriggio, pianifico per 14:05
-                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromvisite);  //
+                Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromVisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(2); // mi aspetterei che inizino a ripartire da capo anche i medici finchè non li rioccupo tutti gli assegnerei 14:05!! ==> TODO: implementare questo comportamento
 
         // TODO:
@@ -245,7 +243,7 @@ public class PianificazioneComponentListaVisiteNotVuotaTests extends Pianificazi
         // ARRANGE & ACT
         Date dataExpected = new GregorianCalendar(2025, Calendar.MARCH, 27).getTime();
         LocalTime oraExpected =
-                Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite);  //
+                Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite);  //
         Medico medicoExpected = getAllDatiMediciTests().get(0); // prendo il primo medico medico (di id=1), perchè al pomeriggio non c'è nessuno, quindi si inizia ad occupare il 1° medico
 
         // TODO:

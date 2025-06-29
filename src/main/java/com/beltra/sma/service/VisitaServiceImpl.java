@@ -3,6 +3,7 @@ package com.beltra.sma.service;
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
 import com.beltra.sma.components.PianificazioneComponent;
 
+import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.*;
 import com.beltra.sma.repository.VisitaRepository;
@@ -10,7 +11,9 @@ import com.beltra.sma.utils.SlotDisponibile;
 import org.springframework.stereotype.Service;
 
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,19 +25,12 @@ import java.util.stream.Collectors;
 public class VisitaServiceImpl implements VisitaService {
 
     private final VisitaRepository visitaRepository;
-    private final UtenteService utenteService;
-    private final PianificazioneComponent pianificazioneComponent;
     private final PrenotazioneService prenotazioneService;
 
     public VisitaServiceImpl(VisitaRepository visitaRepository,
-                             CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilitaComponent,
-                             PianificazioneComponent pianificazioneComponent,
-                             UtenteService utenteService,
                              PrenotazioneService prenotazioneService
                              ) {
         this.visitaRepository = visitaRepository;
-        this.pianificazioneComponent = pianificazioneComponent;
-        this.utenteService = utenteService;
         this.prenotazioneService = prenotazioneService;
     }
 
@@ -61,25 +57,32 @@ public class VisitaServiceImpl implements VisitaService {
     }
 
     @Override
+    public List<VisitaPrenotataDTO> getAllVisitePrenotateAndNotEffettuateByUsernamePazienteByData(String username, Date dataDiRicerca) {
+        return visitaRepository.findAllVisitePrenotateByUsernamePazienteByDataVisita(username, false, dataDiRicerca);
+    }
+
+
+
+    @Override
     public List<VisitaPrenotataDTO> getAllVisitePrenotateAndNotEffettuate() {
         return visitaRepository.findAllVisitePrenotateOrderByDataVisitaAsc(false);
     }
 
-    @Override
-    public List<VisitaPrenotataDTO> getVisitePrenotateSettimana() {
-        LocalDate oggi = LocalDate.now(); // Inizio da oggi
-        LocalDate fineSettimana = oggi.plusDays(7); // Oggi + 7 giorni
-
-        return getAllVisite()
-                .stream()
-                .filter(vp -> {
-                    LocalDate dataVisita = vp.getDataVisita().toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate(); // Conversione a LocalDate
-                    return !dataVisita.isBefore(oggi) && !dataVisita.isAfter(fineSettimana);
-                }) // Filtra le visite tra oggi e 7 giorni da oggi
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<VisitaPrenotataDTO> getVisitePrenotateSettimana() {
+//        LocalDate oggi = LocalDate.now(); // Inizio da oggi
+//        LocalDate fineSettimana = oggi.plusDays(7); // Oggi + 7 giorni
+//
+//        return getAllVisite()
+//                .stream()
+//                .filter(vp -> {
+//                    LocalDate dataVisita = vp.getDataVisita().toInstant()
+//                            .atZone(ZoneId.systemDefault())
+//                            .toLocalDate(); // Conversione a LocalDate
+//                    return !dataVisita.isBefore(oggi) && !dataVisita.isAfter(fineSettimana);
+//                }) // Filtra le visite tra oggi e 7 giorni da oggi
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public List<Visita> getAllVisiteOrderByDataVisitaAsc() {
@@ -89,7 +92,7 @@ public class VisitaServiceImpl implements VisitaService {
 
     @Override
     public List<Visita> getVisiteByAnagraficaMedico(Anagrafica anagrafica) {
-        return visitaRepository.findByAnagrafica(anagrafica);
+        return visitaRepository.findAllByAnagrafica(anagrafica);
     }
 
 
@@ -103,10 +106,42 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findAllVisiteFromNow();
     }
 
+//    @Override
+//    public List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data) {
+//        return visitaRepository.findByAnagraficaAndDataVisita( medico.getAnagrafica(), data );
+//    }
+
+
+
     @Override
-    public List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data) {
-        return visitaRepository.findByAnagraficaAndDataVisita( medico.getAnagrafica(), data );
+    public List<Map<String, String>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine) {
+
+        List<AppuntamentiSettimanaliMedicoDTO> listaAppuntamentiGrezza = getAppuntamentiSettimanaliMedicoLista(username, dataInizio, dataFine);
+
+        return listaAppuntamentiGrezza.stream()
+                .map(this::convertToScheduleXEvent)
+                .toList();
     }
+
+    @Override
+    public List<AppuntamentiSettimanaliMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine) {
+        return visitaRepository.findAppuntamentiSettimanaliMedico(username, dataInizio, dataFine);
+    }
+
+    private Map<String, String> convertToScheduleXEvent(AppuntamentiSettimanaliMedicoDTO app) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+        Map<String, String> mappaEventoScheduleX = new HashMap<>();
+        mappaEventoScheduleX.put("id", app.getIdVisita().toString());
+        mappaEventoScheduleX.put("title", app.getTitoloPrestazione() + " - " + app.getNomePaziente() + " " + app.getCognomePaziente());
+        mappaEventoScheduleX.put("start", dateFormat.format(app.getDataVisita()) + " " + timeFormat.format(app.getOraInizioVisita()));
+        mappaEventoScheduleX.put("end", dateFormat.format(app.getDataVisita()) + " " + timeFormat.format(app.getOraFineVisita()));
+
+        return mappaEventoScheduleX;
+    }
+
+
 
     @Override
     public Visita creaVisita(Prestazione prestazione, SlotDisponibile slotDisponibile) {
@@ -121,51 +156,25 @@ public class VisitaServiceImpl implements VisitaService {
     }
 
 
-
-    @Override
-    public Visita salvaVisita(Visita visita) {
-        return visitaRepository.save(visita);
-    }
-
-
-
     @Override
     public void salvaVisitaAndPrenotazione(Visita visita, Prenotazione prenotazione ) {
         salvaVisita(visita);
         prenotazioneService.salvaPrenotazione(prenotazione);
     }
 
-
-//    public List<VisitaPrenotataDTO> getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(String username, Date oggi) {
-//        return
-//                getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username) // Prendo solo le visite dell'utente paziente di interesse.
-//                .stream()
-//                .filter( v -> v.getDataVisita().compareTo(oggi) == 0) // Ovviamente mi interessa controllare le visite odierne.
-//                .toList();
-//    }
-
-    public List<VisitaPrenotataDTO> getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(String username, Date oggi) {
-        // Converte la data di oggi in LocalDate (senza ora)
-        LocalDate oggiLocalDate = oggi.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        return getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username).stream()
-                .filter(v -> {
-                    // Converte anche la data della visita in LocalDate
-                    LocalDate dataVisita = v.getDataVisita().toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
-                    return dataVisita.equals(oggiLocalDate);
-                })
-                .toList();
+    @Override
+    public Visita salvaVisita(Visita visita) {
+        return visitaRepository.save(visita);
     }
 
-    /**  */
     public boolean utenteOggiHaGiaPrenotatoAlmenoUnaVisita(String username, Date oggi) {
-        return !getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(username, oggi)
-                .isEmpty();
+        // Direttamente a DB
+        return !getAllVisitePrenotateAndNotEffettuateByUsernamePazienteByData(username, oggi).isEmpty();
     }
+
+
+
+
 
 
 

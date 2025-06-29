@@ -18,8 +18,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // Serve per evitare di mettere static il metodo di providing dei dati di test che servirà poi al metodo di test vero e proprio
@@ -46,6 +45,8 @@ public class PianificazioneComponentTest {
     protected List<Medico> listaMediciTest;
     protected List<Visita> listaVisiteTest;
     protected SlotDisponibile slotDisponibileExpected = new SlotDisponibile();
+
+
 
 
 

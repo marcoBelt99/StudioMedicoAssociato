@@ -26,7 +26,21 @@ public interface PianificazioneComponent {
 
 
     /** Tolleranza / Pausa in minuti tra una visita e l'altra. */
-    long pausaFromvisite = Parameters.pausaFromvisite;
+    long pausaFromvisite = Parameters.pausaFromVisite;
+
+
+
+    /** Sorta di "Strategy Pattern", che mi consente di cambiare il comportamento di un oggetto a runtime, evitando l'uso massiccio di if.<br>
+     *  Quando vuoi rendere il codice più flessibile e testabile.<br>
+     *  Va richiamato nel Controller della Prenotazione.
+     * */
+    Optional<SlotDisponibile> trovaSlotDisponibileConControlliPaziente(Double durata,
+                                                                       Date dataAttuale,
+                                                                       LocalTime oraAttuale,
+                                                                       List<Medico> listaMedici,
+                                                                       String usernamePazienteCorrente
+    );
+
 
 
 

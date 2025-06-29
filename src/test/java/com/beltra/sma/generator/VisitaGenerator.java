@@ -1,14 +1,15 @@
+// Generatore per Visita
 package com.beltra.sma.generator;
 
-
-//import com.beltra.sma.datastructures.Pianificatore;
 import com.beltra.sma.model.Visita;
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 
 import java.sql.Time;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 
 public class VisitaGenerator extends Generator<Visita> {
 
@@ -20,15 +21,43 @@ public class VisitaGenerator extends Generator<Visita> {
     public Visita generate(SourceOfRandomness random, GenerationStatus status) {
         Visita visita = new Visita();
 
-        // ID casuale tra 1 e 100
-        visita.setIdVisita(random.nextLong(1, 100));
+        // ID visita
+        visita.setIdVisita((long) random.nextInt(1, 10000));
 
-        // Genera un orario casuale tra le 08:00 e le 18:00
-        int ora = random.nextInt(6, 18);
-        int minuti = random.nextInt(0, 59);
-        visita.setOra(new Time(TimeUnit.HOURS.toMillis(ora) + TimeUnit.MINUTES.toMillis(minuti)));
+        // Orario casuale in fascia lavorativa
+        LocalTime orario = generateWorkingHourTime(random);
+        visita.setOra(Time.valueOf(orario));
+
+        // Numero ambulatorio
+        visita.setNumAmbulatorio(random.nextInt(1, 11));
+
+        // Data casuale nei prossimi giorni
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, random.nextInt(0, 7));
+        visita.setDataVisita(cal.getTime());
+
+        // Se hai bisogno di settare anagrafica e prestazione
+        // MockAnagrafica anagrafica = new MockAnagrafica();
+        // visita.setAnagrafica(anagrafica);
+        // MockPrestazione prestazione = new MockPrestazione();
+        // visita.setPrestazione(prestazione);
 
         return visita;
     }
+
+    private LocalTime generateWorkingHourTime(SourceOfRandomness random) {
+        boolean mattina = random.nextBoolean();
+
+        if (mattina) {
+            // Orario mattutino: 8:00 - 12:00
+            int hour = random.nextInt(8, 12);
+            int minute = random.nextInt(0, 60);
+            return LocalTime.of(hour, minute);
+        } else {
+            // Orario pomeridiano: 14:00 - 18:00
+            int hour = random.nextInt(14, 18);
+            int minute = random.nextInt(0, 60);
+            return LocalTime.of(hour, minute);
+        }
+    }
 }
-// Generator personalizzato per Property Based Testing

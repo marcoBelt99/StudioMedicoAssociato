@@ -1,12 +1,17 @@
 package com.beltra.sma.service;
 
+import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.*;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
+import javax.xml.crypto.Data;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface VisitaService {
 
@@ -21,13 +26,47 @@ public interface VisitaService {
     /** @apiNote Riservato ad utente di tipo "MEDICO".
      * @return Recupera l'elenco di Visite usufruite dai pazienti della settimana corrente.<br>
      * La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).  */
-    List<VisitaPrenotataDTO> getVisitePrenotateSettimana();
+//    List<VisitaPrenotataDTO> getVisitePrenotateSettimana();
+
+
+    List<Visita> getVisiteByAnagraficaMedico(Anagrafica anagrafica);
+
+    /** @apiNote Riservato ad utente di tipo "MEDICO".
+     *  @return  Lista di elementi di tipo AppuntamentiSettimanaliMedicoDTO.
+     *  Notare che la lista è grezza e richiede di essere sistemata con le opportune conversioni prima di
+     *  poter essere processato dal frontend (in questo caso, da schedule-x).*/
+    List<AppuntamentiSettimanaliMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine);
+
+    /** @apiNote Riservato ad utente di tipo "MEDICO".
+     *  @return  Lista di mappe, ognuna rappresentante un evento, nel nostro caso appuntamenti
+     *  gia' pronto per essere processato dal frontend (in questo caso, da schedule-x).*/
+    List<Map<String, String>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine);
+
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+    /** ###############################################################################################*/
+
 
     /** @apiNote Riservato ad utente di tipo "PAZIENTE".
      *  @return Recupera l'elenco delle visite prenotate ma non ancora effettuate, dato lo username di uno specifico paziente.<br>
      *  La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).
      *  @param username username del paziente. */
     List<VisitaPrenotataDTO> getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(String username);
+
+
+    /** @apiNote Riservato ad utente di tipo "PAZIENTE".
+     *  @return Recupera l'elenco delle visite prenotate ma non ancora effettuate, dati: lo username dello specifico paziente, la data di ricerca.<br>
+     *  La tabella e' in un formato intelliggibile (grazie al meccanismo dei DTO).
+     *  @param username username del paziente.
+     *  @param dataDiRicerca data in cui ricercare le visite
+     *  */
+    List<VisitaPrenotataDTO> getAllVisitePrenotateAndNotEffettuateByUsernamePazienteByData(String username, Date dataDiRicerca);
 
     /** @apiNote Riservato ad utente di tipo "PAZIENTE".
      *  @return Recupera l'elenco delle visite prenotate ed effettuate, dato lo username di uno specifico paziente.<br>
@@ -47,7 +86,7 @@ public interface VisitaService {
     /** @param anagrafica Anagrafica del medico da usare per la ricerca.
      * @return Lista di visite che fanno match con il medico.
      */
-    List<Visita> getVisiteByAnagraficaMedico(Anagrafica anagrafica);
+//    List<Visita> getVisiteByAnagraficaMedico(Anagrafica anagrafica);
 
 
     /** @return Elenco visite relative ad una determinata data. */
@@ -55,7 +94,7 @@ public interface VisitaService {
 
     List<Visita> getAllVisiteStartingFromNow();
 
-    List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data);
+//    List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data);
 
 
 
@@ -79,12 +118,18 @@ public interface VisitaService {
     void salvaVisitaAndPrenotazione(Visita visita, Prenotazione prenotazione );
 
 
-    List<VisitaPrenotataDTO> getAllVisiteGiornalierePrenotateAndNotEffettuateByUsernamePaziente(String username, Date oggi);
-
     /** Verifica se l'utente paziente corrente ha già prenotato una visita.<br>
      *  Questo metodo risolve il "Problema delle sovrapposizioni temporali":
      *  Siano U=utente, V=visita, O=oggi, Y=orario, L=lista di visite prenotate da U in X, allora:
      *  Se U ha prenotato V per O alle Y, allora bisogna chiamare
      *      trovaSlotDisponibile() con oraPartenza=L.last.ora.calcolaOraFine()  */
     boolean utenteOggiHaGiaPrenotatoAlmenoUnaVisita(String username, Date oggi);
+
+
+    /** Questo metodo risolve il "Problema delle sovrapposizioni temporali":
+     *  Siano U=utente, V=visita, X=giorno, Y=orario, L=lista di visite prenotate da U in X, allora:<br>
+     *  Se U ha prenotato V per X alle Y, allora bisogna chiamare
+     *      trovaSlotDisponibile() con oraPartenza=L.last.ora.calcolaOraFine().plusMinutes(pausaFromVisite).
+     */
+//    LocalTime getRightOraDiPartenza(String username, Prestazione prestazione, Date oggi);
 }

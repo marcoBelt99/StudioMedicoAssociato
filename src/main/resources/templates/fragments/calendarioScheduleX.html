@@ -46,44 +46,100 @@
         <div class="calendar" id="calendar"></div>
 
         <script type="module">
+
+            // Lasciare cose' il percorso al file js, altrimenti non viene riconosciuto e ottengo 404.
+            import { getAppuntamentiSettimanaliMedico } from '/js/appuntamentiSettimanaliMedico.js';
+
             const { createCalendar, viewWeek } = window.SXCalendar;
-
-
             //const { createDragAndDropPlugin } = window.SXDragAndDrop; // disabilito il drago and drop
-
             const plugins = [
                 //createDragAndDropPlugin(),
             ]
 
 
-            const calendarConfig = {
-                views: [viewWeek],
-                events: [
-                    {
-                        id: '1',
-                        title: 'Evento 1',
-                        start: '2025-06-23 09:15',
-                        end: '2025-06-23 10:00'
-                    },
-                    {
-                        id: '2',
-                        title: 'Evento 2',
-                        start: '2025-06-24 07:05',
-                        end: '2025-06-24 10:05'
-                    }
-                ],
-                locale: 'it-IT',
-                dayBoundaries: {
-                    start: '07:00',
-                    end: '21:00',
-                }
+            let calendar;
+
+
+
+            function getInizioSettimana(date) {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                return new Date(d.setDate(diff)).toISOString().split('T')[0];
             }
 
-            const calendar = createCalendar(calendarConfig, plugins)
+            function getFineSettimana(date) {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? 0 : 7);
+                return new Date(d.setDate(diff)).toISOString().split('T')[0];
+            }
+
+
+            async function initCalendar() { // Nuovo: richiamo questo
+                const oggi = new Date();
+                const inizioSettimana = getInizioSettimana(oggi);
+                const fineSettimana = getFineSettimana(oggi);
+
+                let appuntamentiMedico = await getAppuntamentiSettimanaliMedico(inizioSettimana, fineSettimana);
+
+                const calendarConfig = {
+                    views: [viewWeek], // voglio vedere la settimana
+                    /*
+                    events: [
+                        {
+                            id: '1',
+                            title: 'Evento 1',
+                            start: '2025-06-30 09:15',
+                            end: '2025-07-02 10:00'
+                        },
+
+                     */
+                    locale: 'it-IT',
+                    dayBoundaries: {
+                        start: '07:00',
+                        end: '21:00',
+                    },
+
+                    events: appuntamentiMedico,
+                    // isDark:true,
+                    isResponsive: true,
+
+                    // 🔁 Qui intercetti il cambio settimana
+                    onViewDatesChange: async ({ viewDates }) => {
+                        console.log('📅 Cambio settimana rilevato!');
+                        console.log('📅 ViewDates ricevute:', viewDates);
+                        console.log('📅 Prima data (start):', viewDates[0]);
+                        console.log('📅 Ultima data (end):', viewDates[viewDates.length - 1]);
+
+                        const start = viewDates[0];
+                        const end = viewDates[viewDates.length - 1];
+
+                        console.log('🌐 Chiamando API per:', { start, end });
+                        const nuoviAppuntamenti = await getAppuntamentiSettimanaliMedico(start, end); // correggi qui se usavi getAppuntamenti
+
+                        console.log('📊 Nuovi appuntamenti ricevuti:', nuoviAppuntamenti.length);
+                        console.log('📋 Dettaglio appuntamenti:', nuoviAppuntamenti);
+
+                        calendar.updateOptions({ events: nuoviAppuntamenti });
+                        console.log('✅ Calendario aggiornato');
+                    }
+                };
+
+                calendar = createCalendar(calendarConfig, plugins)
+                calendar.render(document.querySelector('.calendar'))
+            }
+
+            // Nuovo: richiamo questo
+            initCalendar();
 
             console.log(window.SXCalendar)
 
-            calendar.render(document.querySelector('.calendar'))
+            // calendar.render(document.querySelector('.calendar'))
+
+
+
+            // Recupero degli appuntamenti
         </script>
     </div>
 

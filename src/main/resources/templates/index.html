@@ -21,7 +21,6 @@
                 <div sec:authorize="hasRole('ROLE_PAZIENTE') or isAnonymous()">
                     <h3 th:text="${sottotitolo}"></h3>
                     <div th:insert="~{fragments/cardPrestazione.html :: cardPrestazione}"></div>
-
                 </div>
 
 

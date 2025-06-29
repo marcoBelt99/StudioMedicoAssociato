@@ -99,7 +99,7 @@ public class PrenotazioneVisitaController {
         * TODO: ottengo SlotDisponibile:
         * Gli passo la durata media della prestazione, scelta obbligatoriamente allo step precedente. inoltre ti faccio partire la ricerca di questo slot
         * dalla data attuale (ci pensa poi il metodo a verificare che il giorno non sia un sabato o una domenica). */
-        Optional<SlotDisponibile> slotDisponibile = getSlotDisponibile(model, prestazione, usernamePazientePrenotante, nomePazientePrenotante, cognomePazientePrenotante);
+        SlotDisponibile slotDisponibile = getSlotDisponibile(model, prestazione, usernamePazientePrenotante, nomePazientePrenotante, cognomePazientePrenotante);
 
 
 
@@ -108,7 +108,7 @@ public class PrenotazioneVisitaController {
         //Prestazione prestazione = (Prestazione) httpSession.getAttribute("prestazione");
         //SlotDisponibile slotDisponibile = (SlotDisponibile) httpSession.getAttribute("slotDisponibile");
 
-        Visita nuovaVisita = visitaService.creaVisita(prestazione, slotDisponibile.get());
+        Visita nuovaVisita = visitaService.creaVisita(prestazione, slotDisponibile);
         Prenotazione nuovaPrenotazione = prenotazioneService.creaPrenotazione(nuovaVisita, utentePazientePrenotante);
 
         // TODO: Pensare di chiedermi che, se lo step == 3 allora setta la sessione per salvare i dati...
@@ -198,15 +198,25 @@ public class PrenotazioneVisitaController {
 
 
 
-    private Optional<SlotDisponibile> getSlotDisponibile(Model model, Prestazione prestazione, String usernamePazientePrenotante, String nomePazientePrenotante, String cognomePazientePrenotante) {
+    private SlotDisponibile getSlotDisponibile(Model model, Prestazione prestazione, String usernamePazientePrenotante, String nomePazientePrenotante, String cognomePazientePrenotante) {
         Date oggi = new Date();
         Optional<SlotDisponibile> slotDisponibile =
+                // TODO: chiama il metodo padre.
+                /*
                 pianificazioneComponent.trovaSlotDisponibile( prestazione.getDurataMedia(),
                         oggi, // data odierna
                         //LocalTime.now(), // orario attuale
-                        getRightOraDiPartenza(usernamePazientePrenotante, prestazione, oggi),
+                        visitaService.getRightOraDiPartenza(usernamePazientePrenotante, prestazione, oggi),
                         medicoService.getAllMedici(), // lista di medici del sistema
                         pianificazioneComponent.getAllVisiteByData( oggi ) ); // lista di visite odierne
+                        */
+                 pianificazioneComponent.trovaSlotDisponibileConControlliPaziente(prestazione.getDurataMedia(),
+                         oggi,
+                         LocalTime.now(), // TODO: questa è variabile e non deterministica, quindi va catturata a tempo di esecuzione!
+                         medicoService.getAllMedici(),
+                         usernamePazientePrenotante
+                );
+
 
         slotDisponibile.ifPresent(slot -> {
             model.addAttribute("primaDataDisponibile", slot.getData() )
@@ -220,21 +230,12 @@ public class PrenotazioneVisitaController {
             // Aggiungo alla sessione lo slot, per questione di comodità
             httpSession.setAttribute("slotDisponibile", slotDisponibile.get());
         });
-        return slotDisponibile;
+
+        // Lo so, dovrei controllare meglio in caso non sia presente...
+        return slotDisponibile.get();
     }
 
-    /** Questo metodo risolve il "Problema delle sovrapposizioni temporali":
-     *  Siano U=utente, V=visita, X=giorno, Y=orario, L=lista di visite prenotate da U in X, allora:
-     *  Se U ha prenotato V per X alle Y, allora bisogna chiamare
-     *      trovaSlotDisponibile() con oraPartenza=L.last.ora.calcolaOraFine()
-     */
-    public LocalTime getRightOraDiPartenza(String username, Prestazione prestazione, Date oggi) {
-        return visitaService.utenteOggiHaGiaPrenotatoAlmenoUnaVisita(username, oggi) ?
-                    visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username)
-                        .get(visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePaziente(username).size()-1)
-                            .getOra().toLocalTime().plusMinutes( Math.round( prestazione.getDurataMedia() ) ) :
-                LocalTime.now();
-    }
+
 
 
 }

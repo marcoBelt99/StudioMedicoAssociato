@@ -34,6 +34,9 @@ public class PazienteController {
 
         List<VisitaPrenotataDTO> listaVisite = null;
 
+        // Notare: credo si possa recuperare lo username anche facendo uso di:
+        // SecurityContextHolder.getContext().getAuthentication().getName();
+
         if(effettuata) {
             listaVisite = visitaService.getAllVisitePrenotateAndEffettuateByUsernamePaziente( username );
             model.addAttribute("titolo", "Visite Prenotate ed Effettuate");

@@ -2,6 +2,7 @@ package com.beltra.sma.components;
 
 
 import com.beltra.sma.datastructures.CodaMediciDisponibili;
+import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.groovy.datastructures.CodaMediciDisponibiliGroovyImpl;
 import com.beltra.sma.functional.TriFunction;
 
@@ -10,6 +11,7 @@ import com.beltra.sma.model.Visita;
 
 import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.FineVisita;
+import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
@@ -28,13 +30,20 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
     // Code Injection
     private final VisitaService visitaService;
-
-
     private final CalcolatoreAmmissibilitaComponentImpl calcolatore;
 
-    // TODO: Importo la nuova struttura dati
+    /** Per gestire la ricorsione, e far persistere il valore dello username dell'utente dopo la 1° chiamata del chiamante originale,
+     *  che dovrebbe essere sempre il controller. Le altre chiamate perdono in qualche modo il valore dello username, quindi cerco di salvarlo
+     *  tramite questa variabile*/
+    public String usernameRead;
+
+
+    /** Importo la mia nuova struttura dati. */
     private CodaMediciDisponibili codaMediciDisponibili;
 
+//    /** Controllo che: se esistono già visite oggi per un utente X, e l'utente attualmente connesso corrisponde all'utente presente nelle visite (count number visite)
+//     *  oggi ha già prenotato una visita, allora calcola il giusto orario (già fatto con metodo visitaService. */
+//    private final Boolean isStessoUtentePaziente;
 
     /**
      * Nota bene: @Lazy per evitare dipendenze circolari tra i Bean: PianificazioneComponentImpl e VisitaServiceImpl
@@ -46,11 +55,40 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     }
 
 
+    /**
+     * NUOVO METODO PUBBLICO che include il controllo paziente.
+     * Filtro sulla base dell'utente, a tempo di esecuzione!
+     * Questo sarà chiamato dai controller/service.
+     * La presenza di questo metodo e' necessaria in quanto mi consente di gestire al meglio le "chiamate ricorsive".
+     * Quindi, in definitiva, questo metodo dovrebbe essere chiamato solo la 1° volta, dal controller per fare i vari settaggi.
+     */
+    public Optional<SlotDisponibile> trovaSlotDisponibileConControlliPaziente(Double durata,
+                                                                              Date dataAttuale,
+                                                                              LocalTime oraAttuale,
+                                                                              List<Medico> listaMedici,
+                                                                              String usernamePazienteCorrente
+                                                                              ) {
+
+        /** Cerco di rendere persistente il valore di username che ha passato il chiamante.
+         *  usernameRead dovrebbe venire inizializzato solo la prima chiamata: le chiamate ricorsive poi fanno uso di lui. */
+        usernameRead = usernamePazienteCorrente;
+
+        // TODO: Ottengo tutte le visite correnti!
+        List<Visita> visiteGiornaliere = getAllVisiteByData(dataAttuale);
+
+
+        // TODO: Se non ha visite esistenti, procedi normalmente
+        return trovaSlotDisponibile(durata, dataAttuale, getRightOraDiPartenza(usernamePazienteCorrente, dataAttuale) , // oraAttuale
+                listaMedici, visiteGiornaliere);
+    }
+
+
     public Optional<SlotDisponibile> trovaSlotDisponibile(Double durata,
                                                           Date dataAttuale,
                                                           LocalTime oraAttuale,
                                                           List<Medico> listaMedici,
                                                           List<Visita> visiteGiornaliere) {
+
 
         // TODO: Creazione della coda come una delle prime operazioni
         // Nota bene: e' obbligatorio inizializzarla qui ai fini del funzionamento degli altri metodi di calcolo dello slot disponibile
@@ -71,9 +109,6 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                 // partendo però non più da oraAttuale, bensì da orarioApertura
                 return trovaSlotGiornoSuccessivo(calendar, durata, listaMedici);
 
-            // #########################################################################################################
-            // TODO: Pensare di mettere qui (e fattorizzare) la ricerca del primo medico disponibile (tramite il metodo)
-            // #########################################################################################################
 
 
             // ALTRIMENTI, SE ARRIVO QUI LA DATA E' AMMISSIBILE,
@@ -142,21 +177,9 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
             case NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ->
                     setOrarioSlot(slotDisponibile, orarioAperturaPomeriggio.plusMinutes(pausaFromvisite)); //  oraAperturaPomeriggio+5min ( dal momento che listaVisiteGiornaliere = [] )
 
-            case NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO -> // PASSA AL GIORNO SUCCESSIVO
-
-                // ti richiami ricorsivamente sul giorno successivo, con una nuova listaVisiteGiornaliere (relativa al giorno successivo)
-                trovaSlotDisponibile(durataMedia,
-                                          dataSuccessiva, // dataSuccessiva
-                                          orarioAperturaMattina,
-                                          listaMedici,
-                                          getAllVisiteByData(dataSuccessiva) // dataSuccessiva
-                );
-
-
-            // TODO: Perchè invece non ho usato trovaSlotGiornoSuccessivo() ?????
-            // se funziona in questo modo, non ho neanche bisogno di gestire dataSuccessiva prima dello switch == riuso del codice!
-            //trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici );
-
+            case NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO ->
+                    // Richiamati ricorsivamente sul giorno successivo, con una nuova listaVisiteGiornaliere (relativa al giorno successivo)
+                     trovaSlotGiornoSuccessivo(calendar, durataMedia, listaMedici);
         };
 
     }
@@ -232,6 +255,7 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
                                     // ==> serve sapere l'ultima visita del mattino per poter calcolare l'ora di pianificazione di questa nuova visita
                                     // accodaVisitaAlMattino(listaVisiteGiornaliere, fineVisita, dataDiRicerca, medicoLiberato,
                                     //        calendar, orarioAperturaMattina, durataMedia, listaMedici) :
+
 
                                     cercaSlotAlPomeriggio(listaVisiteGiornaliere, fineVisita, slotDisponibile,
                                             calendar, orarioAperturaPomeriggio, durataMedia, listaMedici)
@@ -386,13 +410,27 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         calendar.add(Calendar.DAY_OF_MONTH, 1); // Incrementa di un giorno
         Date dataSuccessiva = calendar.getTime(); // Ottieni la nuova data
 
-        // Pensare al caso sforamento ?
 
-        return trovaSlotDisponibile(durataMedia,
+        /// TODO: Chiamo la funzione wrapper, che decide lei chi chiamare in base alle condizione.
+
+        // ORIGINALE:
+//        return trovaSlotDisponibile(durataMedia,
+//                dataSuccessiva,
+//                orarioAperturaMattina,
+//                listaMedici,
+//                getAllVisiteByData(dataSuccessiva)
+//        );
+
+        // MODIFICATA, con controllo utente
+                return trovaSlotDisponibile(durataMedia,
                 dataSuccessiva,
-                orarioAperturaMattina,
+                getRightOraDiPartenza(usernameRead, dataSuccessiva),
                 listaMedici,
-                getAllVisiteByData(dataSuccessiva));
+                getAllVisiteByData(dataSuccessiva)
+        );
+
+
+         //return trovaSlotDisponibileConControlliPaziente(durataMedia, dataSuccessiva, getRightOraDiPartenza( usernameRead, dataSuccessiva), listaMedici);
     }
 
 
@@ -419,13 +457,27 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
     @Override
-    /** In questo metodo inserisco i dati di test per i vari casi di test specifici.
-     *   */
+    /** In questo metodo inserisco i dati di test per i vari casi di test specifici. */
     public List<Visita> getAllVisiteByData(Date dataCorrente) {
-
         return visitaService.getAllVisiteByData( dataCorrente );
     }
 
+
+    /** Gestisce il caso: stesso utente, stesso giorno, se esistono già visite che lui ha prenotato non ci devono essere sovrapposizioni orarie */
+    public LocalTime getRightOraDiPartenza(String usernamePazienteCorrente, Date giornoVariabile) {
+        Date oggi = new Date();
+        if(visitaService.utenteOggiHaGiaPrenotatoAlmenoUnaVisita(usernamePazienteCorrente, giornoVariabile) ) {
+            // Se arrivo qui, io utente X ho prenotato almeno 1 visita per oggi.
+            List<VisitaPrenotataDTO> visitePazientePrenotateOggi =
+                    visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePazienteByData(usernamePazienteCorrente, giornoVariabile);
+            return visitePazientePrenotateOggi.get(visitePazientePrenotateOggi.size()-1).calcolaOraFine().toLocalTime().plusMinutes(Parameters.pausaFromVisite);
+
+        } else
+            // Sono nello stesso giorno? // new Data().
+            //     Si ==> LocalTime.now()  // Perchè sono nella data di oggi
+            //     No ==> oraAperturaMattina // perchè sono dentro la chiamata ricorsiva, quindi nel futuro
+            return calcolatore.isStessoGiorno.test(oggi, giornoVariabile) ?  LocalTime.now() : orarioAperturaMattina;
+    }
 
 
 }

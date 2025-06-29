@@ -1,4 +1,4 @@
-<div th:fragment="cardPrestazione">
+<div th:fragment="cardPrestazione" xmlns:sec="http://www.w3.org/1999/xhtml">
 
     <!-- Ciclo per le card, divise automaticamente in righe -->
     <div class="section py-5 pb-lg-80 px-lg-5 position-relative" >
@@ -7,8 +7,9 @@
         <div class="container">
 
             <div class="row">
-                <div th:each="prest: ${prestazioni}" class="col-12 col-lg-4">
 
+
+                <div th:each="prest: ${prestazioni}" class="col-12 col-lg-4">
 
 
                     <div class="card-wrapper card-space">
@@ -18,10 +19,22 @@
                                 <p class="card-text font-serif" th:text="${prest.getDescrizione()}">.</p>
 
 
-                                <!-- TODO: inserisco il percorso -->
+                                <!-- Per utente non autenticato: -->
+                                <a class="read-more unauthenticated-link"
+                                   th:href="@{/prestazioni/{id}(id=${prest.getIdPrestazione()})}"
+                                   sec:authorize="!isAuthenticated"
+                                   href="#">
+                                    <span class="text">Dettagli</span>
+                                    <span class="visually-hidden">su Lorem ipsum…</span>
+                                    <svg class="icon"><use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
+                                </a>
 
 
-                                <a class="read-more" th:href="@{/prestazioni/{id} ( id = ${prest.getIdPrestazione()} )}" >
+
+                                <!-- Per utente autenticato: (comportamento aspettato, quindi può proseguire) -->
+                                <a class="read-more"
+                                   th:href="@{/prestazioni/{id} ( id = ${prest.getIdPrestazione()} )}"
+                                   sec:authorize="isAuthenticated">
                                     <span class="text">Dettagli</span>
                                     <span class="visually-hidden">su Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor…</span>
                                     <svg class="icon"> <use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
@@ -35,11 +48,41 @@
             </div>
 
         </div>
+
+
+        <!-- Messaggio di errore in caso di utente non autenticato. -->
+        <div sec:authorize="!isAuthenticated">
+            <div class="alert alert-warning d-none" id="auth-warning">
+                <p>Per accedere a questa funzionalita' devi essere loggato. </p>
+            </div>
+        </div>
+
+        <br/>
+
     </div>
 
 
+    <!-- Per gestire il messaggio di errore in caso di utente non autenticato    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const unauthLinks = document.querySelectorAll('.unauthenticated-link');
+            const warningAlert = document.getElementById('auth-warning');
 
-<!---->
+            unauthLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault(); // impedisce la navigazione
+                    if (warningAlert) {
+                        warningAlert.classList.remove('d-none'); // mostra l'alert
+                        warningAlert.scrollIntoView({ behavior: 'smooth' }); // scorri verso l'alert
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
+    <!---->
 <!---->
 <!---->
 

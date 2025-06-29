@@ -10,7 +10,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
 
 
 import java.time.LocalTime;
@@ -31,6 +30,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
     void initListaVuota() {
         /** La lista di visite di test deve essere rigorosamente vuota */
         listaVisiteTest = new ArrayList<>();
+
     }
 
 
@@ -54,7 +54,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         listaVisiteTest, // lista vuota
 
                         dataVenerdi17Gennaio2025Test,
-                        Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite),
+                        Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite),
                         medicoService.getAllMedici().get(0)
                 ),
 
@@ -69,7 +69,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         listaVisiteTest,
 
                         dataVenerdi17Gennaio2025Test,
-                        LocalTime.of( 7, 50  ).plusMinutes( (Parameters.pausaFromvisite)),
+                        LocalTime.of( 7, 50  ).plusMinutes( (Parameters.pausaFromVisite)),
                         medicoService.getAllMedici().get(0)
                 ),
 
@@ -84,7 +84,7 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         listaVisiteTest,
 
                         dataVenerdi17Gennaio2025Test,
-                        Parameters.orarioAperturaPomeriggio.plusMinutes( Parameters.pausaFromvisite ), // Mi aspetto 14:05
+                        Parameters.orarioAperturaPomeriggio.plusMinutes( Parameters.pausaFromVisite), // Mi aspetto 14:05
                         medicoService.getAllMedici().get(0) // Mi aspetto m1
                 ),
 

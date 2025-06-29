@@ -15,7 +15,7 @@ public class Parameters {
 
 
     /** Tolleranza / Pausa in minuti tra una visita e l'altra. */
-    public static long pausaFromvisite = 5;
+    public static long pausaFromVisite = 5;
 
 
 }

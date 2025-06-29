@@ -7,8 +7,6 @@ import com.beltra.sma.datastructures.CodaMediciDisponibili
 import com.beltra.sma.model.Medico
 import com.beltra.sma.model.Prestazione
 import com.beltra.sma.model.Visita
-
-import com.beltra.sma.service.PrestazioneServiceImpl
 import com.beltra.sma.service.VisitaService
 
 import com.beltra.sma.utils.FineVisita
@@ -90,53 +88,6 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
 
     }
 
-
-
-    // ###################
-    // METODI DI UTILITA'
-    // ##################
-
-//    /** Predicato / Closure di ricerca da usare per la findAll.
-//     *  Ho isolato in una closure per motivi di testabilità.
-//     *  */
-//    Closure<Boolean> isOrarioVisitaAfterChiusuraPomeriggio()  {
-//        return {
-//            Visita visita ->
-//            def oraFine = visita.calcolaOraFine().toLocalTime()
-//            def oraFinePlusPausa = oraFine.plusMinutes(Parameters.pausaFromvisite)
-//
-//            calcolatoreAmmissibilita.isOrarioAfterChiusuraPomeriggio(oraFine) ||
-//            calcolatoreAmmissibilita.isOrarioAfterChiusuraPomeriggio(oraFinePlusPausa)
-//        }
-//    }
-
-
-//    /** Predicato / Closure di ricerca da usare per la findAll  */
-//    Closure<Boolean> visitaNotAmmissibileInPomeriggio() {
-//        return {
-//            Visita v ->
-//                def oraFine = v.calcolaOraFine().toLocalTime()
-//                //def oraVisita = v.ora.toLocalTime()
-//                def oraFineConPausa = oraFine.plusMinutes(Parameters.pausaFromvisite)
-//                //def oraVisitaConPausa = oraVisita.plusMinutes(Parameters.pausaFromvisite)
-//
-//                !calcolatoreAmmissibilita.isOrarioAmmissibileInPomeriggio(oraFine, durataMediaNuovaVisita) ||
-//                !calcolatoreAmmissibilita.isOrarioAmmissibileInPomeriggio(oraFineConPausa, durataMediaNuovaVisita)
-//        }
-//    }
-
-//    /** Controllo che ci sia almeno una visita che non e' ammissibile. <br>
-//     *  @return true se esiste almeno una visita che non è ammissibile */
-//    boolean valutaNextGiornoAmmissibile() {
-//
-//        /** Controllo se esiste almeno una visita che non e' ammissibile in pomeriggio,
-//         * ma che appunto "sfora" l'orario di pomeriggio */
-//
-//        return  listaVisite.any { v ->
-//            isOrarioVisitaAfterChiusuraPomeriggio()(v) &&
-//            visitaNotAmmissibileInPomeriggio()(v)
-//        }
-//    }
 
 
 
@@ -224,13 +175,13 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
             // (Sono nel futuro)
             // Se listaVisite vuota OR listaVisite <= listaMedici
             if(listaVisiteNextGiornoAmmissibile.empty || listaVisiteNextGiornoAmmissibile.size() <= listaMedici.size())
-                    visitaFittizia.setOra( Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite) ) ) // allora ora = orarioAperturaMattina.plusMinutes(pausaFromvisite)
+                    visitaFittizia.setOra( Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite) ) ) // allora ora = orarioAperturaMattina.plusMinutes(pausaFromvisite)
 
             // Altrimenti vuol dire che c'è almeno una visita nel futuro, quindi:
             else
                 // Ti prendi l'ultima visita tra quelle future
                 //visitaFittizia.setOra(Time.valueOf( listaVisiteNextGiornoAmmissibile.last().calcolaOraFine().toLocalTime().plusMinutes(Parameters.pausaFromvisite) )  )
-                visitaFittizia.setOra(Time.valueOf( listaVisiteNextGiornoAmmissibile.last().ora.toLocalTime().plusMinutes(Parameters.pausaFromvisite) )  )
+                visitaFittizia.setOra(Time.valueOf( listaVisiteNextGiornoAmmissibile.last().ora.toLocalTime().plusMinutes(Parameters.pausaFromVisite) )  )
 
 
 //            visitaFittizia.setOra( Time.valueOf(
@@ -273,7 +224,7 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
             FineVisita fineVisitaDelMedicoLibero = new FineVisita((long) listaVisite.size() + 1,
                     Time.valueOf(
                     Parameters.orarioAperturaMattina
-                            .plusMinutes(Parameters.pausaFromvisite)
+                            .plusMinutes(Parameters.pausaFromVisite)
                             .plusMinutes(durataMediaNuovaVisita.toLong()))
             )
 
@@ -387,7 +338,7 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
 
             case RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA ->
                 yield Parameters.orarioAperturaMattina
-                        .plusMinutes(Parameters.pausaFromvisite)
+                        .plusMinutes(Parameters.pausaFromVisite)
                         .plusMinutes(durata)
 
             case RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO ->
@@ -395,7 +346,7 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
                 // TODO: prevedere di usare calcolatoreAmmissibilita.isOrarioAfterPomeriggio() che
                 yield oraDaControllare.plusMinutes(durata).isAfter(Parameters.orarioChiusuraPomeriggio) // se oraDaControllare.plusMinutes(durata) == 21:00 allora la isAfter da false
                     ? Parameters.orarioAperturaMattina
-                        .plusMinutes(Parameters.pausaFromvisite)
+                        .plusMinutes(Parameters.pausaFromVisite)
                         .plusMinutes(durata)
                         // TODO: in caso stia sforando la chiusura del pomeriggio allora posso pensare
                         //   di richiamare ricorsivamente build() ?? ==> in questo modo mi baso sulle visite del primo giorno ammissibile
@@ -403,7 +354,7 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
 
             case RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ->
                 yield Parameters.orarioAperturaPomeriggio
-                        .plusMinutes(Parameters.pausaFromvisite)
+                        .plusMinutes(Parameters.pausaFromVisite)
                         .plusMinutes(durata)
 
             default -> throw new IllegalArgumentException("Tipo di risultato non gestito: $risultato")

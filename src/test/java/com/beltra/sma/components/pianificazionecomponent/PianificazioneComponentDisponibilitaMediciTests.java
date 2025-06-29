@@ -54,7 +54,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( LocalTime.of(7, 0).plusMinutes( Parameters.pausaFromvisite ) ); // Mi aspetto 07:05
+        Time oraExpected = Time.valueOf( LocalTime.of(7, 0).plusMinutes( Parameters.pausaFromVisite) ); // Mi aspetto 07:05
         Medico medicoExpected = listaMediciTest.get(2); // mi aspetto il medico 3
 
         SlotDisponibile slotDisponibileExpected =
@@ -122,7 +122,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) ); // TODO: Mi aspetto 07:15, perchè tanto listaVisite.size < listaMedici.size!
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromVisite) ); // TODO: Mi aspetto 07:15, perchè tanto listaVisite.size < listaMedici.size!
         Medico medicoExpected = listaMediciTest.get(2);
 
         SlotDisponibile slotDisponibileExpected =
@@ -185,7 +185,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3]
         // mediciMap = [<1, {1, 07:20}>, <2, {2, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) ); // Mi aspetto 07:35
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromVisite) ); // Mi aspetto 07:35
         Medico medicoExpected = listaMediciTest.get(2);
 
         SlotDisponibile slotDisponibileExpected =
@@ -252,7 +252,7 @@ public class PianificazioneComponentDisponibilitaMediciTests extends Pianificazi
         // listaMedici = [m1, m2, m3] ==> m2 ed m3 sono liberi
         // mediciMap = [<1, {1, 07:20}>, <2, {0, 09:05}>, <3, {0, 09:05}]
         Date dataExpected = dataTest;
-        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromvisite ) );
+        Time oraExpected = Time.valueOf( oraAttualeTest.plusMinutes( Parameters.pausaFromVisite) );
         Medico medicoExpected = listaMediciTest.get(1); // mi aspetto m2
 
         SlotDisponibile slotDisponibileExpected = new SlotDisponibile( dataExpected, oraExpected , medicoExpected );

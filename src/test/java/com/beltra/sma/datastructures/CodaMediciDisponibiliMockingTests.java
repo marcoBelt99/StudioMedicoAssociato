@@ -114,11 +114,11 @@ public class CodaMediciDisponibiliMockingTests {
 
         v1.setIdVisita(11L);
         v1.setPrestazione(p1);
-        v1.setOra(Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite) ));
+        v1.setOra(Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite) ));
 
         v2.setIdVisita(22L);
         v2.setPrestazione(p2);
-        v2.setOra(Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromvisite) ));
+        v2.setOra(Time.valueOf( Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite) ));
 
         listaVisiteToReturn.add(v1);
         listaVisiteToReturn.add(v2);

@@ -1,5 +1,6 @@
 package com.beltra.sma.repository;
 
+import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.Anagrafica;
 import com.beltra.sma.model.Medico;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -72,31 +74,30 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
     );
 
 
-
-
-
-//    /** Per l'utente medico: elenco delle visite prenotate dai pazientie non effettuate */
-//    @Query(
-//            """
-//                SELECT new com.beltra.sma.dto.VisitaPrenotataDTO(
-//                pren.dataPrenotazione,
-//                vis.dataVisita, vis.ora, vis.numAmbulatorio,
-//                utente.anagrafica.nome, utente.anagrafica.cognome,
-//                vis.prestazione.titolo
-//            )
-//                FROM Visita vis, Prenotazione pren, Utente utente
-//                WHERE
-//                vis.idVisita = pren.visita.idVisita
-//                AND pren.effettuata = :effettuata
-//                AND utente.anagrafica.idAnagrafica = pren.anagrafica.idAnagrafica
-//                AND utente.username = :username
-//            """
-//    )
-//    List<VisitaPrenotataDTO> findAllVisitePrenotateByUsernameMedico(
-//            @Param("username") String username,
-//            @Param("effettuata") Boolean effettuata
-//    )
-
+    /** Per l'utente paziente: elenco delle visite prenotate, dati il suo username e la data su cui si vuole ricercare. */
+    @Query(
+            """
+                SELECT new com.beltra.sma.dto.VisitaPrenotataDTO(
+                pren.dataPrenotazione,
+                vis.dataVisita, vis.ora, vis.numAmbulatorio,
+                utente.anagrafica.nome, utente.anagrafica.cognome,
+                vis.prestazione.titolo,
+                vis.prestazione.durataMedia
+            )
+                FROM Visita vis, Prenotazione pren, Utente utente
+                WHERE
+                vis.idVisita = pren.visita.idVisita
+                AND pren.effettuata = :effettuata
+                AND utente.anagrafica.idAnagrafica = pren.anagrafica.idAnagrafica
+                AND utente.username = :username
+                AND vis.dataVisita = :dataDiRicerca
+            """
+    ) // TODO: decidere se tenere questo metodo oppure quello nel service fatto con stream() API.
+    List<VisitaPrenotataDTO> findAllVisitePrenotateByUsernamePazienteByDataVisita(
+            @Param("username") String username,
+            @Param("effettuata") Boolean effettuata,
+            @Param("dataDiRicerca") Date dataDiRicerca
+    );
 
 
 
@@ -128,6 +129,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
     
     List<Visita> findAllByOrderByDataVisitaAscOraAsc();
 
+    List<Visita> findAllByAnagrafica(Anagrafica anagrafica);
 
     /** Trova tutte le visite del DB relative ad una determinata data, in ordine di ora (crescente) */
     @Query("SELECT v FROM Visita v WHERE v.dataVisita = :data ORDER BY v.ora ASC")
@@ -150,19 +152,33 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
     List<Visita> findAllVisiteFromNow();
 
 
-    /** Trova tutte le visite di un determinato medico in una determinata data */
-    @Query("SELECT v FROM Visita v WHERE v.anagrafica.idAnagrafica = :idMedico AND v.dataVisita = :data")
-    List<Visita> findByMedicoAndData(@Param("idMedico") Long idMedico, @Param("data") Date data);
-
-
-    List<Visita> findByAnagrafica(Anagrafica anagrafica);
-
-    /** Prende tutte le visite di una determianta data assegnate ad un determinato medico */
-    List<Visita> findByAnagraficaAndDataVisita(Anagrafica medico, Date dataVisita);
-
-
-
-
-    //boolean existsByMedicoAndDataVisitaAndOraBetween(Medico medico, Date dataVisita, Time oraInizio, Time oraFine);
+    @Query(
+    """
+        SELECT new com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO(
+            vis.idVisita,
+            vis.dataVisita,
+            vis.ora,
+            vis.prestazione.durataMedia,
+            vis.prestazione.titolo,
+            vis.numAmbulatorio,
+            anag_paziente.nome,
+            anag_paziente.cognome,
+            paz.codiceFiscale
+    )
+        FROM Visita vis
+        JOIN vis.anagrafica medico
+        JOIN Utente utente ON utente.anagrafica = medico
+        JOIN Prenotazione pren ON pren.visita = vis
+        JOIN pren.anagrafica anag_paziente
+        JOIN Paziente paz ON paz.anagrafica = anag_paziente
+        WHERE utente.username = :usernameMedico
+          AND vis.dataVisita BETWEEN :dataInizio AND :dataFine
+    """
+    )
+    List<AppuntamentiSettimanaliMedicoDTO> findAppuntamentiSettimanaliMedico(
+            @Param("usernameMedico") String usernameMedico,
+            @Param("dataInizio") Date dataInizio,
+            @Param("dataFine") Date dataFine
+    );
 
 }

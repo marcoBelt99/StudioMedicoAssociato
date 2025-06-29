@@ -25,7 +25,7 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     private LocalTime orarioChiusuraMattina = Parameters.orarioChiusuraMattina;
     private LocalTime orarioAperturaPomeriggio = Parameters.orarioAperturaPomeriggio;
     private LocalTime orarioChiusuraPomeriggio = Parameters.orarioChiusuraPomeriggio;
-    private Long pausaFromVisite = Parameters.pausaFromvisite;
+    private Long pausaFromVisite = Parameters.pausaFromVisite;
 
     /** COSTRUTTORI */
     public CalcolatoreAmmissibilitaComponentImpl() {
@@ -79,6 +79,9 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     }
 
 
+    public void setIsStessoGiorno(BiPredicate<Date, Date> isStessoGiorno) {
+        this.isStessoGiorno = isStessoGiorno;
+    }
 
     public Boolean isOrarioAmmissibile(LocalTime orario, Double durataPrestazione) {
         return condizioneSoddisfacibilita( orario ) && condizioneSoddisfacibilita( aggiungiDurataAndPausa( orario, durataPrestazione ) );
@@ -113,18 +116,9 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     /** Aggiunge il parametro durataMedia all'orario passato come parametro e la pausa di 5 minuti (tra una visita e la successiva).*/
     public LocalTime aggiungiDurataAndPausa(LocalTime ora, Double durataMedia) {
-        return ora.plusMinutes(durataMedia.intValue() + Parameters.pausaFromvisite);
+        return ora.plusMinutes(durataMedia.intValue() + Parameters.pausaFromVisite);
     }
 
-    // TODO: questo metodo è buggato!!!!!
-    @Override
-    public boolean isOrarioAfterMezzanotte(LocalTime ora, Double durataMedia) {
-        return
-            !isOrarioAmmissibile(ora, durataMedia) &&
-            //ora.isBefore(LocalTime.MAX);
-            ora.isAfter(LocalTime.MIDNIGHT) || aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MIDNIGHT);
-             //aggiungiDurataAndPausa(ora, durataMedia).isAfter(LocalTime.MAX));
-    }
 
     @Override
     public boolean isOrarioAmmissibileInMattina(LocalTime ora, Double durata) {
