@@ -21,8 +21,6 @@ public class PrestazioneController {
     }
 
 
-
-
     @GetMapping("/{id}")
     public String mostraStep1(@PathVariable Long id,
                               Model model,

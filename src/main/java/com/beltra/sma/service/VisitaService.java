@@ -40,7 +40,7 @@ public interface VisitaService {
     /** @apiNote Riservato ad utente di tipo "MEDICO".
      *  @return  Lista di mappe, ognuna rappresentante un evento, nel nostro caso appuntamenti
      *  gia' pronto per essere processato dal frontend (in questo caso, da schedule-x).*/
-    List<Map<String, String>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine);
+    List<Map<String, Object>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine);
 
     /** ###############################################################################################*/
     /** ###############################################################################################*/

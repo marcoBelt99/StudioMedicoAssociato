@@ -173,6 +173,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
         JOIN Paziente paz ON paz.anagrafica = anag_paziente
         WHERE utente.username = :usernameMedico
           AND vis.dataVisita BETWEEN :dataInizio AND :dataFine
+          AND pren.effettuata = false
     """
     )
     List<AppuntamentiSettimanaliMedicoDTO> findAppuntamentiSettimanaliMedico(

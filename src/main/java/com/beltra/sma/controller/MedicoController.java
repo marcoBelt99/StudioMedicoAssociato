@@ -28,11 +28,10 @@ import java.util.Map;
 public class MedicoController {
 
     private final VisitaService visitaService;
-    //private final MedicoServiceImpl medicoServiceImpl;
 
-    MedicoController(VisitaService visitaService /*,MedicoServiceImpl medicoServiceImpl */) {
+
+    MedicoController(VisitaService visitaService) {
         this.visitaService = visitaService;
-//        this.medicoServiceImpl = medicoServiceImpl;
     }
 
     /** Accessibile solo da Medico. */
@@ -48,32 +47,13 @@ public class MedicoController {
     }
 
 
-    /** Accessibile solo da Medico. */
-    /*
+    /** Accessibile solo da Medico. <br>
+     *  Endpoint per popolare il calendario con gli eventi (appuntamenti) del medico corrente.
+     * */
     @GetMapping("/appuntamenti")
-    public ResponseEntity<List<AppuntamentiSettimanaliMedicoDTO>> getEventi(
+    public ResponseEntity<List<Map<String, Object>>> getAppuntamentiSettimanali(
             @RequestParam String inizioSettimana,
-            @RequestParam String fineSettimana
-    ) {
-        Date dataInizio = new Date( inizioSettimana);
-        Date dataFine = new Date ( fineSettimana);
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        //String username = "mario_rossi";
-
-        List<AppuntamentiSettimanaliMedicoDTO> appuntamentiSettimanaliMedico =
-                visitaService.getAppuntamentiSettimanaliMedico(username, dataInizio, dataFine);
-        return ResponseEntity.ok(appuntamentiSettimanaliMedico);
-
-    }
-
-     */
-
-    @GetMapping("/appuntamenti")
-    public ResponseEntity<List<Map<String, String>>> getAppuntamentiSettimanali(
-            @RequestParam String inizioSettimana,
-            @RequestParam String fineSettimana
-    ) {
+            @RequestParam String fineSettimana) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date dataInizio = dateFormat.parse(inizioSettimana);
@@ -83,7 +63,7 @@ public class MedicoController {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             // String username = "mario_rossi"; // Per test
 
-            List<Map<String, String>> appuntamentiSettimanaliMedico =
+            List<Map<String, Object>> appuntamentiSettimanaliMedico =
                     visitaService.getAppuntamentiSettimanaliMedicoListaMappe(username, dataInizio, dataFine);
 
             return ResponseEntity.ok(appuntamentiSettimanaliMedico);
@@ -94,20 +74,6 @@ public class MedicoController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
-
-//    // TODO: Endpoint per ottenere i dettagli del paziente via AJAX
-//    @GetMapping("/appuntamenti")
-//    @ResponseBody // Indica a Spring di restituire JSON direttamente
-//    public ResponseEntity<PazienteDTO> getPazienteDetails(@RequestParam("codiceFiscale") String codiceFiscale) {
-//
-//        return ResponseEntity.ok( visi.getPazienteDTOByCodiceFiscale( codiceFiscale ) );
-//
-//    }
-
-
-
 
 
 }

@@ -35,6 +35,9 @@
         <script th:src="@{/js/schedule-x/translations.js}"></script>
         <script th:src="@{/js/schedule-x/calendar.js}"></script>
 
+        <!-- Plugin modale eventi -->
+        <script th:src="@{/js/schedule-x/event-modal.js}"></script>
+
 
         <link th:href="@{/css/schedule-x/theme-default.css}" rel="stylesheet" />
 
@@ -43,103 +46,118 @@
 
 
     <div class="container">
+
+        <!-- Div contenente il calendario        -->
         <div class="calendar" id="calendar"></div>
+
+
+        <!-- Modal Bootstrap Italia -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="modaleAppuntamento">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-radius-large">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="titoloAppuntamento">Titolo appuntamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="dettagliAppuntamento">Dettagli dell'appuntamento...</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <script type="module">
 
             // Lasciare cose' il percorso al file js, altrimenti non viene riconosciuto e ottengo 404.
-            import { getAppuntamentiSettimanaliMedico } from '/js/appuntamentiSettimanaliMedico.js';
+            import { getAppuntamentiSettimanaliMedico, getAppuntamentiIniziali } from '/js/appuntamentiSettimanaliMedico.js';
+
 
             const { createCalendar, viewWeek } = window.SXCalendar;
-            //const { createDragAndDropPlugin } = window.SXDragAndDrop; // disabilito il drago and drop
+            // const { createDragAndDropPlugin } = window.SXDragAndDrop; // disabilito il drago and drop
+
+            const { createEventModalPlugin } = window.SXEventModal;
+            //const { eventModalPlugin } = window.SXEventModal; // abilito il modal
+
+
+            const eventModal = createEventModalPlugin()
+
+
+            // ✅ Importa il plugin event-modal correttamente
+            // const { createEventModal } = window.SXEventModal;
+
             const plugins = [
-                //createDragAndDropPlugin(),
+                // createDragAndDropPlugin(),
+
+                // createEventModalPlugin() // Funzionante!!
+                eventModal // Funzionante (è solo una costante che contiene la chiamata createEventModalPlugin()
             ]
+
 
 
             let calendar;
 
 
+            /** Funzione di init del calendario. */
+            async function initCalendar() {
 
-            function getInizioSettimana(date) {
-                const d = new Date(date);
-                const day = d.getDay();
-                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-                return new Date(d.setDate(diff)).toISOString().split('T')[0];
-            }
+                ///** Recupero tutti gli appuntamenti del medico loggato, presenti da inizioSettimana a fineSettimana */
+                //let appuntamentiMedico = await getAppuntamentiSettimanaliMedico(inizioSettimana, fineSettimana);
 
-            function getFineSettimana(date) {
-                const d = new Date(date);
-                const day = d.getDay();
-                const diff = d.getDate() - day + (day === 0 ? 0 : 7);
-                return new Date(d.setDate(diff)).toISOString().split('T')[0];
-            }
+                const appuntamentiIniziali = await getAppuntamentiIniziali();
+                console.log('APPUNTAMENTI INIZIALI:\n');
+                console.log(appuntamentiIniziali);
 
-
-            async function initCalendar() { // Nuovo: richiamo questo
-                const oggi = new Date();
-                const inizioSettimana = getInizioSettimana(oggi);
-                const fineSettimana = getFineSettimana(oggi);
-
-                let appuntamentiMedico = await getAppuntamentiSettimanaliMedico(inizioSettimana, fineSettimana);
 
                 const calendarConfig = {
                     views: [viewWeek], // voglio vedere la settimana
-                    /*
-                    events: [
-                        {
-                            id: '1',
-                            title: 'Evento 1',
-                            start: '2025-06-30 09:15',
-                            end: '2025-07-02 10:00'
-                        },
-
-                     */
+                    // esempio di evento inserito manualmente:
+                    //events: [{id: '1',title: 'Evento 1',start: '2025-07-04 09:15',end: '2025-07-04 10:00'}],
                     locale: 'it-IT',
                     dayBoundaries: {
                         start: '07:00',
                         end: '21:00',
                     },
 
-                    events: appuntamentiMedico,
+                    /** Imposto gli eventi iniziali */
+                    events: appuntamentiIniziali,
                     // isDark:true,
                     isResponsive: true,
+                    callbacks: {
 
-                    // 🔁 Qui intercetti il cambio settimana
-                    onViewDatesChange: async ({ viewDates }) => {
-                        console.log('📅 Cambio settimana rilevato!');
-                        console.log('📅 ViewDates ricevute:', viewDates);
-                        console.log('📅 Prima data (start):', viewDates[0]);
-                        console.log('📅 Ultima data (end):', viewDates[viewDates.length - 1]);
+                        // TODO: (0) evento asincrono: Quando l'utente naviga tra le settimane
+                        async onRangeUpdate({start, end}) {
+                            try {
+                                console.log('🔃 Cambio settimana:', start, end);
 
-                        const start = viewDates[0];
-                        const end = viewDates[viewDates.length - 1];
+                                // TODO: (1) fase di fetch (get) degli appuntamenti e (2)await della risposta
 
-                        console.log('🌐 Chiamando API per:', { start, end });
-                        const nuoviAppuntamenti = await getAppuntamentiSettimanaliMedico(start, end); // correggi qui se usavi getAppuntamenti
+                                const nuoviAppuntamenti = await getAppuntamentiSettimanaliMedico(start, end);
 
-                        console.log('📊 Nuovi appuntamenti ricevuti:', nuoviAppuntamenti.length);
-                        console.log('📋 Dettaglio appuntamenti:', nuoviAppuntamenti);
+                                // Aggiornamento del calendario
+                                calendar.events.set(nuoviAppuntamenti);// aggiorno gli appuntamenti
 
-                        calendar.updateOptions({ events: nuoviAppuntamenti });
-                        console.log('✅ Calendario aggiornato');
+                                console.log('appuntamenti aggiornati');
+                            } catch(e) {
+                                console.error('Errore durante il caricamento degli appuntamenti:', e);
+                            }
+                        }
                     }
+
                 };
 
-                calendar = createCalendar(calendarConfig, plugins)
-                calendar.render(document.querySelector('.calendar'))
+                // Richiamo il metodo di creazione del calendario
+                calendar = createCalendar(calendarConfig, plugins);
+                console.log('Calendario creato!');
+                calendar.render(document.querySelector('.calendar'));
             }
 
-            // Nuovo: richiamo questo
+            // Inizializzo il calendario
             initCalendar();
 
-            console.log(window.SXCalendar)
-
-            // calendar.render(document.querySelector('.calendar'))
-
-
-
-            // Recupero degli appuntamenti
         </script>
     </div>
 

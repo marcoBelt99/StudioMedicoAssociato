@@ -41,8 +41,7 @@ public class PazienteController {
             listaVisite = visitaService.getAllVisitePrenotateAndEffettuateByUsernamePaziente( username );
             model.addAttribute("titolo", "Visite Prenotate ed Effettuate");
         }
-        else
-        {
+        else {
             listaVisite = visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePaziente( username );
             model.addAttribute("titolo", "Visite Prenotate e Non Effettuate");
         }

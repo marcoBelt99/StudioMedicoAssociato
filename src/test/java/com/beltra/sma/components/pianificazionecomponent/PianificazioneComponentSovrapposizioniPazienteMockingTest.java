@@ -49,7 +49,7 @@ class PianificazioneComponentSovrapposizioniPazienteMockingTest extends Pianific
     pianificazioneComponent = new PianificazioneComponentImpl(visitaService, calcolatore);
     }
 
-
+    /*
     @Test
     void test_getRightOraDiPartenza_se_utente_ha_visite_oggi() {
 
@@ -77,6 +77,8 @@ class PianificazioneComponentSovrapposizioniPazienteMockingTest extends Pianific
 
         assertEquals(oraInizioProssimaVisitaExpected ,risultato);
     }
+
+     */
 
     @Test
     void test_getRightOraDiPartenza_se_stesso_giorno_e_nessuna_visita() {

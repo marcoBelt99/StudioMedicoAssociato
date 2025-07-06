@@ -78,6 +78,9 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
 
 
         // TODO: Se non ha visite esistenti, procedi normalmente
+        // !!!!!! TODO: Fixare il bug per cui: Se sono nel caso stesso utente + caso visiteGiornaliere non vuote orario ammissibile mi da sempre ora fine ultima visita, ma:
+        //  se LocalTime.now() > getRightOraVisita() allora rischio che mi venga pianificata nel passato.+
+        // TODO: altro errore: mi pianifica la visita per il giorno dopo 30/06/2025
         return trovaSlotDisponibile(durata, dataAttuale, getRightOraDiPartenza(usernamePazienteCorrente, dataAttuale) , // oraAttuale
                 listaMedici, visiteGiornaliere);
     }
@@ -163,8 +166,8 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
         // DEVO ANALIZZARE IL MOTIVO DELLA NON AMMISSIBILITA' ORARIA,
         // e poi PROPORRE DEI DIVERSI ORARI PER LO SLOT (A SECONDA DEL MOTIVO):
 
-        calendar.add(Calendar.DAY_OF_MONTH, 1); // Incrementa di un giorno
-        Date dataSuccessiva = calendar.getTime(); // Ottieni la nuova data
+        //calendar.add(Calendar.DAY_OF_MONTH, 1); // Incrementa di un giorno // commentato il 06/07/2025
+        //Date dataSuccessiva = calendar.getTime(); // Ottieni la nuova data // commentato il 06/07/2025
 
         return switch ( calcolatore.getRisultatoCalcoloAmmissibilitaOrario( oraAttuale, durataMedia ) ) {
 
@@ -463,20 +466,33 @@ public class PianificazioneComponentImpl implements PianificazioneComponent {
     }
 
 
-    /** Gestisce il caso: stesso utente, stesso giorno, se esistono già visite che lui ha prenotato non ci devono essere sovrapposizioni orarie */
+    /** Gestisce il caso: stesso utente, stesso giorno, se esistono già visite che lui ha prenotato non ci devono essere sovrapposizioni orarie. */
     public LocalTime getRightOraDiPartenza(String usernamePazienteCorrente, Date giornoVariabile) {
+
         Date oggi = new Date();
+
+        LocalTime orarioDaRitornare;
         if(visitaService.utenteOggiHaGiaPrenotatoAlmenoUnaVisita(usernamePazienteCorrente, giornoVariabile) ) {
             // Se arrivo qui, io utente X ho prenotato almeno 1 visita per oggi.
             List<VisitaPrenotataDTO> visitePazientePrenotateOggi =
                     visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePazienteByData(usernamePazienteCorrente, giornoVariabile);
-            return visitePazientePrenotateOggi.get(visitePazientePrenotateOggi.size()-1).calcolaOraFine().toLocalTime().plusMinutes(Parameters.pausaFromVisite);
+            orarioDaRitornare = visitePazientePrenotateOggi.get(visitePazientePrenotateOggi.size()-1).calcolaOraFine().toLocalTime(); //.plusMinutes(Parameters.pausaFromVisite); // non sono sicuro serva aggiugnere la pausa
+
+            // Se però adesso sono le 15, ma l'ulima visita finisce alle 14:35 sono fregato perchè mi verrebbe ritornato un orario più piccolo,
+            // quindi pianificata una visita nel passato.
+            // TODO: forse fare LocalTime.now() non è sicuro, perchè se io vado nel futuro devo ragionare in termini di ultima visita
+            // e poi devo analizzare se ultimaVisita.oraFine è ammissibile o meno anzichè dire LocalTime.now()
+            orarioDaRitornare = orarioDaRitornare.isBefore(LocalTime.now()) ? LocalTime.now() : orarioDaRitornare;
+
+            // Sta poi al chiamante controllare l'ammissibilità o di LocalTime.now() oppure di orarioDaRitornare.
 
         } else
             // Sono nello stesso giorno? // new Data().
             //     Si ==> LocalTime.now()  // Perchè sono nella data di oggi
             //     No ==> oraAperturaMattina // perchè sono dentro la chiamata ricorsiva, quindi nel futuro
-            return calcolatore.isStessoGiorno.test(oggi, giornoVariabile) ?  LocalTime.now() : orarioAperturaMattina;
+            orarioDaRitornare = calcolatore.isStessoGiorno.test(oggi, giornoVariabile) ?  LocalTime.now() : orarioAperturaMattina;
+
+        return orarioDaRitornare;
     }
 
 

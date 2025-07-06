@@ -34,21 +34,27 @@
                     <div class="steppers-header">
                         <ul>
 
-                            <li class="confirmed" th:classappend="${step == 1} ? 'active' : ''">
-                                Prestazione
+<!--                            <li class="confirmed" th:classappend="${step == 1} ? 'active' : ''">-->
+                            <li th:class="'it-stepper-item' + (${step > 1} ? ' confirmed' : '') + (${step == 1} ? ' active' : '')">
+
+                            Prestazione
                                 <svg class="icon steppers-success">
                                     <use th:href="@{/svg/sprites.svg#it-check}"></use>
                                 </svg>
                                 <span class="visually-hidden">Confermato</span>
                             </li>
 
-                            <li class="it-stepper-item" th:classappend="${step == 2} ? 'active' : ''">
-                                Data e ora
+<!--                            <li class="it-stepper-item" th:classappend="${step == 2} ? 'active' : ''">-->
+                            <li th:class="'it-stepper-item' + (${step > 2} ? ' confirmed' : '') + (${step == 2} ? ' active' : '')">
+
+                            Data e ora
                                 <span class="visually-hidden">Attivo</span>
                             </li>
 
-                            <li class="it-stepper-item" th:classappend="${step == 3} ? 'active' : ''">
-                                <div class="step-title">Riepilogo</div>
+<!--                            <li class="it-stepper-item" th:classappend="${step == 3} ? 'active' : ''">-->
+                            <li th:class="'it-stepper-item' + (${step > 3} ? ' confirmed' : '') + (${step == 3} ? ' active' : '')">
+
+                            <div class="step-title">Riepilogo</div>
 
                             </li>
                         </ul>

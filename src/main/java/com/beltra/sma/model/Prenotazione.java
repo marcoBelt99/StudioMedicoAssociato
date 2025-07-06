@@ -21,6 +21,8 @@ public class Prenotazione {
     private Date dataPrenotazione;
     private boolean effettuata;
 
+    private Boolean deleted; // di default vale false
+
     @ManyToOne
     @JoinColumn(name = "id_anagrafica")
     private Anagrafica anagrafica;

@@ -99,7 +99,8 @@ public class PrenotazioneVisitaController {
         * TODO: ottengo SlotDisponibile:
         * Gli passo la durata media della prestazione, scelta obbligatoriamente allo step precedente. inoltre ti faccio partire la ricerca di questo slot
         * dalla data attuale (ci pensa poi il metodo a verificare che il giorno non sia un sabato o una domenica). */
-        SlotDisponibile slotDisponibile = getSlotDisponibile(model, prestazione, usernamePazientePrenotante, nomePazientePrenotante, cognomePazientePrenotante);
+        SlotDisponibile slotDisponibile =
+                getSlotDisponibile(model, prestazione, usernamePazientePrenotante, nomePazientePrenotante, cognomePazientePrenotante);
 
 
 
@@ -141,7 +142,7 @@ public class PrenotazioneVisitaController {
             @RequestParam String primaDataDisponibile,
             @RequestParam String primoOrarioDisponibile,
             @RequestParam String medicoCandidato,
-                        HttpSession session,
+                        //HttpSession session,
                         Model model) {
 
 

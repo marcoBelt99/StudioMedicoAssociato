@@ -62,27 +62,11 @@ public class VisitaServiceImpl implements VisitaService {
     }
 
 
-
     @Override
     public List<VisitaPrenotataDTO> getAllVisitePrenotateAndNotEffettuate() {
         return visitaRepository.findAllVisitePrenotateOrderByDataVisitaAsc(false);
     }
 
-//    @Override
-//    public List<VisitaPrenotataDTO> getVisitePrenotateSettimana() {
-//        LocalDate oggi = LocalDate.now(); // Inizio da oggi
-//        LocalDate fineSettimana = oggi.plusDays(7); // Oggi + 7 giorni
-//
-//        return getAllVisite()
-//                .stream()
-//                .filter(vp -> {
-//                    LocalDate dataVisita = vp.getDataVisita().toInstant()
-//                            .atZone(ZoneId.systemDefault())
-//                            .toLocalDate(); // Conversione a LocalDate
-//                    return !dataVisita.isBefore(oggi) && !dataVisita.isAfter(fineSettimana);
-//                }) // Filtra le visite tra oggi e 7 giorni da oggi
-//                .collect(Collectors.toList());
-//    }
 
     @Override
     public List<Visita> getAllVisiteOrderByDataVisitaAsc() {
@@ -106,15 +90,10 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findAllVisiteFromNow();
     }
 
-//    @Override
-//    public List<Visita> getAllVisiteByMedicoAndData(Medico medico, Date data) {
-//        return visitaRepository.findByAnagraficaAndDataVisita( medico.getAnagrafica(), data );
-//    }
-
 
 
     @Override
-    public List<Map<String, String>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine) {
+    public List<Map<String, Object>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine) {
 
         List<AppuntamentiSettimanaliMedicoDTO> listaAppuntamentiGrezza = getAppuntamentiSettimanaliMedicoLista(username, dataInizio, dataFine);
 
@@ -128,13 +107,14 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findAppuntamentiSettimanaliMedico(username, dataInizio, dataFine);
     }
 
-    private Map<String, String> convertToScheduleXEvent(AppuntamentiSettimanaliMedicoDTO app) {
+    private Map<String, Object> convertToScheduleXEvent(AppuntamentiSettimanaliMedicoDTO app) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-        Map<String, String> mappaEventoScheduleX = new HashMap<>();
+        Map<String, Object> mappaEventoScheduleX = new HashMap<>();
         mappaEventoScheduleX.put("id", app.getIdVisita().toString());
-        mappaEventoScheduleX.put("title", app.getTitoloPrestazione() + " - " + app.getNomePaziente() + " " + app.getCognomePaziente());
+        mappaEventoScheduleX.put("title", app.getTitoloPrestazione());
+        mappaEventoScheduleX.put("people",  Arrays.asList(app.getNomePaziente() + " " + app.getCognomePaziente()));
         mappaEventoScheduleX.put("start", dateFormat.format(app.getDataVisita()) + " " + timeFormat.format(app.getOraInizioVisita()));
         mappaEventoScheduleX.put("end", dateFormat.format(app.getDataVisita()) + " " + timeFormat.format(app.getOraFineVisita()));
 
