@@ -172,21 +172,20 @@
         </dependency>
 
     <!-- TODO: Property Based Testing -->
-        <!-- JUnit Quickcheck -->
-        <dependency>
-            <groupId>com.pholser</groupId>
-            <artifactId>junit-quickcheck-core</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
 
-    <!-- Per creare i generators personalizzati   -->
-        <dependency>
-            <groupId>com.pholser</groupId>
-            <artifactId>junit-quickcheck-generators</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.pholser</groupId>-->
+<!--            <artifactId>junit-quickcheck-core</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        -->
+<!--        <dependency>-->
+<!--            <groupId>com.pholser</groupId>-->
+<!--            <artifactId>junit-quickcheck-generators</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.junit.vintage</groupId>
@@ -199,6 +198,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.36</version>
+            <scope>test</scope>
+        </dependency>
+
+<!-- TODO: Per il PBT uso jqwik perche' jqwik e' compatibile con JUnit 5, mentre
+        JUnit QuickCheck non lo e', bensi' lo e' solo con Junit 4.
+-->
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>1.9.2</version>
             <scope>test</scope>
         </dependency>
 

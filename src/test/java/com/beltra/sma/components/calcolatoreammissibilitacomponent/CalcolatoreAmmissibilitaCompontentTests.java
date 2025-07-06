@@ -5,6 +5,7 @@ import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl;
 import com.beltra.sma.components.RisultatoAmmissibilita;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.utils.Parameters;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,14 +14,19 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.stream.Stream;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 //@SpringBootTest // non serve per fare i test unitari! Serve solo se voglio fare test di integrazione tra più componenti
@@ -29,7 +35,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
     CalcolatoreAmmissibilitaComponent calcolatoreAmmissibilitaComponent;
     Prestazione prestazioneTest;
 
-    //@Autowired
+
     @BeforeAll
     void init() {
         calcolatoreAmmissibilitaComponent = new CalcolatoreAmmissibilitaComponentImpl();
@@ -37,27 +43,45 @@ public class CalcolatoreAmmissibilitaCompontentTests {
     }
 
 
-    @Test
-    public void testIsGiornoAmmissibile_Ok() {
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, Calendar.DECEMBER, Calendar.FRIDAY);
-        Date data = gregorianCalendar.getTime();
-        assertTrue(  calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( data) );
+
+    /// ########################################
+    /// ########################################
+    /// ########################################
+    /// TEST AMMISSIBILITA' GIORNO
+
+    private static Stream<Arguments>provideDatiForIsGiornoAmmissibile() {
+        // Arrange
+        return Stream.of(
+        Arguments.of(Calendar.FRIDAY, true),
+                Arguments.of(Calendar.SATURDAY, false),
+                Arguments.of(Calendar.SUNDAY, false)
+        );
     }
 
-    @Test
-    public void testIsGiornoAmmissibile_NoBecauseIsSaturday() {
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, Calendar.DECEMBER, Calendar.SATURDAY);
-        Date data = gregorianCalendar.getTime();
-        assertFalse(  calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( data ) );
+
+    @ParameterizedTest(name = "{index} => giorno={0}, expected={1}")
+    @MethodSource("provideDatiForIsGiornoAmmissibile")
+    public void testIsGiornoAmmissibile( int giornoTest, boolean expected) {
+
+        Date dataTest = new GregorianCalendar(2024, Calendar.DECEMBER, giornoTest).getTime();
+        // Act + Assert
+        assertThat(calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( dataTest) ).isEqualTo(expected);
     }
 
-    @Test
-    public void testIsGiornoAmmissibile_NoBecauseIsSunday() {
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, Calendar.DECEMBER, Calendar.SUNDAY);
-        Date data = gregorianCalendar.getTime();
-        assertFalse(  calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( data) );
-    }
 
+//    @Property
+//    public void giorniFerialiSonoAmmissibili(@InRange(min = "2024-01-01", max = "2025-12-31") LocalDate date) {
+//        DayOfWeek dow = date.getDayOfWeek();
+//        assumeTrue(dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY);
+//
+//        Date legacyDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        assertTrue(calcolatoreAmmissibilitaComponent.isGiornoAmmissibile(legacyDate));
+//    }
+
+    /// ###########################################################
+    /// ###########################################################
+    /// ###########################################################
+    /// TEST AMMISSIBILITA' ORARIA:
 
 
     @Test
@@ -85,7 +109,6 @@ public class CalcolatoreAmmissibilitaCompontentTests {
                       calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
 
     }
-
 
 
     @Test

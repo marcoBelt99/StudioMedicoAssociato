@@ -68,11 +68,11 @@ public interface CalcolatoreAmmissibilitaComponent {
      *  - dopo oraChiusuraMattina <br>
      *  - prima di mezzanotte <br>
      * Non c'è controllo di ammissibilità*/
-    boolean isOrarioInPomeriggio(LocalTime ora);
+    //boolean isOrarioInPomeriggio(LocalTime ora);
 
     /** Controlla che ora sia dopo oraAperturaPomeriggio<br>
      * e prima di mezzanotte */
-    boolean isOrarioAfterAperturaPomeriggio(LocalTime ora);
+    //boolean isOrarioAfterAperturaPomeriggio(LocalTime ora);
 
     /** Controlla che ora sia dopo ora chiusura pomeriggio.
      *

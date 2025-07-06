@@ -15,36 +15,21 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     /** ATTRIBUTI */
 
-    /** Orario da controllare */
-    private LocalTime orarioDaControllare;
-    /** quantita' di cui maggiorare orario */
-    private Double durataPrestazione;
+
+    private final LocalTime orarioAperturaMattina = Parameters.orarioAperturaMattina;
+    private final LocalTime orarioChiusuraMattina = Parameters.orarioChiusuraMattina;
+    private final LocalTime orarioAperturaPomeriggio = Parameters.orarioAperturaPomeriggio;
+    private final LocalTime orarioChiusuraPomeriggio = Parameters.orarioChiusuraPomeriggio;
+    private final Long pausaFromVisite = Parameters.pausaFromVisite;
 
 
-    private LocalTime orarioAperturaMattina = Parameters.orarioAperturaMattina;
-    private LocalTime orarioChiusuraMattina = Parameters.orarioChiusuraMattina;
-    private LocalTime orarioAperturaPomeriggio = Parameters.orarioAperturaPomeriggio;
-    private LocalTime orarioChiusuraPomeriggio = Parameters.orarioChiusuraPomeriggio;
-    private Long pausaFromVisite = Parameters.pausaFromVisite;
 
     /** COSTRUTTORI */
     public CalcolatoreAmmissibilitaComponentImpl() {
     }
 
-// Questi due costruttori sono inutili molto probabilmente
-//    public CalcolatoreAmmissibilitaComponentImpl(Double durataPrestazione) {
-//        this.orarioDaControllare = LocalTime.now();
-//        this.durataPrestazione = durataPrestazione;
-//    }
-
-//    public CalcolatoreAmmissibilitaComponentImpl(LocalTime orarioDaControllare, Double durataPrestazione) {
-//        this.orarioDaControllare = orarioDaControllare;
-//        this.durataPrestazione = durataPrestazione;
-//    }
-
 
     /** METODI */
-
     public Boolean isGiornoAmmissibile( Date data ) {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTime( data );
@@ -79,14 +64,9 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
     }
 
 
-    public void setIsStessoGiorno(BiPredicate<Date, Date> isStessoGiorno) {
-        this.isStessoGiorno = isStessoGiorno;
-    }
-
     public Boolean isOrarioAmmissibile(LocalTime orario, Double durataPrestazione) {
         return condizioneSoddisfacibilita( orario ) && condizioneSoddisfacibilita( aggiungiDurataAndPausa( orario, durataPrestazione ) );
     }
-
 
 
     public RisultatoAmmissibilita getRisultatoCalcoloAmmissibilitaOrario(LocalTime orarioDaControllare, Double durataPrestazione) {
@@ -116,7 +96,7 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
     /** Aggiunge il parametro durataMedia all'orario passato come parametro e la pausa di 5 minuti (tra una visita e la successiva).*/
     public LocalTime aggiungiDurataAndPausa(LocalTime ora, Double durataMedia) {
-        return ora.plusMinutes(durataMedia.intValue() + Parameters.pausaFromVisite);
+        return ora.plusMinutes(durataMedia.intValue() + pausaFromVisite);
     }
 
 
@@ -141,28 +121,11 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
                 ora.isBefore(orarioChiusuraMattina);
     }
 
-    @Override
-    public boolean isOrarioInPomeriggio(LocalTime ora) {
-        return  ora.isAfter(orarioChiusuraMattina) &&
-                ora.isBefore(LocalTime.MAX);
-    }
-
-    @Override
-    public boolean isOrarioAfterAperturaPomeriggio(LocalTime ora) {
-        return  ora.isAfter(orarioAperturaPomeriggio.plusMinutes(pausaFromVisite)) &&
-                ora.isBefore(LocalTime.MAX);
-    }
 
 
     @Override
     public boolean isOrarioAfterChiusuraPomeriggio(LocalTime ora) {
         return ora.compareTo(orarioChiusuraPomeriggio) > 0; // in questo caso io NON sto comprendendo il fatto che esattamente le "21:00" sia dopo chiusura pomeriggio
-    }
-
-
-
-    public boolean isOrarioBetweenMidnightAndAperturaMattina(LocalTime ora) {
-        return ora.isAfter(LocalTime.MIDNIGHT) && ora.isBefore(orarioAperturaMattina);
     }
 
 
@@ -174,7 +137,7 @@ public class CalcolatoreAmmissibilitaComponentImpl implements CalcolatoreAmmissi
 
         // Calcolo la differenza in minuti tra oraFine (maggiorata di 5 minuti) e ora chiusura
         // nota che non e' specificato se chiusura mattino o pomeriggio, lo scelgo in fase di chiamata
-        long differenzaInMinuti = Duration.between( oraFine.plusMinutes(PianificazioneComponent.pausaFromvisite), orarioChiusura ).toMinutes();
+        long differenzaInMinuti = Duration.between( oraFine.plusMinutes(pausaFromVisite), orarioChiusura ).toMinutes();
         return (differenzaInMinuti - durataMedia) >= 0;
     };
 
