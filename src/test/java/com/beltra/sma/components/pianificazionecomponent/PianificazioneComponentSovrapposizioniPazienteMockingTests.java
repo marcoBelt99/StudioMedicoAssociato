@@ -1,34 +1,22 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
-import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
 import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl;
-import com.beltra.sma.components.PianificazioneComponent;
 import com.beltra.sma.components.PianificazioneComponentImpl;
-import com.beltra.sma.data.DatiVisiteTest;
-import com.beltra.sma.dto.VisitaPrenotataDTO;
-import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.Parameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Time;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PianificazioneComponentSovrapposizioniPazienteMockingTest extends PianificazioneComponentTest {
+class PianificazioneComponentSovrapposizioniPazienteMockingTests extends PianificazioneComponentTests {
 
     @Mock
     private VisitaService visitaService;

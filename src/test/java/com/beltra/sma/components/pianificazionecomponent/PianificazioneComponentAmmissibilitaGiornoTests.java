@@ -2,6 +2,7 @@ package com.beltra.sma.components.pianificazionecomponent;
 
 import com.beltra.sma.utils.SlotDisponibile;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 
 
 import java.time.LocalTime;
@@ -12,9 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class PianificazioneComponentAmmissibilitaGiornoTests extends PianificazioneComponentTest {
+public class PianificazioneComponentAmmissibilitaGiornoTests extends PianificazioneComponentTests {
 
     // TODO: PARAMETRIZZARE QUESTI 3 TESTS!
+
+
+   // @ParameterizedTest
+
+
 
     /// CASO GIORNO NON AMMISSIBILE
     @Test

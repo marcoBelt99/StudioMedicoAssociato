@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class PianificazioneComponentSforamentoGiornoSuccessivoMockingTest extends PianificazioneComponentTest{
+public class PianificazioneComponentSforamentoGiornoSuccessivoMockingTests extends PianificazioneComponentTests {
 
     // Qui posso mockare il fatto che per un certo giorno nel futuro
     // io ho già in programma delle visite,

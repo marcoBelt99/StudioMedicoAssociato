@@ -5,7 +5,6 @@ import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl;
 
 import com.beltra.sma.utils.Parameters;
 import net.jqwik.api.*;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ import java.util.Date;
 
 
 
-public class CalcolatoreAmmissibilitaComponentPropertyBasedTest {
+public class CalcolatoreAmmissibilitaComponentPropertyBasedTests {
 
     CalcolatoreAmmissibilitaComponent calcolatore;
 
@@ -53,7 +52,7 @@ public class CalcolatoreAmmissibilitaComponentPropertyBasedTest {
     }
 
     // Proprietà di simmetria: se un orario è soddisfacibile,
-// dovrebbe essere nella fascia mattutina O pomeridiana
+    // dovrebbe essere nella fascia mattutina O pomeridiana
     @Property
     boolean orariSoddisfacibiliSonoInUnaDelleDueFasce(@ForAll("orariGenerici") LocalTime orario) {
         calcolatore = new CalcolatoreAmmissibilitaComponentImpl();

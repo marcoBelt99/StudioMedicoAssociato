@@ -172,6 +172,8 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
             // Altrimenti calcolatoreAmmissibilita.calcolaOraFine().plusMinutes(pausaFromvisite)
             //
 
+
+            // TODO: fattorizzare meglio questo if
             // (Sono nel futuro)
             // Se listaVisite vuota OR listaVisite <= listaMedici
             if(listaVisiteNextGiornoAmmissibile.empty || listaVisiteNextGiornoAmmissibile.size() <= listaMedici.size())
@@ -192,7 +194,7 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
 //            )
 //            // Devo aggiungere l'altra condizone per cui se listaMedici.size() < listaVisite.size()
 
-            visitaFittizia.setPrestazione(prestazioneFittizia )
+            visitaFittizia.setPrestazione( prestazioneFittizia )
 
             listaVisiteNextGiornoAmmissibile.add(visitaFittizia) // Quando arrivo qui devo essere sicuro di avere almeno un medico
 
@@ -337,9 +339,10 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
             case RisultatoAmmissibilita.AMMISSIBILE -> yield oraDaControllare.plusMinutes(durata)
 
             case RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA ->
-                yield Parameters.orarioAperturaMattina
-                        .plusMinutes(Parameters.pausaFromVisite)
-                        .plusMinutes(durata)
+                yield Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite).plusMinutes(durata)
+
+            case RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ->
+                yield Parameters.orarioAperturaPomeriggio.plusMinutes(Parameters.pausaFromVisite).plusMinutes(durata)
 
             case RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO ->
                 // Da migliorare (questa e' la casistica se sono esattamente le 21:00) allora non passare a mettere l'orario del mattino ....
@@ -352,10 +355,6 @@ class CodaMediciDisponibiliGroovyImpl implements CodaMediciDisponibili {
                         //   di richiamare ricorsivamente build() ?? ==> in questo modo mi baso sulle visite del primo giorno ammissibile
                     : oraDaControllare.plusMinutes(durata)
 
-            case RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ->
-                yield Parameters.orarioAperturaPomeriggio
-                        .plusMinutes(Parameters.pausaFromVisite)
-                        .plusMinutes(durata)
 
             default -> throw new IllegalArgumentException("Tipo di risultato non gestito: $risultato")
         }

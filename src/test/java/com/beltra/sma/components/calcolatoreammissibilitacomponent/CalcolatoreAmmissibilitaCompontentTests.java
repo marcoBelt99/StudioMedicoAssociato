@@ -14,10 +14,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+
 import java.time.LocalTime;
-import java.time.ZoneId;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,7 +25,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 //@SpringBootTest // non serve per fare i test unitari! Serve solo se voglio fare test di integrazione tra più componenti
@@ -43,173 +42,138 @@ public class CalcolatoreAmmissibilitaCompontentTests {
     }
 
 
+    ///  ########################################
+    ///  TEST: isGiornoAmmissibile()
+    ///  ########################################
 
-    /// ########################################
-    /// ########################################
-    /// ########################################
-    /// TEST AMMISSIBILITA' GIORNO
 
     private static Stream<Arguments>provideDatiForIsGiornoAmmissibile() {
         // Arrange
-        return Stream.of(
-        Arguments.of(Calendar.FRIDAY, true),
+        return
+            Stream.of(
+                Arguments.of(Calendar.FRIDAY, true),
                 Arguments.of(Calendar.SATURDAY, false),
                 Arguments.of(Calendar.SUNDAY, false)
-        );
+            );
     }
 
 
     @ParameterizedTest(name = "{index} => giorno={0}, expected={1}")
     @MethodSource("provideDatiForIsGiornoAmmissibile")
-    public void testIsGiornoAmmissibile( int giornoTest, boolean expected) {
+    public void isGiornoAmmissibileWorks( int giornoTest, boolean risultatoExpected) {
 
         Date dataTest = new GregorianCalendar(2024, Calendar.DECEMBER, giornoTest).getTime();
         // Act + Assert
-        assertThat(calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( dataTest) ).isEqualTo(expected);
+        assertThat( risultatoExpected ).isEqualTo(calcolatoreAmmissibilitaComponent.isGiornoAmmissibile( dataTest) );
     }
 
 
-//    @Property
-//    public void giorniFerialiSonoAmmissibili(@InRange(min = "2024-01-01", max = "2025-12-31") LocalDate date) {
-//        DayOfWeek dow = date.getDayOfWeek();
-//        assumeTrue(dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY);
-//
-//        Date legacyDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//        assertTrue(calcolatoreAmmissibilitaComponent.isGiornoAmmissibile(legacyDate));
-//    }
+    ///  ########################################
+    ///  TEST: condizioneSoddisfacibilita()
+    ///  ########################################
+    private static Stream<Arguments>provideDatiForCondizioneSoddisfacibilita() {
+        // Arrange
+        return Stream.of(
 
-    /// ###########################################################
-    /// ###########################################################
-    /// ###########################################################
-    /// TEST AMMISSIBILITA' ORARIA:
-
-
-    @Test
-    public void testIsOrarioAmmissibile_MattinaOk() {
-
-        LocalTime orarioTest = LocalTime.of(8, 0); // alle 8
-        // 8:45 + 5 minuti di "pausa" = 8:50
-
-        assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia() ) );
-        assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
-                      calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
-
-    }
-
-    @Test
-    public void testIsOrarioAmmissibile_MattinaFails() {
-
-        LocalTime orarioTest = LocalTime.of(11, 20); // alle 8
-        // 11:45 + 5 minuti di "pausa" = 11:50
+                /// Verifico il funzionamento aspettato
+                Arguments.of( LocalTime.of(6, 59), false), //   No, perche' prima di orario apertura mattina
+                Arguments.of( LocalTime.of(7, 1), true), //     Ok, perche' dopo orario apertura mattina
+                Arguments.of(  LocalTime.of(12, 1), false), //  No, perche' dopo orario chiusura mattina
+                Arguments.of(  LocalTime.of(13, 59), false), // No, perche' between chiusura mattina and before apertura pomeriggio
+                Arguments.of(  LocalTime.of(20, 59), true), //  Ok, perche' prima di chiusura pomeriggio
+                Arguments.of(  LocalTime.of(21, 1), false), //  No, perche' dopo orario chiusura pomeriggio
 
 
-        assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
+                /// E' bene testare anche le condizioni di confine, infatti lo faccio coi seguenti dati:
+                Arguments.of(  Parameters.orarioAperturaMattina, true),
+                Arguments.of(  Parameters.orarioChiusuraMattina, true),
+                Arguments.of(  Parameters.orarioAperturaPomeriggio, true),
+                Arguments.of(  Parameters.orarioChiusuraPomeriggio, true)
 
-        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
-                      calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
-
-    }
-
-
-    @Test
-    public void testIsOrarioAmmissibile_PomeriggioOk() {
-
-        LocalTime orarioTest = LocalTime.of(15, 0); // alle 15
-        // 15:45 + 5 minuti di "pausa" = 15:50
-
-
-        assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest, prestazioneTest.getDurataMedia()) );
-
-        assertEquals( RisultatoAmmissibilita.AMMISSIBILE,
-                      calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
-    }
-
-
-    @Test
-    public void testIsOrarioAmmissibile_PomeriggioFails() {
-        LocalTime orarioTest = LocalTime.of(20, 20);
-        // 20:20 + 45 (durata) + 5 (pausa) = 21:10
-
-        // Questo test deve essere false: orarioTest + durataMedia sfora orario di chiusura
-        assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
-        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO,
-                      calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()) );
-    }
-
-    @Test
-    public void testIsOrarioAmmissibile_BetweenChiusuraMattinaAndAperturaPomeriggioFails() {
-
-        LocalTime orarioTest = LocalTime.of(12, 45);
-        assertFalse( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia()) );
-        assertEquals( RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO,
-                      calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario( orarioTest, prestazioneTest.getDurataMedia() )
         );
     }
 
 
-
-    @Test
-    public void testCondizioneSoddisfacibilita_Ok() {
-        LocalTime orarioDaControllare = LocalTime.of(7, 1);
-        assertEquals( true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita( orarioDaControllare) );
-    }
-
-
-    @Test
-    public void testCondizioneSoddisfacibilita_NoBecauseBeforeOpeningMattina() {
-        LocalTime orarioDaControllare = LocalTime.of(6, 59);
-        assertEquals( false, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare) );
+    @ParameterizedTest
+    @MethodSource("provideDatiForCondizioneSoddisfacibilita")
+    public void condizioneSoddisfacibilita_Works( LocalTime orarioTest, boolean risultatoExpected) {
+        // Act + Assert
+        assertThat( risultatoExpected ).isEqualTo(calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita( orarioTest));
     }
 
 
 
-    @Test
-    public void testCondizioneSoddisfacibilita_NoBecauseAfterClosingMattina() {
-        LocalTime orarioDaControllare = LocalTime.of(12, 1);
-        assertEquals( false, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare) );
+    ///  ########################################
+    ///  TEST: isOrarioAmmissibile()
+    ///  ########################################
+
+
+    private static Stream<Arguments>provideDatiForIsOrarioAmmissibile() {
+        // Arrange
+        return Stream.of(
+
+                /// MATTINA
+                // Dalle 06:09 + 45 min  ==> 06:54 + "pausa" (5 min)  ==> 06:59 ==> non ammissibile
+                Arguments.of(LocalTime.of(6, 9), false, RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA),
+                // Dalle 06:10 + 45 min  ==> 06:55 + "pausa" (5 min)  ==> 07:00 ==> non ammissibile (perche' non vale condizioneSoddisfacibilita su oraAttuale non maggiorata, vale però su oraAttuale maggiorata)
+                Arguments.of(LocalTime.of(6, 11), false, RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA),
+                // Dalle 06:11 + 45 min  ==> 06:56 + "pausa" (5 min)  ==> 07:01 ==> non ammissibile (perchè non vale condizioneSoddisfacibilita su oraAttuale non maggiorata)
+                Arguments.of(LocalTime.of(6, 10), false, RisultatoAmmissibilita.NO_BECAUSE_BEFORE_APERTURA_MATTINA), // Caso di confine
+
+                // Dalle 07:00 + 45 min  ==> 07:45 + "pausa" (5 min)  ==> 07:50 ==> ammissibile (perchè vale condizioneSoddisfacibilita sia su oraAttuale non maggiorata, che su oraAttuale maggiorata)
+                Arguments.of(Parameters.orarioAperturaMattina, true, RisultatoAmmissibilita.AMMISSIBILE), // Caso di confine
+                // Dalle 07:01 + 45 min  ==> 07:46 + "pausa" (5 min)  ==> 07:51 ==> ammissibile (perchè vale condizioneSoddisfacibilita sia su oraAttuale non maggiorata, che su oraAttuale maggiorata)
+                Arguments.of(LocalTime.of(7, 1), true, RisultatoAmmissibilita.AMMISSIBILE), // Caso di confine
+                // Dalle 08:00 + 45 min  ==> 08:45 + "pausa" (5 min)  ==> 8:50 ==> ammissibile
+                Arguments.of( LocalTime.of(8,0), true, RisultatoAmmissibilita.AMMISSIBILE ),
+                // Dalle 11:09 + 45 min  ==> 11:54 + "pausa" (5 min)  ==> 11:59 ==> ammissibile
+                Arguments.of( LocalTime.of(11,9), true, RisultatoAmmissibilita.AMMISSIBILE ), // Caso di confine
+
+                // Dalle 11:10 + 45 min  ==> 11:55 + "pausa" (5 min)  ==> 12:00 ==> ammissibile
+                Arguments.of( LocalTime.of(11,10), true, RisultatoAmmissibilita.AMMISSIBILE ), // Caso di confine
+
+                // Dalle 11:11 + 45 min  ==> 11:56 + "pausa" (5 min)  ==> 12:01 ==> ammissibile
+                Arguments.of( LocalTime.of(11,11), false, RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ), // Caso di confine
+                // Dalle 11:20 + 45 min  ==> 12:05 +  "pausa" (5 min) ==>  12:10 ==> non ammissibile
+                Arguments.of( LocalTime.of(11, 20), false, RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ),
+                // Dalle 12:45 + 45 min  ==> 13:30 +  "pausa" (5 min) ==>  13:35 ==> non ammissibile
+                Arguments.of( LocalTime.of(12, 45), false, RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ),
+
+
+                /// POMERIGGIO
+                // Dalle 13:10 + 45 min  ==> 13:55 +   "pausa" (5 min) ==> 14:00 ==> non ammissibile
+                Arguments.of( LocalTime.of(13, 10), false, RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ),
+                // Dalle 13:11 + 45 min  ==> 13:56 +   "pausa" (5 min) ==> 14:01 ==> non ammissibile
+                Arguments.of( LocalTime.of(13, 11), false, RisultatoAmmissibilita.NO_BECAUSE_BETWEEN_AFTER_CHIUSURA_MATTINA_AND_BEFORE_APERTURA_POMERIGGIO ),
+
+                // Dalle 15:00 + 45 min  ==> 15:45 +   "pausa" (5 min) ==> 15:50 ==> ammissibile
+                Arguments.of( LocalTime.of(15, 0), true, RisultatoAmmissibilita.AMMISSIBILE ),
+                // Dalle 20:09 + 45 min  ==> 20:54 +   "pausa" (5 min) ==> 20:59 ==> ammissibile
+                Arguments.of( LocalTime.of(20, 9), true, RisultatoAmmissibilita.AMMISSIBILE ),
+                // Dalle 20:10 + 45 min  ==> 20:55 +   "pausa" (5 min) ==> 21:00 ==> non ammissibile
+                Arguments.of( LocalTime.of(20, 10), true, RisultatoAmmissibilita.AMMISSIBILE ), // Caso di confine
+                // Dalle 20:11 + 45 min  ==> 20:56 +   "pausa" (5 min) ==> 21:01 ==> non ammissibile
+                Arguments.of( LocalTime.of(20, 11), false, RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO ), // Caso di confine
+                // Dalle 20:20 + 45 min ==> 21:05 +   "pausa" (5 min) ==> 21:10 ==> non ammissibile
+                Arguments.of( LocalTime.of(20, 20), false, RisultatoAmmissibilita.NO_BECAUSE_AFTER_CHIUSURA_POMERIGGIO )
+
+        );
     }
 
 
-    @Test
-    public void testCondizioneSoddisfacibilita_NoBecauseBeforeOpeningPomeriggio() {
-        LocalTime orarioDaControllare = LocalTime.of(13, 59);
-        assertEquals( false, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare) );
+    @ParameterizedTest
+    @MethodSource("provideDatiForIsOrarioAmmissibile")
+    public void isOrarioAmmissibile_Works( LocalTime orarioTest, boolean risultatoExpected, RisultatoAmmissibilita risultatoAmmissibilitaExpected) {
+
+        // Act + Assert
+        assertThat( calcolatoreAmmissibilitaComponent.isOrarioAmmissibile( orarioTest , prestazioneTest.getDurataMedia() ) ).isEqualTo(risultatoExpected);
+        assertThat( risultatoAmmissibilitaExpected ).isEqualTo(calcolatoreAmmissibilitaComponent.getRisultatoCalcoloAmmissibilitaOrario(orarioTest, prestazioneTest.getDurataMedia()));
+
     }
 
 
-    @Test
-    public void testCondizioneSoddisfacibilita_NoBecauseAfterClosingPomeriggio() {
-        LocalTime orarioDaControllare = LocalTime.of(21, 1);
-        assertEquals( false, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare) );
-    }
 
 
-    // TODO: E' bene testare anche le condizioni di confine, infatti lo faccio nei seguenti metodi:
-    @Test
-    public void testCondizioneSoddisfacibilita_BoundaryOpeningMattina() {
-        LocalTime orarioDaControllare = LocalTime.of(7, 0);
-        assertEquals(true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare));
-    }
-
-    @Test
-    public void testCondizioneSoddisfacibilita_BoundaryClosingMattina() {
-        LocalTime orarioDaControllare = LocalTime.of(12, 0);
-        assertEquals(true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare));
-    }
-
-
-    @Test
-    public void testCondizioneSoddisfacibilita_BoundaryOpeningPomeriggio() {
-        LocalTime orarioDaControllare = LocalTime.of(14, 0);
-        assertEquals(true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare));
-    }
-
-
-    @Test
-    public void testCondizioneSoddisfacibilita_BoundaryClosingPomeriggio() {
-        LocalTime orarioDaControllare = LocalTime.of(21, 0);
-        assertEquals(true, calcolatoreAmmissibilitaComponent.condizioneSoddisfacibilita(orarioDaControllare));
-    }
 
 /// #############################################################################################
 /// #############################################################################################
@@ -386,7 +350,7 @@ public class CalcolatoreAmmissibilitaCompontentTests {
     //  i seguenti test dovrebbero catturare questa casistica.
 
     @Test
-    void testIsOrarioAfterChiusuraPomeriggio_ShouldReturnTrue(){
+    void testIsOrarioAfterChiusuraPomeriggio_ShouldReturnTrue() {
        assertTrue( calcolatoreAmmissibilitaComponent.isOrarioAfterChiusuraPomeriggio(LocalTime.of(21, 1)) );
     }
 

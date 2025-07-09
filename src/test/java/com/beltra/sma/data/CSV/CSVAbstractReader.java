@@ -21,7 +21,7 @@ import java.util.List;
  *  */
 public abstract class CSVAbstractReader<T> {
 
-    private final String SEPARATOR = ",";
+    private final String SEPARATORE = ",";
 
     @Getter
     private final String pathAnagraficheCSV = "src/test/resources/anagrafiche.csv";
@@ -86,7 +86,7 @@ public abstract class CSVAbstractReader<T> {
             while ((line = br.readLine()) != null) {
 
                 // Splitto con la virgola
-                String[] fields = line.split(SEPARATOR);
+                String[] fields = line.split(SEPARATORE);
 
                 // Da qui in poi codice relativo al parsing e al popolamento dell'entita' in questione
                 // e' delegato alla specifica sottoclasse

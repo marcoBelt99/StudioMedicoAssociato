@@ -1,5 +1,6 @@
 package com.beltra.sma.service;
 
+import com.beltra.sma.exceptions.UtenteNotFoundException;
 import com.beltra.sma.model.Utente;
 
 public interface UtenteService {
@@ -12,7 +13,7 @@ public interface UtenteService {
     /** Recupera l'utente in base al suo username.
      * @param username chiave di ricerca
      * */
-    Utente getUtenteByUsername(String username);
+    Utente getUtenteByUsername(String username) throws UtenteNotFoundException;
 
     /** Verifica che l'utente con quel dato username sia presente nel database.
      * @param username chiave di ricerca

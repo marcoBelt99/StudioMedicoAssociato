@@ -84,7 +84,7 @@ public interface CalcolatoreAmmissibilitaComponent {
     boolean isDurataMediaContenuta(Double durataMedia, LocalTime oraFine, LocalTime orarioChiusura);
 
 
-    /** Metodo di utilità che ritorna il primo giorno ammissibile.<br>
+    /** Metodo di utilità che ritorna il primo giorno ammissibile dopo una determinata data di partenza.<br>
      * @param dataDiPartenza data da analizzare e, se non ammissibile (cioè se è sabato o domenica) da incrementare.
      * @param calendar necessario per effettuare l'eventuale incremento di data.
      * @return il successivo giorno ammissibile, rispetto a dataDaControllare. */

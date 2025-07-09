@@ -44,12 +44,13 @@ public class CodaMediciDisponibiliTests {
     Medico m2;
     Medico m3;
 
-//    public CodaMediciDisponibiliTests(VisitaService visitaService) {
-//        this.visitaService = visitaService;
-//    }
+
 
     @BeforeAll
     void inizializzaDati() {
+
+        // Per testare questa struttura dati mi servo di dati ad hoc.
+
         listaVisite = getAllVisiteByData();
         listaMedici = getAllDatiMediciTests();
         listaPrestazioni = getAllPrestazioniTests();
@@ -59,19 +60,21 @@ public class CodaMediciDisponibiliTests {
         m3 = listaMedici.get(2);
 
         visitaService = mock(VisitaService.class); // per rispettare la "unitarietà" dei test.
-        // se dovessi iniettare il VisitaService allora a livello di memoria avrei maggior overhead.
+        // se dovessi iniettare il VisitaService allora a livello di memoria e tempo di esecuzione avrei maggior overhead.
 
     }
 
 
+    ///  ##################################################
+    ///  TEST: Funzionamento generico della Struttura Dati
+    ///  #################################################
 
 
     /** Metodo di providing dei dati, necessario per i test con @ParameterizedTest e @MethodSource */
     private Stream<Arguments> provideDatiTestMediciMapAndMediciQueue() {
 
-        //inizializzaDati();
 
-        /// Voglio simulare di inserire visite via via crescenti
+        /// Voglio simulare di inserire visite dentro listaVisite, in modo via via crescente
         return Stream.of(
 
             /// [v1]: simulo l'inserimento di v1
@@ -229,7 +232,7 @@ public class CodaMediciDisponibiliTests {
 
     @ParameterizedTest
     @MethodSource("provideDatiTestMediciMapAndMediciQueue")
-    void testFunzionamentoMediciMapAndMediciQueue(List<Visita> visiteEsistentiTest, Double durataMediaTest,
+    void mediciMapAndMediciQueue_Works(List<Visita> visiteEsistentiTest, Double durataMediaTest,
                   Medico medicoExpected, FineVisita fineVisitaExpected) {
 
         /// ACT
@@ -254,9 +257,15 @@ public class CodaMediciDisponibiliTests {
     }
 
 
+
+
+    ///  ########################################
+    ///  TEST: getPrimoMedicoDisponibile()
+    ///  ########################################
+
     /** Copre il caso in cui lista visite e' vuota ma lista medici non lo e', quindi ritorna sempre il primo medico! */
     @Test
-    void testGetPrimoMedicoDisponibile_WithEmptyListaVisite_AndNotEmptyListaMedici_AlwaysIsM1() {
+    void getPrimoMedicoDisponibile_WithEmptyListaVisite_AndNotEmptyListaMedici_AlwaysIsM1() {
         /// []: Simulo la lista di visite vuote, ma la lista di medici non vuota
 
         /// Arrange & Act
@@ -270,7 +279,7 @@ public class CodaMediciDisponibiliTests {
 
     /** Casistica mentre sto aumentando di visite: arrivato alla 18°-esima voglio esattamente il comportamento aspettato. */
     @Test
-    void testGetPrimoMedicoDisponibile_WithNotEmptyListaVisite_AndNotEmptyListaMedici_WorksCorrectly() {
+    void getPrimoMedicoDisponibile_WithNotEmptyListaVisite_AndNotEmptyListaMedici_WorksCorrectly() {
         /// ACT
         CodaMediciDisponibili coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite.stream().limit(18).toList(), LocalTime.now(),
                 0.0, visitaService);
@@ -280,7 +289,7 @@ public class CodaMediciDisponibiliTests {
 
 
     @Test
-    void testGetListaVisiteGiornaliereNextGiornoAmmissibile_ShouldReturnNotNullList() {
+    void getListaVisiteGiornaliereNextGiornoAmmissibile_ShouldReturnNotNullList() {
 
         CodaMediciDisponibiliGroovyImpl coda = new CodaMediciDisponibiliGroovyImpl(listaMedici, listaVisite, LocalTime.now(),
                 0.0, visitaService);
@@ -427,18 +436,18 @@ public class CodaMediciDisponibiliTests {
 
             Arguments.of(LocalTime.MIN, durataTest, false),
             Arguments.of(LocalTime.MIDNIGHT, durataTest, false),
-            Arguments.of(LocalTime.of(3,5), durataTest,     false),
-            Arguments.of(Parameters.orarioAperturaMattina, durataTest,  false ),
-            Arguments.of(LocalTime.of(10, 0), durataTest,   false ),
-            Arguments.of(LocalTime.of(11,39), durataTest,   false),
-            Arguments.of(LocalTime.of(11, 40), durataTest,  false),
-            Arguments.of(LocalTime.of(12, 41), durataTest,  false),
-            Arguments.of(LocalTime.of(13, 39), durataTest,  false),
-            Arguments.of(LocalTime.of(13, 40), durataTest, false), // da qui in poi, comprese le 14:00, inizia l'orario di lavoro nel pomeriggio
-            Arguments.of(LocalTime.of(13, 41), durataTest, false),
-            Arguments.of(LocalTime.of(14, 41), durataTest, false),
-            Arguments.of(LocalTime.of(20, 34), durataTest, false),
-            Arguments.of(LocalTime.of(20, 35), durataTest, false), // aggiunge la pausa anche (5 min) + 20 = 21:00, che in questo caso sono ancora comprese
+            Arguments.of(LocalTime.of(3,5), durataTest,      false),
+            Arguments.of(Parameters.orarioAperturaMattina, durataTest,    false ),
+            Arguments.of(LocalTime.of(10, 0), durataTest,    false ),
+            Arguments.of(LocalTime.of(11,39), durataTest,    false),
+            Arguments.of(LocalTime.of(11, 40), durataTest,   false),
+            Arguments.of(LocalTime.of(12, 41), durataTest,   false),
+            Arguments.of(LocalTime.of(13, 39), durataTest,   false),
+            Arguments.of(LocalTime.of(13, 40), durataTest,   false), // da qui in poi, comprese le 14:00, inizia l'orario di lavoro nel pomeriggio
+            Arguments.of(LocalTime.of(13, 41), durataTest,   false),
+            Arguments.of(LocalTime.of(14, 41), durataTest,   false),
+            Arguments.of(LocalTime.of(20, 34), durataTest,   false),
+            Arguments.of(LocalTime.of(20, 35), durataTest,   false), // aggiunge la pausa anche (5 min) + 20 = 21:00, che in questo caso sono ancora comprese
 
             /// Casi true: (è vero che le visite che hanno questi orari non sono ammissibili in pomeriggio perchè appunto sono prima di ora pomeriggio)
             Arguments.of(LocalTime.of(20, 36), durataTest, true), // già da questo non è più ammissibile perchè si va alle 21:01 (5 min + 20 min)

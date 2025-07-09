@@ -11,7 +11,6 @@ import com.beltra.sma.model.Visita;
 
 import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.FineVisita;
-import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 
 

@@ -1,6 +1,9 @@
 package com.beltra.sma.components.pianificazionecomponent;
 
+
+import com.beltra.sma.components.CalcolatoreAmmissibilitaComponentImpl;
 import com.beltra.sma.components.PianificazioneComponent;
+import com.beltra.sma.components.PianificazioneComponentImpl;
 import com.beltra.sma.data.DatiMediciTest;
 import com.beltra.sma.data.DatiPrestazioniTest;
 import com.beltra.sma.data.DatiTest;
@@ -9,27 +12,32 @@ import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.MedicoService;
+import com.beltra.sma.service.VisitaService;
 import com.beltra.sma.utils.SlotDisponibile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+
 
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
 
-
+import static org.mockito.Mockito.mock;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // Serve per evitare di mettere static il metodo di providing dei dati di test che servirà poi al metodo di test vero e proprio
-@SpringBootTest
-public class PianificazioneComponentTest {
+//@SpringBootTest
+public class PianificazioneComponentTests {
 
-    @Autowired
+//    @Autowired
     protected PianificazioneComponent pianificazioneComponent;
 
-    @Autowired
+//    @Autowired
     protected MedicoService medicoService;
+
+    protected VisitaService visitaService; // nuovo
+
+    protected CalcolatoreAmmissibilitaComponentImpl calcolatoreAmmissibilitaComponent; // nuovo
 
     protected DatiVisiteTest datiVisiteTest = new DatiVisiteTest();
 
@@ -47,7 +55,14 @@ public class PianificazioneComponentTest {
     protected SlotDisponibile slotDisponibileExpected = new SlotDisponibile();
 
 
+    @BeforeEach
+    void init() {
+        medicoService = mock(MedicoService.class);
+        visitaService = mock(VisitaService.class);
+        calcolatoreAmmissibilitaComponent = new CalcolatoreAmmissibilitaComponentImpl();
 
+        pianificazioneComponent = new PianificazioneComponentImpl(visitaService, calcolatoreAmmissibilitaComponent);
+    }
 
 
 /// ###################################

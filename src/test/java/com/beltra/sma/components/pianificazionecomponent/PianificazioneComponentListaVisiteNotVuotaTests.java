@@ -11,8 +11,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-public class PianificazioneComponentListaVisiteNotVuotaTests extends PianificazioneComponentTest {
+//@SpringBootTest
+public class PianificazioneComponentListaVisiteNotVuotaTests extends PianificazioneComponentTests {
 
 
 /// ###########################   2) CASO INDUTTIVO: LISTA VISITE NON VUOTA   ############################

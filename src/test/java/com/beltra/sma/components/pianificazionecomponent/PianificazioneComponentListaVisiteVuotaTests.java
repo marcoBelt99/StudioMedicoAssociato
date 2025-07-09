@@ -2,6 +2,7 @@ package com.beltra.sma.components.pianificazionecomponent;
 
 import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
+import com.beltra.sma.service.MedicoService;
 import com.beltra.sma.utils.Parameters;
 import com.beltra.sma.utils.SlotDisponibile;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,19 +20,25 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // Serve per evitare di mettere static il metodo di providing dei dati di test che servirà poi al metodo di test vero e proprio
 //@SpringBootTest // Non serve!! => se lo usassi sprecherei memoria per niente, poichè mi carica tutto il contesto Spring. Va usato per Integration Tests!
-public class PianificazioneComponentListaVisiteVuotaTests extends PianificazioneComponentTest {
+public class PianificazioneComponentListaVisiteVuotaTests extends PianificazioneComponentTests {
 
 
 
     @BeforeAll
     void initListaVuota() {
         /** La lista di visite di test deve essere rigorosamente vuota */
+
         listaVisiteTest = new ArrayList<>();
 
+
     }
+
+    //listaVisiteTest = new ArrayList<>();
 
 
     /// ######################   1) CASO BASE: LISTA VISITE VUOTA   #####################
@@ -41,6 +48,8 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
     /** Metodo di providing dei dati, necessario per i test con @ParameterizedTest e @MethodSource */
     private Stream<Arguments> provideDatiTestCase_ListaVisiteEmpty() {
 
+        MedicoService medicoServiceMock = mock(MedicoService.class);
+        when(medicoServiceMock.getAllMedici()).thenReturn(getAllDatiMediciTests());
 
         return Stream.of(
                 /// 1.A: oraAttuale before oraAperturaMattina
@@ -50,12 +59,12 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         90.0,
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of( 6, 55 ), // 06:55 < 07:00
-                        medicoService.getAllMedici(), // Medici veri!
+                        medicoServiceMock.getAllMedici(), // Medici mockati con la lista di test (medici letti da file)
                         listaVisiteTest, // lista vuota
 
                         dataVenerdi17Gennaio2025Test,
                         Parameters.orarioAperturaMattina.plusMinutes(Parameters.pausaFromVisite),
-                        medicoService.getAllMedici().get(0)
+                        medicoServiceMock.getAllMedici().get(0)
                 ),
 
                 /// 1.B: oraAttuale ammissibile in mattina
@@ -65,12 +74,12 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         90.0,
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of( 7, 50  ),
-                        medicoService.getAllMedici(), // Medici veri!
+                        medicoServiceMock.getAllMedici(), // Medici mockati con la lista di test (medici letti da file)
                         listaVisiteTest,
 
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of( 7, 50  ).plusMinutes( (Parameters.pausaFromVisite)),
-                        medicoService.getAllMedici().get(0)
+                        medicoServiceMock.getAllMedici().get(0)
                 ),
 
                 /// 1.C: oraAttuale not ammissibile in mattina
@@ -80,12 +89,12 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         120.0, // scelgo una durata
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of(10, 20), // la durata scelta mi fa sforare oraChiusuraMattina
-                        medicoService.getAllMedici(), // Medici veri!
+                        medicoServiceMock.getAllMedici(), // Medici mockati con la lista di test (medici letti da file)
                         listaVisiteTest,
 
                         dataVenerdi17Gennaio2025Test,
                         Parameters.orarioAperturaPomeriggio.plusMinutes( Parameters.pausaFromVisite), // Mi aspetto 14:05
-                        medicoService.getAllMedici().get(0) // Mi aspetto m1
+                        medicoServiceMock.getAllMedici().get(0) // Mi aspetto m1
                 ),
 
                 /// 1.D: oraAttuale ammissibile in pomeriggio
@@ -93,12 +102,12 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         50.0,
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of(14, 10),
-                        medicoService.getAllMedici(), // Medici veri!
+                        medicoServiceMock.getAllMedici(), // Medici mockati con la lista di test (medici letti da file)
                         listaVisiteTest,
 
                         dataVenerdi17Gennaio2025Test,
                         LocalTime.of(14, 10).plusMinutes(5),
-                        medicoService.getAllMedici().get(0)
+                        medicoServiceMock.getAllMedici().get(0)
                 ),
 
                 /// Testo un bug trovato:
@@ -106,13 +115,13 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
                         45.0,
                         new GregorianCalendar(2025, Calendar.JUNE, 24).getTime(),
                         LocalTime.of(23, 21),
-                        medicoService.getAllMedici(), // Medici veri!
+                        medicoServiceMock.getAllMedici(), // Medici mockati con la lista di test (medici letti da file)
                         listaVisiteTest,
 
                         // Mi aspetto il giorno dopo!
                         new GregorianCalendar(2025, Calendar.JUNE, 25).getTime(),
                         Parameters.orarioAperturaMattina.plusMinutes(5),
-                        medicoService.getAllMedici().get(0)
+                        medicoServiceMock.getAllMedici().get(0)
                 )
         );
     }
@@ -137,12 +146,10 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
 
 
         // ASSERT
-        assertThat(risultato).isNotNull(); // added
-        assertTrue( risultato.isPresent(), "Il risultato dovrebbe essere presente");
-        assertThat(dataExpected ).isEqualTo(risultato.get().getData()); // added
-        assertEquals( dataExpected, risultato.get().getData() );
-        assertThat(oraExpected).isEqualTo(risultato.get().getOrario().toLocalTime()); // added
-        assertEquals( oraExpected, risultato.get().getOrario().toLocalTime() ); // converto risultato.orario da Date a LocalTime per avere eguaglianza nei tipi per la Assert
+        assertThat(risultato).isNotNull();
+        assertThat(risultato).isPresent();
+        assertThat( dataExpected ).isEqualTo(risultato.get().getData());
+        assertThat( oraExpected).isEqualTo(risultato.get().getOrario().toLocalTime()); // converto risultato.orario da Date a LocalTime per avere eguaglianza nei tipi per la Assert
         assertEquals( medicoExpected.getIdAnagrafica(), risultato.get().getMedico().getIdAnagrafica() ); // non riuscivo ad eguagliare gli oggetti, quindi controllo tramite id
         assertEquals( medicoExpected.getMatricola(), risultato.get().getMedico().getMatricola() ); // e tramite matricola
     }
@@ -163,13 +170,15 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
     ///
     @Test
     public void testTrovaSlotDisponibile_ListaVisiteVuota_WithOraAttualeNotAmmissibileInPomeriggio() {
+        MedicoService medicoServiceMock = mock(MedicoService.class);
+        when(medicoServiceMock.getAllMedici()).thenReturn(getAllDatiMediciTests());
 
         // ARRANGE & ACT
         Optional<SlotDisponibile> risultato = arrangeAndAct(
                 100.0, // durata
                 dataVenerdi17Gennaio2025Test,
                 LocalTime.of(20, 0), // la durata di test scelta + questo orario di test superano oraChiusuraPomeriggio
-                medicoService.getAllMedici(), // Medici veri!
+                medicoServiceMock.getAllMedici(), // Medici veri!
                 listaVisiteTest,
 
                 dataLunedi20Gennaio2025Test, // Quello che so per certo (che voglio) è che passo al/ai giorno/i successivo/i
@@ -178,8 +187,11 @@ public class PianificazioneComponentListaVisiteVuotaTests extends Pianificazione
         );
 
         // ASSERT
-        assertTrue( risultato.isPresent(), "Il risultato dovrebbe essere presente");
-        assertEquals( dataLunedi20Gennaio2025Test, risultato.get().getData() );
+        assertThat(risultato).isNotNull();
+        assertThat(risultato).isPresent();
+        assertThat(dataVenerdi17Gennaio2025Test).isNotSameAs(risultato.get().getData()); // Mi aspetto che la data sia superiore a quella di partenza
+        assertThat(dataLunedi20Gennaio2025Test).isInSameDayAs(risultato.get().getData()); // Mi aspetto il risultato sia esattamente questo
+
         // Non posso dir nulla a priori se nei giorni successivi ci saranno visite, quindi non posso asserire sugli orari
 
     }

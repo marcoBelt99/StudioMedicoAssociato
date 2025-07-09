@@ -1,7 +1,5 @@
 package com.beltra.sma.service;
 
-import com.beltra.sma.components.CalcolatoreAmmissibilitaComponent;
-import com.beltra.sma.components.PianificazioneComponent;
 
 import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
@@ -10,17 +8,13 @@ import com.beltra.sma.repository.VisitaRepository;
 import com.beltra.sma.utils.SlotDisponibile;
 import org.springframework.stereotype.Service;
 
-
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 
-/** In questa classe si fa parecchio uso della classe "operazionale" Service: {@link PianificazioneComponent} */
+
+
 @Service
 public class VisitaServiceImpl implements VisitaService {
 

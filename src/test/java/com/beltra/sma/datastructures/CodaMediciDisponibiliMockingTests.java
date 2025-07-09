@@ -23,6 +23,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,11 +61,11 @@ public class CodaMediciDisponibiliMockingTests {
 
 
     @Test
-    void testGetPrimoMedicoDisponibile_MustReturn_M3_Mockito() {
+    void getPrimoMedicoDisponibile_MustReturn_M3_Mockito() {
 
         /// ARRANGE
-        LocalTime oraAttuale = LocalTime.of(22, 0);
-        Double durataMedia = 180.0;
+        LocalTime oraAttuale = LocalTime.of(22, 0); // Ora attuale, per fare in modo di essere dopo orario di chiusura pomeriggio
+        Double durataMedia = 180.0; // Durata della nuova visita
         List<Visita> listaVisiteFittizie = getListaVisiteFinteNextGiornoAmmissibile(); // lista da usare per falsificare (da usare nello spy)
 
         /// ACT
@@ -83,26 +84,32 @@ public class CodaMediciDisponibiliMockingTests {
 
 
         /// ASSERT
-        assertNotNull(primoMedicoDisponibile);
+
+        assertThat(primoMedicoDisponibile.getKey()).isNotNull();
+        // assertNotNull(primoMedicoDisponibile);
 
         // In questo caso mi devi prendere M3!
-        assertEquals(m3.getMatricola(), primoMedicoDisponibile.getKey().getMatricola());
+        assertThat(m3.getMatricola()).isEqualTo(primoMedicoDisponibile.getKey().getMatricola());
+        //assertEquals(m3.getMatricola(), primoMedicoDisponibile.getKey().getMatricola());
 
         // Mi aspetto che il primo medico disponibile si libererà alle 10:05. (Poi la visita futura inizierà dopo 5 minuti, ossia alle 10:10).
-        assertEquals(Time.valueOf(LocalTime.of(10,5)), primoMedicoDisponibile.getValue().getOraFine());
+        assertThat(Time.valueOf( LocalTime.of(10, 5))).hasSameTimeAs(primoMedicoDisponibile.getValue().getOraFine());
+        //assertEquals(Time.valueOf(LocalTime.of(10,5)), primoMedicoDisponibile.getValue().getOraFine());
 
     }
 
 
-    // #################################################################
-    // OTTENIMENTO DATI
-    // #################################################################
+    /// #################################################################
+    /// OTTENIMENTO DATI
+    /// #################################################################
 
     protected List<Visita> getAllVisiteByData() {
         return datiVisiteTest.getListaVisiteFullFromCSV();
     }
 
-    /** Lista di visite fasulle, necessarie per lo spy del metodo getListaVisiteByData(). */
+    /** Lista di visite fasulle, necessarie per lo spy del metodo getListaVisiteByData(). <br>
+     *  Facciamo finta che nel successivo giorno ammissibile siano gia' pianificate due visite.
+     *  */
     private List<Visita> getListaVisiteFinteNextGiornoAmmissibile() {
         List<Visita> listaVisiteToReturn = new ArrayList<>();
 
