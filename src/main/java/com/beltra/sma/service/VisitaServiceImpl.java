@@ -1,8 +1,9 @@
 package com.beltra.sma.service;
 
 
-import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
+import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
+import com.beltra.sma.exceptions.AppuntamentoNotFoundException;
 import com.beltra.sma.model.*;
 import com.beltra.sma.repository.VisitaRepository;
 import com.beltra.sma.utils.SlotDisponibile;
@@ -89,7 +90,7 @@ public class VisitaServiceImpl implements VisitaService {
     @Override
     public List<Map<String, Object>> getAppuntamentiSettimanaliMedicoListaMappe(String username, Date dataInizio, Date dataFine) {
 
-        List<AppuntamentiSettimanaliMedicoDTO> listaAppuntamentiGrezza = getAppuntamentiSettimanaliMedicoLista(username, dataInizio, dataFine);
+        List<AppuntamentoSettimanaleMedicoDTO> listaAppuntamentiGrezza = getAppuntamentiSettimanaliMedicoLista(username, dataInizio, dataFine);
 
         return listaAppuntamentiGrezza.stream()
                 .map(this::convertToScheduleXEvent)
@@ -97,11 +98,11 @@ public class VisitaServiceImpl implements VisitaService {
     }
 
     @Override
-    public List<AppuntamentiSettimanaliMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine) {
+    public List<AppuntamentoSettimanaleMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine) {
         return visitaRepository.findAppuntamentiSettimanaliMedico(username, dataInizio, dataFine);
     }
 
-    private Map<String, Object> convertToScheduleXEvent(AppuntamentiSettimanaliMedicoDTO app) {
+    private Map<String, Object> convertToScheduleXEvent(AppuntamentoSettimanaleMedicoDTO app) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
@@ -148,9 +149,21 @@ public class VisitaServiceImpl implements VisitaService {
 
 
 
+public AppuntamentoSettimanaleMedicoDTO getAppuntamentoById(Long idVisita, String usernameMedico, Date dataInizio, Date dataFine) throws AppuntamentoNotFoundException {
+        /*
+        return getAppuntamentiSettimanaliMedicoLista(usernameMedico, dataInizio, dataFine).stream()
+            .filter(a -> a.getIdVisita().equals(idAppuntamento))
+            .findFirst()
+            .orElseThrow(() -> new AppuntamentoNotFoundException("Appuntamento non presente."));
+         */
+
+    return visitaRepository.findDettaglioAppuntamentoSettimanaleMedico(idVisita, usernameMedico, dataInizio, dataFine);
+}
 
 
-
+//    public AppuntamentoSettimanaleMedicoDTO getAppuntamentoById(Long idAppuntamento) {
+//        visitaRepository.findById(idAppuntamento);
+//    }
 
 
 

@@ -144,7 +144,35 @@
                             } catch(e) {
                                 console.error('Errore durante il caricamento degli appuntamenti:', e);
                             }
+                        },
+
+                        onDoubleClickEvent(calendarEvent) {
+                            console.log('onDoubleClickEvent', calendarEvent);
+
+                       // Recupero i dati dell'appuntamento cliccato
+                           const idAppuntamento = calendarEvent.id;
+                           // const dataInizio = new Date( calendarEvent.start );
+                           // const dataFine = new Date( calendarEvent.end );
+
+
+                            const dataInizioParam = calendarEvent.start.split(' ')[0];
+                            const dataFineParam = calendarEvent.end.split(' ')[0];
+
+                           // Formatta le date per passarle come query param
+                           // const dataInizioParam = encodeURIComponent(dataInizio);
+                           // const dataFineParam = encodeURIComponent(dataFine);
+                           //  const dataInizioParam = dataInizio;//.toISOString().slice(0, 16);
+                           //  const dataFineParam = dataFine;//.toISOString().slice(0, 16);
+
+                           // Costruzione URL di reindirizzamento
+                           //const url = `medico/appuntamenti/dettaglio/${idAppuntamento}?dataInizio=${dataInizioParam}&dataFine=${dataFineParam}`;
+
+                            //window.location.href = `medico/appuntamenti/dettaglio/${idAppuntamento}?inizioSettimana=${dataInizioParam}&fineSettimana=${dataFineParam}`;
+                            window.location.href = `medico/appuntamenti/dettaglio/${idAppuntamento}`;
+
+
                         }
+
                     }
 
                 };

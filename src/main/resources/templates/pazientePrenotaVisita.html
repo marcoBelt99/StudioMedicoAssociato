@@ -21,9 +21,10 @@
     <body>
 
         <div th:insert="~{fragments/navbar.html :: navbar}"></div>
-
+        <br>
         <div class="container">
-            <div class="card">
+            <div class="card card-bg card-big border border-primary rounded border-bottom-card">
+                <br>
 
                 <!-- ######## -->
                 <!--  STEPPER -->
@@ -38,9 +39,9 @@
                             <li th:class="'it-stepper-item' + (${step > 1} ? ' confirmed' : '') + (${step == 1} ? ' active' : '')">
 
                             Prestazione
-                                <svg class="icon steppers-success">
-                                    <use th:href="@{/svg/sprites.svg#it-check}"></use>
-                                </svg>
+<!--                                <svg class="icon steppers-success">-->
+<!--                                    <use th:href="@{/svg/sprites.svg#it-check}"></use>-->
+<!--                                </svg>-->
                                 <span class="visually-hidden">Confermato</span>
                             </li>
 
@@ -105,6 +106,7 @@
         </div>
     </div>
 
+        <br>
         <div th:insert="~{fragments/foot.html :: foot}"></div>
 
     </body>

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- TODO: inserisco il blocco comune head  -->
+<div th:insert="~{fragments/head.html :: head}"></div>
+
+
+<body>
+
+
+<!-- TODO: inserisco il blocco comune per la navbar  -->
+<div th:insert="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container">
+
+    <h1>STUDIO MEDICO ASSOCIATO</h1>
+
+    <h3 th:text="${titolo}"></h3>
+
+    <hr>
+
+    <br>
+
+    <table class="table table-bordered border-primary">
+        <tbody>
+        <tr>
+            <th scope="row">Prestazione</th>
+            <td th:text="${appuntamento.getTitoloPrestazione()}"></td>
+        </tr>
+        <tr>
+            <th scope="row">Paziente</th>
+            <td th:text="${appuntamento.getCognomePaziente() + ' ' + appuntamento.getNomePaziente()}"></td>
+        </tr>
+        <tr>
+            <th scope="row">Data Prenotazione</th>
+            <td th:text="${#dates.format(appuntamento.getDataPrenotazione(), 'yyyy-MM-dd')}"></td>
+        </tr>
+        <tr>
+            <th scope="row">Data Inizio Visita</th>
+            <td th:text="${#dates.format(appuntamento.getDataVisita(), 'yyyy-MM-dd')}"><mark></mark></td>
+        </tr>
+        <tr>
+            <th scope="row">Ora Inizio</th>
+            <td th:class="mark" th:text="${ appuntamento.getOraInizioVisita()}"></td>
+        </tr>
+        <tr>
+            <th scope="row">Ora Fine</th>
+            <td th:text="${appuntamento.getOraFineVisita()}"></td>
+        </tr>
+        <tr>
+            <th scope="row">Num Ambulatorio</th>
+            <td th:text="${appuntamento.getNumAmbulatorio()}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+        <p>Infermieri</p>
+
+        <br/>
+
+    </div>
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!-- TODO: inserisco un blocco comune per il foot -->
+<div th:insert="~{fragments/foot.html :: foot}"></div>
+
+</body>
+</html>

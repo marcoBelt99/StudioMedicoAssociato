@@ -1,13 +1,12 @@
 package com.beltra.sma.service;
 
-import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
+import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -34,7 +33,7 @@ public class VisitaServiceTests {
 
         Date inizioSettimana = new GregorianCalendar(2025, Calendar.JUNE, 23).getTime();
         Date fineSettimana = new GregorianCalendar(2025, Calendar.JUNE, 29).getTime();
-        List<AppuntamentiSettimanaliMedicoDTO> appuntamentiSettimanali = visitaService
+        List<AppuntamentoSettimanaleMedicoDTO> appuntamentiSettimanali = visitaService
             .getAppuntamentiSettimanaliMedicoLista("mario_rossi", inizioSettimana, fineSettimana);
 
 

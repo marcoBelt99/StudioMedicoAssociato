@@ -4,6 +4,7 @@ import com.beltra.sma.model.Utente;
 import com.beltra.sma.repository.AnagraficaRepository;
 import com.beltra.sma.repository.UtenteRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@SpringBootTest
+import static org.mockito.Mockito.mock;
+
+//@SpringBootTest
 public class UtenteInsertTests {
 
-    @Autowired
+    //@Autowired
     private AnagraficaRepository anagraficaRepository;
-    @Autowired
+   // @Autowired
     private UtenteRepository utenteRepository;
+
+    @BeforeEach
+    void init()  {
+        anagraficaRepository = mock(AnagraficaRepository.class);
+    }
+
 
     @Disabled
     @Test

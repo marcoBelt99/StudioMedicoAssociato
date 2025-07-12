@@ -1,14 +1,12 @@
 package com.beltra.sma.service;
 
-import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
+import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
+import com.beltra.sma.exceptions.AppuntamentoNotFoundException;
 import com.beltra.sma.model.*;
 import com.beltra.sma.utils.SlotDisponibile;
 
 
-import javax.xml.crypto.Data;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +30,10 @@ public interface VisitaService {
     List<Visita> getVisiteByAnagraficaMedico(Anagrafica anagrafica);
 
     /** @apiNote Riservato ad utente di tipo "MEDICO".
-     *  @return  Lista di elementi di tipo AppuntamentiSettimanaliMedicoDTO.
+     *  @return  Lista di elementi di tipo AppuntamentoSettimanaleMedicoDTO.
      *  Notare che la lista è grezza e richiede di essere sistemata con le opportune conversioni prima di
      *  poter essere processato dal frontend (in questo caso, da schedule-x).*/
-    List<AppuntamentiSettimanaliMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine);
+    List<AppuntamentoSettimanaleMedicoDTO> getAppuntamentiSettimanaliMedicoLista(String username, Date dataInizio, Date dataFine);
 
     /** @apiNote Riservato ad utente di tipo "MEDICO".
      *  @return  Lista di mappe, ognuna rappresentante un evento, nel nostro caso appuntamenti
@@ -132,4 +130,13 @@ public interface VisitaService {
      *      trovaSlotDisponibile() con oraPartenza=L.last.ora.calcolaOraFine().plusMinutes(pausaFromVisite).
      */
 //    LocalTime getRightOraDiPartenza(String username, Prestazione prestazione, Date oggi);
+
+    /** Recupera un determinato appuntamento in base al suo id.<br>
+     *  @param idAppuntamento della visita da ricercare.
+     *  @return La visita cercata.
+     *  @throws AppuntamentoNotFoundException Se non trova l'appuntamento desiderato.*/
+    AppuntamentoSettimanaleMedicoDTO getAppuntamentoById(Long idAppuntamento, String usernameMedico, Date dataInizio, Date dataFine) throws AppuntamentoNotFoundException;
+
+
+//    AppuntamentoSettimanaleMedicoDTO getAppuntamentoById(Long idAppuntamento) throws AppuntamentoNotFoundException;
 }

@@ -91,7 +91,8 @@ public class SecurityConfiguration {
             authz.requestMatchers(
 
                     //new AntPathRequestMatcher("/visite/all"),
-                    new AntPathRequestMatcher("/medico/visite/**")
+                    new AntPathRequestMatcher("/medico/visite/**"),
+                    new AntPathRequestMatcher("/medico/appuntamenti/**")
                     //new AntPathRequestMatcher("/visitePaziente")
             ).hasRole("MEDICO"); // tutti questi endpoint sono accessibili solo dall'utente che ha il ruolo di MEDICO
 

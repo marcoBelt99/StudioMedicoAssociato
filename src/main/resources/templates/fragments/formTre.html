@@ -2,23 +2,28 @@
 
     <h3 class="mb-4 text-center">Riepilogo Prenotazione</h3>
     <hr/>
-    <form>
+    <br>
+    <form class="text-center justify-content-center">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 mb-5 mx-auto text-center">
                 <h4>Paziente:</h4>
                 <p><span th:text="${nomePaziente + ' ' + cognomePaziente}"></span></p>
-<!--                <p>Cognome: <span th:text="${cognomePaziente}"></span></p>-->
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-5 mx-auto text-center">
                 <h4>Medico:</h4>
                 <p><span th:text="${medicoCandidato}"></span></p>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-5 mx-auto text-center">
                 <h4>Prestazione: </h4>
-                <span th:text="${session.prestazione.getTitolo()}"></span>
-                <p>Costo totale: <span th:text="${session.prestazione.getCosto()+session.prestazione.getTicket()} + ' €'" ></span></p>
+                <div class="row">
+                    <span th:text="${session.prestazione.getTitolo()}"></span>
+                </div>
+<!--                    <br>-->
+                <div class="row">
+                    <span th:text="'Costo totale: ' +  ${session.prestazione.getCosto()+session.prestazione.getTicket()} + ' €'" ></span>
+                </div>
             </div>
 
         </div>

@@ -2,41 +2,42 @@
 
     <h3 class="mb-4 text-center">Disponibilita'</h3>
     <hr/>
-    <form th:action="@{/prenotazione/step2}" method="post">
-        <div class="form-group">
-            <p>La prima data disponibile per la visita e':</p>
-            <input class="form-control" type="text"
+    <br>
+    <form th:action="@{/prenotazione/step2}" method="post"  > <!-- class="text-center justify-content-center"-->
+
+        <div class="form-group mb-5 mx-auto text-center">
+            <label for="prima_data_disponibile" >La prima Data Disponibile per la visita e':</label>
+            <input class="form-control form-control-lg" type="text"
                    name="primaDataDisponibile"
                    id="prima_data_disponibile"
                    required readonly
-                   th:value="${#dates.format(primaDataDisponibile, 'dd-MMM-yyyy')}"
-            >
+                   th:value="${#dates.format(primaDataDisponibile, 'dd-MMM-yyyy')}">
         </div>
-        <div class="form-group">
-            <p>Alle ore:</p>
-            <input class="form-control" type="text"
+        <br>
+
+        <div class="form-group mb-5 mx-auto text-center">
+            <label for="orario" >Alle ore:</label>
+            <input class="form-control form-control-lg" type="text"
                    id="orario"
                    name="primoOrarioDisponibile"
                    required readonly
-                   th:value="${#dates.format(primoOrarioDisponibile, 'HH:mm')}"
-            >
-
+                   th:value="${#dates.format(primoOrarioDisponibile, 'HH:mm')}">
         </div>
+        <br>
 
-        <div class="form-group">
-            <p>Medico:</p>
-            <input class="form-control" type="text"
+        <div class="form-group mb-5 mx-auto text-center">
+            <label for="medico_candidato" >Medico:</label>
+            <input class="form-control form-control-lg" type="text"
                    name="medicoCandidato"
                    id="medico_candidato"
                    required readonly
-                   th:value="${medicoCandidato}"
-            >
+                   th:value="${medicoCandidato}">
         </div>
+        <br>
 
 
         <div class="row mt-4">
             <div class="form-group col text-center">
-<!--                <button type="submit" class="btn btn-primary">Avanti</button> -->
                 <button type="button" class="btn btn-secondary">Cambia Data</button>
             </div>
         </div>

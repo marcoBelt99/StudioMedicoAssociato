@@ -35,22 +35,22 @@ import static org.junit.jupiter.api.Assertions.*;
 /** TODO: ricordati che molto probabilmente, tutti questi test presenti in questa classe li dovrai trasferire
  *   Nella classe VisitaServiceTest
  * */
-@SpringBootTest
+//@SpringBootTest
 public class CreatePrenotazioneVisitaTests {
 
     // Vari Code Injection:
-    @Autowired
+    //@Autowired
     private UtenteService utenteService;
 
-    @Autowired
+    //@Autowired
     private PrestazioneService prestazioneService;
 
-    @Autowired
-    private VisitaService visitaService;
+    //@Autowired
+   private VisitaService visitaService;
 
 
-    @Autowired
-    private PianificazioneComponent calcolatoreAmmissibilitaComponent;
+   // @Autowired
+   private PianificazioneComponent calcolatoreAmmissibilitaComponent;
 
 
 
@@ -61,7 +61,7 @@ public class CreatePrenotazioneVisitaTests {
     List<Prestazione> prestazioniDisponibili = new ArrayList<Prestazione>();
 
     Date dataVisitaDesiderata = new GregorianCalendar().getTime();
-    @Autowired
+    //@Autowired
     private PrestazioneRepository prestazioneRepository;
 
 

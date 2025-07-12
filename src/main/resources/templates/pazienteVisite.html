@@ -29,7 +29,6 @@
             <th scope="col">Data Prenotazione</th>
             <th scope="col">Data Visita</th>
             <th scope="col">Ora</th>
-<!--            <th scope="col">Medico</th>-->
             <th scope="col">Num Ambulatorio</th>
 
         </tr>
@@ -39,9 +38,8 @@
             <td th:text="${visitaPrenotata.getTitoloPrestazione()}"></td>
             <td th:text="${#dates.format( visitaPrenotata.getDataPrenotazione(), 'yyyy-MM-dd' )}"></td>
             <td th:text="${#dates.format( visitaPrenotata.getDataVisita(), 'yyyy-MM-dd' )}"></td>
-            <td th:text="${visitaPrenotata.getOra()}"></td>
+            <td th:text="${#dates.format( visitaPrenotata.getOra(), 'HH:mm')}"></td>
             <td th:text="${visitaPrenotata.getNumAmbulatorio()}"></td>
-<!--            <td th:text="${visitaPrenotata.medico()}"></td>-->
         </tr>
         </tbody>
     </table>

@@ -1,25 +1,25 @@
 package com.beltra.sma.controller;
 
-import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
+import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
-import com.beltra.sma.service.MedicoServiceImpl;
+import com.beltra.sma.model.Visita;
 import com.beltra.sma.service.VisitaService;
 
 
+import jakarta.servlet.http.HttpSession;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +29,14 @@ public class MedicoController {
 
     private final VisitaService visitaService;
 
+    private final HttpSession session;
+    private final HttpSession httpSession;
 
-    MedicoController(VisitaService visitaService) {
+
+    MedicoController(VisitaService visitaService, HttpSession session, HttpSession httpSession) {
         this.visitaService = visitaService;
+        this.session = session;
+        this.httpSession = httpSession;
     }
 
     /** Accessibile solo da Medico. */
@@ -66,6 +71,10 @@ public class MedicoController {
             List<Map<String, Object>> appuntamentiSettimanaliMedico =
                     visitaService.getAppuntamentiSettimanaliMedicoListaMappe(username, dataInizio, dataFine);
 
+            // Mi salvo in sessione la data
+            httpSession.setAttribute("inizioSettimana", inizioSettimana);
+            httpSession.setAttribute("fineSettimana", fineSettimana);
+
             return ResponseEntity.ok(appuntamentiSettimanaliMedico);
 
         } catch (ParseException e) {
@@ -74,6 +83,34 @@ public class MedicoController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+
+    /** Accessibile solo da Medico. <br>
+     *  Permette di accedere alla pagina di dettaglio della specifica visita. */
+    @GetMapping("/appuntamenti/dettaglio/{idAppuntamento}")
+    public String getDettaglioAppuntamento(@PathVariable Long idAppuntamento,
+                                     Model model) throws ParseException {
+
+            // Deve essere necessariamente un Medico
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            String inizioSettimana = (String) httpSession.getAttribute("inizioSettimana");
+            String fineSettimana =  (String) httpSession.getAttribute("fineSettimana");
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date dataInizio = dateFormat.parse(inizioSettimana);
+            Date dataFine = dateFormat.parse(fineSettimana);
+
+
+            AppuntamentoSettimanaleMedicoDTO appuntamentoSettimanale = visitaService.getAppuntamentoById(idAppuntamento, username, dataInizio, dataFine);
+
+            model.addAttribute("titolo", "Appuntamento numero: " + idAppuntamento);
+            model.addAttribute("appuntamento", appuntamentoSettimanale);
+
+            return "appuntamentoDettaglio";
+
+    }
+
 
 
 }

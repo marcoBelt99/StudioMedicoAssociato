@@ -1,16 +1,13 @@
 package com.beltra.sma.repository;
 
-import com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO;
+import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 import com.beltra.sma.dto.VisitaPrenotataDTO;
 import com.beltra.sma.model.Anagrafica;
-import com.beltra.sma.model.Medico;
 import com.beltra.sma.model.Visita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -154,7 +151,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
 
     @Query(
     """
-        SELECT new com.beltra.sma.dto.AppuntamentiSettimanaliMedicoDTO(
+        SELECT new com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO(
             vis.idVisita,
             vis.dataVisita,
             vis.ora,
@@ -176,7 +173,42 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
           AND pren.effettuata = false
     """
     )
-    List<AppuntamentiSettimanaliMedicoDTO> findAppuntamentiSettimanaliMedico(
+    List<AppuntamentoSettimanaleMedicoDTO> findAppuntamentiSettimanaliMedico(
+            @Param("usernameMedico") String usernameMedico,
+            @Param("dataInizio") Date dataInizio,
+            @Param("dataFine") Date dataFine
+    );
+
+
+
+    @Query(
+            """
+                SELECT new com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO(
+                    vis.idVisita,
+                    pren.dataPrenotazione,
+                    vis.dataVisita,
+                    vis.ora,
+                    vis.prestazione.durataMedia,
+                    vis.prestazione.titolo,
+                    vis.numAmbulatorio,
+                    anag_paziente.nome,
+                    anag_paziente.cognome,
+                    paz.codiceFiscale
+            )
+                FROM Visita vis
+                JOIN vis.anagrafica medico
+                JOIN Utente utente ON utente.anagrafica = medico
+                JOIN Prenotazione pren ON pren.visita = vis
+                JOIN pren.anagrafica anag_paziente
+                JOIN Paziente paz ON paz.anagrafica = anag_paziente
+                WHERE utente.username = :usernameMedico
+                  AND vis.dataVisita BETWEEN :dataInizio AND :dataFine
+                  AND pren.effettuata = false
+                  AND vis.idVisita = :idVisita
+            """
+    )
+    AppuntamentoSettimanaleMedicoDTO findDettaglioAppuntamentoSettimanaleMedico(
+            @Param("idVisita") Long idVisita,
             @Param("usernameMedico") String usernameMedico,
             @Param("dataInizio") Date dataInizio,
             @Param("dataFine") Date dataFine

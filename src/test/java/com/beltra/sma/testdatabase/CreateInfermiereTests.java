@@ -9,12 +9,25 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+/** Test di integrazione che verifica che venga rispettato questo ordine:
+ *  1) Anagrafica
+ *  2) Utente
+ *  3) Ruolo
+ *  4) Infermiere
+ *  <br>
+ *  E' piu' che altro un BDD (test comportamentale).
+ * */
 @SpringBootTest
 public class CreateInfermiereTests {
 
@@ -34,7 +47,8 @@ public class CreateInfermiereTests {
     @Test
     @Transactional // TODO: OBBLIGATORIO USO DI TRANSACTIONAL
     @Commit // per poter effettivamente inserire realmente sul DB
-    public void testInsertInfermiere() { // di base --> specializzazione=null
+    @Rollback // alla fine, rimuovo il dato inserito
+    public void newInfermiereIsInsertedInDB() { // di base --> specializzazione=null
 
 
         // 1. Creare l'anagrafica
@@ -72,6 +86,7 @@ public class CreateInfermiereTests {
         infermiere.setTipologia("Strumentale"); // Creazione nuovo medico di base
 
         infermiere = infermiereRepository.save( infermiere );
+
 
         Assertions.assertNotNull( anagrafica );
         Assertions.assertNotNull( utente );

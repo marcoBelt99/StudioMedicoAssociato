@@ -1,0 +1,62 @@
+
+<!--
+<div th:fragment="breadcrumb">
+
+    <nav class="breadcrumb-container" aria-label="Percorso di navigazione">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a><span class="separator" aria-hidden="true">/</span></li>
+            <li class="breadcrumb-item"><a href="#">Sottosezione</a><span class="separator" aria-hidden="true">/</span></li>
+            <li class="breadcrumb-item active" aria-current="page">Nome pagina</li>
+        </ol>
+    </nav>
+</div>
+-->
+
+<!--
+<div th:fragment="breadcrumb(livelli)">
+    <nav class="breadcrumb-container" aria-label="Percorso di navigazione">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">Home</a>
+                <span class="separator">/</span>
+            </li>
+
+            <li th:each="livello, stat : ${livelli}"
+                th:classappend="${stat.last} ? 'active' : ''"
+                th:attr="aria-current=${stat.last} ? 'page' : null"
+                class="breadcrumb-item">
+                <a th:if="!${stat.last}" th:href="${livello.href}" th:text="${livello.label}"></a>
+                <span th:if="${stat.last}" th:text="${livello.label}"></span>
+                <span th:if="!${stat.last}" class="separator">/</span>
+            </li>
+        </ol>
+    </nav>
+</div>
+-->
+
+<!-- fragments/breadcrumb.html -->
+<div th:fragment="breadcrumb">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">Home</a>
+            </li>
+
+            <li class="breadcrumb-item"
+                th:each="segment, iterStat : ${#httpServletRequest.requestURI.split('/')}"
+                th:if="${segment != '' and iterStat.index > 0}"
+                th:classappend="${iterStat.last}? 'active' : ''"
+                th:aria-current="${iterStat.last}? 'page' : null">
+
+                <!-- Costruisco il link cumulativo fino al segmento corrente -->
+                <a th:if="${!iterStat.last}"
+                   th:href="@{'/' + ${#strings.arrayJoin(#httpServletRequest.requestURI.split('/')[1..iterStat.index], '/')}}"
+                   th:text="${#strings.capitalize(segment)}">
+                </a>
+
+                <!-- Ultimo segmento, testo senza link -->
+                <span th:if="${iterStat.last}" th:text="${#strings.capitalize(segment)}"></span>
+            </li>
+        </ol>
+    </nav>
+</div>

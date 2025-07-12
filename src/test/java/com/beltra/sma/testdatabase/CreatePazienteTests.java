@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -37,6 +38,7 @@ public class CreatePazienteTests {
     @Test
     @Transactional // TODO: OBBLIGATORIO USO DI TRANSACTIONAL
     @Commit // per poter effettivamente inserire realmente sul DB
+    @Rollback
     public void testInsertPaziente() {
 
 

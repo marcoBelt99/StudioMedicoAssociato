@@ -29,14 +29,19 @@ public class PazienteController {
             Model model) {
 
 
-        // Se ho /visite?effettuata=true allora visualizzo solo quelle effettuate
-        // Se ho /visite?effettuata=false allora visualizzo solo quelle non ancora effettuate
+        /// Se ho /visite?effettuata=true allora visualizzo solo quelle effettuate
+        /// Se ho /visite?effettuata=false allora visualizzo solo quelle non ancora effettuate
 
         List<VisitaPrenotataDTO> listaVisite = null;
 
         // Notare: credo si possa recuperare lo username anche facendo uso di:
         // SecurityContextHolder.getContext().getAuthentication().getName();
 
+
+        listaVisite = effettuata ? visitaService.getAllVisitePrenotateAndEffettuateByUsernamePaziente( username ) : visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePaziente( username );
+        model.addAttribute("titolo", effettuata ? "Visite Prenotate ed Effettuate" : "Visite Prenotate e Non Effettuate");
+
+        /*
         if(effettuata) {
             listaVisite = visitaService.getAllVisitePrenotateAndEffettuateByUsernamePaziente( username );
             model.addAttribute("titolo", "Visite Prenotate ed Effettuate");
@@ -45,6 +50,7 @@ public class PazienteController {
             listaVisite = visitaService.getAllVisitePrenotateAndNotEffettuateByUsernamePaziente( username );
             model.addAttribute("titolo", "Visite Prenotate e Non Effettuate");
         }
+         */
 
         model.addAttribute("visitePrenotate", listaVisite);
         return "pazienteVisite";
