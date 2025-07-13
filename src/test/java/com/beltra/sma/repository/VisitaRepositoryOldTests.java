@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class VisitaRepositoryTests {
+public class VisitaRepositoryOldTests {
 
     @Autowired
     private VisitaRepository visitaRepository;

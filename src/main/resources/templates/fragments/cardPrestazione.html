@@ -24,7 +24,7 @@
                                    th:href="@{/prestazioni/{id}(id=${prest.getIdPrestazione()})}"
                                    sec:authorize="!isAuthenticated"
                                    href="#">
-                                    <span class="text">Dettagli</span>
+                                    <span sec:authorize="isAnonymous()" class="text">Scopri di piu'</span>
                                     <span class="visually-hidden">su Lorem ipsum…</span>
                                     <svg class="icon"><use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
                                 </a>
@@ -35,7 +35,7 @@
                                 <a class="read-more"
                                    th:href="@{/prestazioni/{id} ( id = ${prest.getIdPrestazione()} )}"
                                    sec:authorize="isAuthenticated">
-                                    <span class="text">Dettagli</span>
+                                    <span sec:authorize="hasRole('ROLE_PAZIENTE')" class="text">Prenota</span>
                                     <span class="visually-hidden">su Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor…</span>
                                     <svg class="icon"> <use th:href="@{/svg/sprites.svg#it-arrow-right}"></use></svg>
                                 </a>

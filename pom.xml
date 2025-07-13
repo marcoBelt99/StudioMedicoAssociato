@@ -34,7 +34,11 @@
     <version>0.0.1</version>
 
 <!-- ###################################################    -->
-<!-- Sezione descrittiva del progetto    -->
+<!-- ###################################################    -->
+<!-- ###################################################    -->
+<!--        Sezione descrittiva del progetto                -->
+<!-- ###################################################    -->
+<!-- ###################################################    -->
 <!-- ###################################################    -->
     <name>StudioMedicoAssociato</name>
     <description>Progetto "Studio Medico Associato" per il corso di Ingegneria del Software Avanzata
@@ -66,34 +70,39 @@
         <url>https://endif.unife.it/it</url>
     </organization>
 
-<!--    <scm>-->
-<!--        <connection/>-->
-<!--        <developerConnection/>-->
-<!--        <tag/>-->
-<!--        <url/>-->
-<!--    </scm>-->
+    <!--    <scm>-->
+    <!--        <connection/>-->
+    <!--        <developerConnection/>-->
+    <!--        <tag/>-->
+    <!--        <url/>-->
+    <!--    </scm>-->
     <properties>
         <java.version>17</java.version>
     </properties>
 
 
-    <!-- ################################### -->
-    <!--  TODO: DIPENDENZE  -->
-    <!-- ################################### -->
+    <!-- ###################################################    -->
+    <!-- ###################################################    -->
+    <!-- ###################################################    -->
+    <!--            ### DIPENDENZE ###                          -->
+    <!-- ###################################################    -->
+    <!-- ###################################################    -->
+    <!-- ###################################################    -->
+
+    <!-- ### Spring Data JPA ###    -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-    <!-- TODO: Spring Security (sviluppo)       -->
-
+    <!--### Spring Security (sviluppo) ###-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- TODO: Thymeleaf   -->
+        <!-- ### Thymeleaf ###   -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -104,36 +113,30 @@
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- TODO: Spring Web        -->
+        <!-- ### Spring Web ### -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
 
-        <!-- TODO: Driver PostgreSQL  -->
+        <!-- ### Driver PostgreSQL ### -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+    <!-- ### Lombock (per eliminare codice boilerplate) ###-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-<!-- ################################        -->
-<!-- TODO: Testing                           -->
-<!-- ################################        -->
-
-        <!-- TODO: Per UnitTest usando Spring Data Jpa in un Database in memory: -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+    <!-- ################################### -->
+    <!-- ### Dipendenze per il Testing ##### -->
+    <!-- ################################## -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -141,38 +144,63 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- TODO: Spring Security (Test) -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- ### Per UnitTest usando Spring Data Jpa in un Database in memory.
+                 TODO: Vedere se tenerlo o toglierlo, potrebbe essere inutile se voglio mantenere il solo DB di produzione. ### -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- TODO: TESTCONTAINERS        -->
+        <!-- Dipendenze per eseguire test con postgresql in un container docker -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.21.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.21.3</version>
+        </dependency>
+
+
+    <!-- Flyway per le migrazioni        -->
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--&lt;!&ndash;            <scope></scope>&ndash;&gt;-->
+<!--        </dependency>-->
+
+
+        <!-- ###  Spring Security (Test) ### -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!--  Utile per vedere tutti gli endpoints che ho creato nel progetto -->
+
+        <!-- ### Actuator: utile per vedere tutti gli endpoints che ho creato nel progetto ### -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
 
-        <!-- TODO: JavaCodeCoverage -->
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.12</version> <!-- prima avevo la 0.8.12 -->
-            <type>maven-plugin</type>
-        </dependency>
-
-    <!-- Per leggere da CSV (utile per scrivere meglio i dati di test) -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>5.7.1</version>
-            <scope>test</scope>
-        </dependency>
 
     <!-- TODO: Property Based Testing -->
-
+<!-- Vecchia e non piu' manutenuta, sono passato a jqwik -->
 <!--        <dependency>-->
 <!--            <groupId>com.pholser</groupId>-->
 <!--            <artifactId>junit-quickcheck-core</artifactId>-->
@@ -187,11 +215,46 @@
 <!--            <scope>test</scope>-->
 <!--        </dependency>-->
 
+        <!-- jquik: Per il PBT uso jqwik perche' jqwik e' compatibile con JUnit 5, mentre
+        JUnit QuickCheck non lo e', bensi' lo e' solo con Junit 4. -->
         <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.8.2</version>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>1.9.2</version>
             <scope>test</scope>
+        </dependency>
+
+
+        <!-- ################################################################ -->
+        <!-- ### Dipendenze per la COPERTURA DEI TEST: JavaCodeCoverage ##### -->
+        <!-- ################################################################ -->
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.12</version> <!-- prima avevo la 0.8.12 -->
+            <type>maven-plugin</type>
+        </dependency>
+
+        <!-- Per leggere da CSV (utile per scrivere meglio i dati di test) -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
+    <!-- ########################################  -->
+    <!-- ########## GROOVY ######################  -->
+    <!-- Funziona con groovy-all e con la corretta configurazione del plugin di gmavenplus-plugin (vedi sotto).       -->
+    <!-- ########################################  -->
+    <!-- ########################################  -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>4.0.24</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -201,36 +264,14 @@
             <scope>test</scope>
         </dependency>
 
-<!-- TODO: Per il PBT uso jqwik perche' jqwik e' compatibile con JUnit 5, mentre
-        JUnit QuickCheck non lo e', bensi' lo e' solo con Junit 4.
--->
-        <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <version>1.9.2</version>
-            <scope>test</scope>
-        </dependency>
-
-<!-- ########################################  -->
-<!--  TODO: Groovy-->
-<!-- Funziona con groovy-all e con la corretta configurazione del plugin di gmavenplus-plugin (vedi sotto).       -->
-<!-- ########################################  -->
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>4.0.24</version>
-            <type>pom</type>
-        </dependency>
-
-
     </dependencies>
 
     <build>
         <plugins>
 
-            <!-- TODO: AGGIUNGERE PLUGIN PER MAVEN COMPILER + GROOVY ECLIPSE COMPILER + GROOVY ECLIPSE BATCH            -->
+            <!-- AGGIUNTO PLUGIN PER MAVEN COMPILER + GROOVY ECLIPSE COMPILER + GROOVY ECLIPSE BATCH            -->
 
-    <!-- TODO: gmaven-plugin: serve una versione personalizzata  -->
+    <!-- gmaven-plugin: serve una versione personalizzata  -->
     <!-- Questa versione mi assicura un ordine di esecuzione corretto per la compilazione mista Java/Groovy           -->
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
@@ -274,15 +315,7 @@
                 </goals>
                 </execution>
             </executions>
-<!--                <configuration>-->
-<!--                    <sources>-->
-<!--                        <source>src/main/groovy</source>-->
-<!--                    </sources>-->
-<!--                    <testSources>-->
-<!--                        <testSource>src/test/groovy</testSource>-->
-<!--                    </testSources>-->
-<!--                    <groovyVersion>4.0.24</groovyVersion>-->
-<!--                </configuration>-->
+
             </plugin>
 
 
@@ -302,7 +335,7 @@
 
 
 
-            <!-- TODO: PLUGIN PER JAVA CODE COVERAGE -->
+            <!-- PLUGIN PER JAVA CODE COVERAGE -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -324,7 +357,7 @@
             </plugin>
 
 
-    <!-- TODO: maven-compiler-plugin            -->
+    <!-- maven-compiler-plugin            -->
     <!-- In teoria tengo il maven compiler plugin (che mi compila le classi Java) dopo il gmavenplus-plugin (che invece
                 mi compila le classi groovy) -->
             <plugin>

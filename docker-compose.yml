@@ -17,7 +17,8 @@ services:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: mmsf22dp
         volumes:
-            - ./database/sma-DDL-and-DML.sql:/docker-entrypoint-initdb.d/init.sql
+#            - ./database/CREATE-INSERT-TANTE_PRENOTAZIONI_VISITE.sql:/docker-entrypoint-initdb.d/init.sql
+            - ./src/main/resources/database/CREATE-INSERT-TANTE_PRENOTAZIONI_VISITE_PerContainer.sql:/docker-entrypoint-initdb.d/init.sql
             - postgres_data:/var/lib/postgresql/data # questa riga garantisce che i dati del database vengano salvati in un volume persistente chiamato postgres_data e non vengano persi tra i riavvii del contenitore
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -U postgres" ] # se da problemi, al posto di $() mettere postgres
@@ -33,7 +34,7 @@ services:
 
 
     web:
-        image: stud_med_ass:latest # immagine che genero con il Dockerfile_001
+        image: stud_med_ass:latest # immagine che genero con il Dockerfile
         build:
             context: .
             dockerfile: Dockerfile
