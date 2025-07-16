@@ -86,7 +86,7 @@ replay_pid*
 
 
 # TODO: includo il database e i secrets
-database
+# database
 secrets
 
 # TODO: escludo i files di configurazione per l'ambiente di sviluppo
