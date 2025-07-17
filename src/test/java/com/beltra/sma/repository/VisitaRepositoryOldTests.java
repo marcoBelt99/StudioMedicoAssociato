@@ -17,115 +17,115 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
-@SpringBootTest
-public class VisitaRepositoryOldTests {
+//@Disabled
+//@SpringBootTest
+//public class VisitaRepositoryOldTests {
+//
+//    @Autowired
+//    private VisitaRepository visitaRepository;
+//    @Autowired
+//    private UtenteRepository utenteRepository;
+//
+//
+//    private final String username = "marcobeltra";
+//    private int totaleVisitePaziente ;
+//
+//
+//    @BeforeEach
+//    public void setup() {
+//        Long idAnagrafica = utenteRepository
+//                .findByUsername(username)
+//                .getAnagrafica()
+//                .getIdAnagrafica();
+//
+//        totaleVisitePaziente = visitaRepository
+//                .findAllVisitePazienteByAnagraficaPaziente(idAnagrafica)
+//                .size();
+//    }
+//
+//
+//    @Test
+//    public void findAllVisiteOrderByDataVisitaDesc_ReturnsListOfVisitaDTO() {
+//
+//        List<VisitaPrenotataDTO> listaVisiteDTO =
+//                visitaRepository.findAllVisiteOrderByDataVisitaDesc();
+//
+//        if(!listaVisiteDTO.isEmpty())
+//            listaVisiteDTO.forEach(System.out::println);
+//
+//        assertNotNull( listaVisiteDTO );
+//    }
+//
+//
+//    @Test
+//    public void findAllVisitePrenotateAndNotEffettuateByUsernamePaziente_ReturnsListOfVisitaPrenotataDTO() {
+//
+//        List<VisitaPrenotataDTO> listaVisitePrenotateAndNotEffettuateDTO =
+//                visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, false);
+//
+//        if(!listaVisitePrenotateAndNotEffettuateDTO.isEmpty())
+//            listaVisitePrenotateAndNotEffettuateDTO.forEach(System.out::println);
+//
+//        int totaleVisiteNotEffettuatePaziente = listaVisitePrenotateAndNotEffettuateDTO.size();
+//
+//
+//        // Totale visite - totale visite effettuate = totale visite non effettuate
+//        assertEquals(totaleVisitePaziente - (visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, true).size() ),
+//                totaleVisiteNotEffettuatePaziente);
+//
+//    }
+//
+//
+//
+//    @Test
+//    public void findAllVisitePrenotateAndEffettuateByUsernamePaziente_ReturnsListOfVisitaPrenotataDTO() {
+//
+//        List<VisitaPrenotataDTO> listaVisitePrenotateAndEffettuateDTO =
+//                visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, true);
+//
+//        if(!listaVisitePrenotateAndEffettuateDTO.isEmpty())
+//            listaVisitePrenotateAndEffettuateDTO.forEach(System.out::println);
+//
+//        int totaleVisiteEffettuatePaziente = listaVisitePrenotateAndEffettuateDTO.size();
+//
+//        // Totale visite - totale visite effettuate = totale visite non effettuate
+//        assertEquals(totaleVisitePaziente - (visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, false).size() ),
+//                          totaleVisiteEffettuatePaziente);
+//    }
+//
+//
+//
+//    @Test
+//    public void findAllVisitePazienteByAnagraficaPaziente_MustReturnListOfVisita() {
+//
+//        String username = "marcobeltra";
+//        Long idAnagraficaPaziente =
+//                 utenteRepository.findByUsername( username ).getAnagrafica().getIdAnagrafica();
+//
+//         List<Visita> listaVisite =
+//                 visitaRepository.findAllVisitePazienteByAnagraficaPaziente(idAnagraficaPaziente);
+//
+//        assertNotNull( listaVisite );
+//
+//        System.out.println( String.format("\nLista delle visite per il paziente: %s\n", username) );
+//        listaVisite.forEach(System.out::println);
+//
+//    }
+//
+//    @Test
+//    public void testFindAllByDataVisita() {
+//
+//
+//                visitaRepository.findAllByDataVisita(
+//                        new GregorianCalendar(  2024 , Calendar.DECEMBER, 11).getTime()
+//                )
+//                .forEach( v -> {
+//                    System.out.println("\n");
+//                    System.out.println(v);
+//                });
+//
+//
+//    }
 
-    @Autowired
-    private VisitaRepository visitaRepository;
-    @Autowired
-    private UtenteRepository utenteRepository;
 
-
-    private final String username = "marcobeltra";
-    private int totaleVisitePaziente ;
-
-
-    @BeforeEach
-    public void setup() {
-        Long idAnagrafica = utenteRepository
-                .findByUsername(username)
-                .getAnagrafica()
-                .getIdAnagrafica();
-
-        totaleVisitePaziente = visitaRepository
-                .findAllVisitePazienteByAnagraficaPaziente(idAnagrafica)
-                .size();
-    }
-
-
-    @Test
-    public void findAllVisiteOrderByDataVisitaDesc_ReturnsListOfVisitaDTO() {
-
-        List<VisitaPrenotataDTO> listaVisiteDTO =
-                visitaRepository.findAllVisiteOrderByDataVisitaDesc();
-
-        if(!listaVisiteDTO.isEmpty())
-            listaVisiteDTO.forEach(System.out::println);
-
-        assertNotNull( listaVisiteDTO );
-    }
-
-
-    @Test
-    public void findAllVisitePrenotateAndNotEffettuateByUsernamePaziente_ReturnsListOfVisitaPrenotataDTO() {
-
-        List<VisitaPrenotataDTO> listaVisitePrenotateAndNotEffettuateDTO =
-                visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, false);
-
-        if(!listaVisitePrenotateAndNotEffettuateDTO.isEmpty())
-            listaVisitePrenotateAndNotEffettuateDTO.forEach(System.out::println);
-
-        int totaleVisiteNotEffettuatePaziente = listaVisitePrenotateAndNotEffettuateDTO.size();
-
-
-        // Totale visite - totale visite effettuate = totale visite non effettuate
-        assertEquals(totaleVisitePaziente - (visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, true).size() ),
-                totaleVisiteNotEffettuatePaziente);
-
-    }
-
-
-
-    @Test
-    public void findAllVisitePrenotateAndEffettuateByUsernamePaziente_ReturnsListOfVisitaPrenotataDTO() {
-
-        List<VisitaPrenotataDTO> listaVisitePrenotateAndEffettuateDTO =
-                visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, true);
-
-        if(!listaVisitePrenotateAndEffettuateDTO.isEmpty())
-            listaVisitePrenotateAndEffettuateDTO.forEach(System.out::println);
-
-        int totaleVisiteEffettuatePaziente = listaVisitePrenotateAndEffettuateDTO.size();
-
-        // Totale visite - totale visite effettuate = totale visite non effettuate
-        assertEquals(totaleVisitePaziente - (visitaRepository.findAllVisitePrenotateByUsernamePaziente(username, false).size() ),
-                          totaleVisiteEffettuatePaziente);
-    }
-
-
-
-    @Test
-    public void findAllVisitePazienteByAnagraficaPaziente_MustReturnListOfVisita() {
-
-        String username = "marcobeltra";
-        Long idAnagraficaPaziente =
-                 utenteRepository.findByUsername( username ).getAnagrafica().getIdAnagrafica();
-
-         List<Visita> listaVisite =
-                 visitaRepository.findAllVisitePazienteByAnagraficaPaziente(idAnagraficaPaziente);
-
-        assertNotNull( listaVisite );
-
-        System.out.println( String.format("\nLista delle visite per il paziente: %s\n", username) );
-        listaVisite.forEach(System.out::println);
-
-    }
-
-    @Test
-    public void testFindAllByDataVisita() {
-
-
-                visitaRepository.findAllByDataVisita(
-                        new GregorianCalendar(  2024 , Calendar.DECEMBER, 11).getTime()
-                )
-                .forEach( v -> {
-                    System.out.println("\n");
-                    System.out.println(v);
-                });
-
-
-    }
-
-
-}
+//}

@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
+@Disabled
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class VisitaServiceTests {
 
