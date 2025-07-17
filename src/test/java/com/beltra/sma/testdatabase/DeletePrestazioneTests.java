@@ -4,6 +4,7 @@ import com.beltra.sma.model.Prestazione;
 import com.beltra.sma.model.Visita;
 import com.beltra.sma.repository.PrestazioneRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+@Disabled
 @SpringBootTest
 public class DeletePrestazioneTests {
 

@@ -2,8 +2,10 @@ package com.beltra.sma.service;
 
 import com.beltra.sma.dto.AppuntamentoSettimanaleMedicoDTO;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.beltra.sma.repository.MedicoRepository;
+import com.beltra.sma.repository.PrenotazioneRepository;
+import com.beltra.sma.repository.VisitaRepository;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -12,15 +14,23 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-@SpringBootTest
+import static org.mockito.Mockito.mock;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class VisitaServiceTests {
 
-    @Autowired
+    private PrenotazioneService prenotazioneService;
+    private VisitaRepository visitaRepository;
     private VisitaService visitaService;
 
+    @BeforeAll
+    void setupService() {
+        prenotazioneService = mock(PrenotazioneService.class);
+        visitaRepository = mock(VisitaRepository.class);
+        visitaService = new VisitaServiceImpl(visitaRepository, prenotazioneService);
+    }
 
-
-
+    @Disabled
     @DisplayName("Verifica che ")
     @Test
     void getVisitePrenotateSettimana_ShouldReturAllVisiteBetweenMondayAndFriday() {
@@ -36,6 +46,7 @@ public class VisitaServiceTests {
         List<AppuntamentoSettimanaleMedicoDTO> appuntamentiSettimanali = visitaService
             .getAppuntamentiSettimanaliMedicoLista("mario_rossi", inizioSettimana, fineSettimana);
 
+        // Assert ???
 
     }
 

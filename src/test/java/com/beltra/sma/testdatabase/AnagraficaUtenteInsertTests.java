@@ -20,7 +20,6 @@ import static org.mockito.Mockito.mock;
 
 public class AnagraficaUtenteInsertTests {
 
-
     private AnagraficaRepository anagraficaRepository;
 
 

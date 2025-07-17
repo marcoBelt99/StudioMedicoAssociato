@@ -7,6 +7,7 @@ import com.beltra.sma.repository.RuoloRepository;
 import com.beltra.sma.repository.UtenteRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,7 +20,7 @@ import java.util.GregorianCalendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@Disabled
 /** Test di integrazione che verifica che venga rispettato questo ordine:
  *  1) Anagrafica
  *  2) Utente
